@@ -1,0 +1,26 @@
+{
+  "name": "app-turbo",
+  "version": "1.0.0",
+  "homepage": "https://github.com/wecatch",
+  "author": "zhyq0826 @三月沙 https://github.com/wecatch",
+  "description": "app-turbo front end js",
+  "lib": {
+    "jquery": "http://jquery.com",
+    "swipejs": "http://swipejs.com/",
+    "nodejs": "http://nodejs.org/",
+    "gruntks": "http://gruntjs.com/"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/wecatch/app-turbo"
+  },
+  "devDependencies": {
+    "grunt": "~0.4.1",
+    "grunt-contrib-jshint": "~0.6.0",
+    "grunt-contrib-uglify": "~0.2.2",
+    "grunt-contrib-concat": "~0.3.0",
+    "grunt-contrib-qunit": "~0.2.2",
+    "grunt-contrib-watch": "~0.4.4",
+    "grunt-contrib-less": "~0.6.5"
+  }
+}

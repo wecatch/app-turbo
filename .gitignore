@@ -52,3 +52,8 @@ docs/_build/
 
 # PyBuilder
 target/
+node_modules
+*.~
+.ssh
+.idea
+__test__
