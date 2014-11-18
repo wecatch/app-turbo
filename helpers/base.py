@@ -8,7 +8,7 @@ class Helper(dict):
     __prefix = _PREFIX
 
     def __setitem__(self, k, v):
-        super(Helper, self).setdefault('%s%s'%(self.__prefix, self.__convert_name(k)), v)
+        return super(Helper, self).setdefault('%s%s'%(self.__prefix, self.__convert_name(k)), v)
 
     def __getattr__(self, name):
         collect = self.get(name, None)

@@ -37,33 +37,3 @@ class User(Model):
         'ctime':            (time, None)        ,
     }
 
-
-class U2food(Model): 
-    """
-    field:
-        uid-> u
-        fid-> f
-        atime-> t
-    """
-    name = 'u2food'
-
-    field = {
-        'u':               (ObjectId, None)    ,
-        'f':               (ObjectId, None)    ,
-        't':               (datetime, None)    ,
-    }
-
-
-
-class FoodComment(Model):
-
-    name = 'food_comment'
-
-    field = {
-        'fid':             (ObjectId, None)   ,
-        'uid':             (ObjectId, None)   ,
-        'up':              (list, [])         ,
-        'size':            (int, 0)           ,
-        'content':         (basestring, None) ,
-        'atime':           (datetime, None)   ,
-    }

@@ -2,7 +2,6 @@
 
 # installed helper list 
 INSTALLED_HELPERS = (
-    'food',
     'user',
 )
 
