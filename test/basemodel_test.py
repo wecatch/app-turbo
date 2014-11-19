@@ -50,7 +50,10 @@ class BaseModelTest(unittest.TestCase):
         pass
 
     def test_update(self):
-        pass
+        with self.assertRaises(Exception):
+            self.m.update({},{'hello': 0}) 
+        
+        self.m.update({},{'$set':{'hellow': 0}})
 
     def test_remove(self):
         pass

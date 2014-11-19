@@ -9,14 +9,14 @@ from pymongo import ASCENDING, DESCENDING
 
 import loggers
 
-from utils import escape as _es 
+from utils import escape as _es
 
 logger = loggers.getLogger(__file__)
 
 
 class Record(dict):
     """a dict object to replace default mongodb record
-    
+
     """
     def __init__(self, record, *args, **kwargs):
         super(Record, self).__init__(*args, **kwargs)
@@ -30,7 +30,7 @@ def convert_to_record(func):
     """wrap mongodb record to a dict record
 
     """
-    
+
     @functools.wraps(func)
     def wrapper(self, *args, **kwargs):
         result = func(self, *args, **kwargs)
@@ -39,20 +39,100 @@ def convert_to_record(func):
                 return Record(result)
 
             return (Record(i) for i in result)
-                
-        return result 
-    
+
+        return result
+
     return wrapper
 
 
-class BaseBaseModel(object):
+class MixinModel(object):
+
+    @staticmethod
+    def utctimestamp(seconds=None):
+        if seconds:
+            return long(time.mktime(time.gmtime(seconds)))
+        else:
+            return long(time.mktime(time.gmtime()))
+
+    @staticmethod
+    def timestamp():
+        return long(time.time())
+
+    @staticmethod
+    def datetime(dt=None):
+        if dt:
+            return datetime.strptime(dt, '%Y-%m-%d %H:%M')
+        else:
+            return datetime.now()
+
+    @staticmethod
+    def utcdatetime(dt=None):
+        if dt:
+            return datetime.strptime(dt, '%Y-%m-%d %H:%M')
+        else:
+            return datetime.utcnow()
+
+    @staticmethod
+    def to_one_str(value, *args, **kwargs):
+        """string化的单个record对象
+        """
+        if kwargs.get('wrapper'):
+            return MixinModel._wrapper_to_one_str(value)
+
+        return _es.to_dict_str(value)
+
+    @classmethod
+    @convert_to_record
+    def _wrapper_to_one_str(cls, value):
+        return _es.to_dict_str(value)
+
+    @staticmethod
+    def default_encode(v):
+        return _es.default_encode(v)
+
+    @staticmethod
+    def json_encode(v):
+        return _es.json_encode(v)
+
+    @staticmethod
+    def json_decode(v):
+        return _es.json_decode(v)
+
+    @staticmethod
+    def to_objectid(objid):
+        return _es.to_objectid(objid)
+
+    @staticmethod
+    def create_objectid():
+        """return ObjectId
+        """
+        return ObjectId()
+
+
+class BaseBaseModel(MixinModel):
     """mongodb 基础api 访问
-    
+
     """
 
     name = None                            # mongodb collection name
     field = None                           # collection key
     column = None                          # need to query field
+    __operators = {
+        '$set': '',
+        '$unset': '',
+        '$rename': '',
+        '$currentDate': '',
+        '$inc': '',
+        '$max': '',
+        '$min': '',
+        '$mul': '',
+        '$setOnInsert': '',
+
+        '$addToSet': '',
+        '$pop': '',
+        '$pushAll': '',
+        '$push': '',
+    }
 
     def __init__(self, db_name='test', _MONGO_DB_MAPPING=None):
         if _MONGO_DB_MAPPING is None:
@@ -62,7 +142,7 @@ class BaseBaseModel(object):
         self.__db = _MONGO_DB_MAPPING['db']
         # databases file
         self.__db_file = _MONGO_DB_MAPPING['db_file']
-        
+
         #databse name
         if db_name not in self.__db or self.__db.get(db_name, None) is None:
             raise Exception("%s is invalid databse" % db_name)
@@ -101,67 +181,74 @@ class BaseBaseModel(object):
     def insert(self, doc_or_docs, **kwargs):
         """collection insert method
         args:
-            w(optional):(integer or string) If this is a replica set, 
-            write operations will block until they have been replicated to the specified number or tagged set of servers. 
-            w=<int> always includes the replica set primary (e.g. w=3 means write to the primary and wait until replicated to two secondaries). 
+            w(optional):(integer or string) If this is a replica set,
+            write operations will block until they have been replicated to the specified number or tagged set of servers.
+            w=<int> always includes the replica set primary (e.g. w=3 means write to the primary and wait until replicated to two secondaries).
             Passing w=0 disables write acknowledgement and all other write concern options.
-            
-            wtimeout(optional): (integer) Used in conjunction with w. 
-            Specify a value in milliseconds to control how long to wait for write propagation to complete. 
+
+            wtimeout(optional): (integer) Used in conjunction with w.
+            Specify a value in milliseconds to control how long to wait for write propagation to complete.
             If replication does not complete in the given timeframe, a timeout exception is raised.
-        
+
         """
+        if not kwargs.get('check') == False:
+            return self.create(doc_or_docs, **kwargs)
+
         return self.__collect.insert(doc_or_docs, **kwargs)
 
     def save(self, to_save, **kwargs):
         """collection save method
-        
+
         """
         return self.__collect.save(to_save, **kwargs)
-    
+
     def find_one(self, spec_or_id=None, *args, **kwargs):
         """collection find_one method
-        
+
         """
         if kwargs.get('wrapper', False):
             return self._wrapper_find_one(spec_or_id, *args, **kwargs)
 
         return self.__collect.find_one(spec_or_id, *args, **kwargs)
-    
+
     def find(self, *args, **kwargs):
         """collection find method
-        
+
         """
         if kwargs.get('wrapper', False):
             return self._wrapper_find(*args, **kwargs)
 
         return self.__collect.find(*args, **kwargs)
-    
+
     @convert_to_record
     def _wrapper_find_one(self, spec_or_id=None, *args, **kwargs):
         """convert record to a dict that has no key error
-        
+
         """
         return self.__collect.find_one(spec_or_id, *args, **kwargs)
-    
+
     @convert_to_record
     def _wrapper_find(self, *args, **kwargs):
         """convert record to a dict that has no key error
-        
+
         """
         return self.__collect.find(*args, **kwargs)
 
     def update(self, spec, document, multi=False, **kwargs):
         """collection update method
-        
+
         """
+        for opk in document.keys():
+            if not opk.startswith('$') or opk not in self.__operators:
+                raise Exception("invalid document update operator")
+
         return self.__collect.update(spec, document, multi=multi, **kwargs)
 
     def remove(self, spec_or_id=None, **kwargs):
         """collection remove method
         warning:
-            if you want to remove all documents, 
-            you must override _remove_all method to make sure 
+            if you want to remove all documents,
+            you must override _remove_all method to make sure
             you understand the result what you do
         """
         if isinstance(spec_or_id, dict) and spec_or_id == {}:
@@ -209,11 +296,11 @@ class BaseBaseModel(object):
 
         return self.__collect.find_one({'_id': document_id}, column)
 
-    def find_and_modify(self, query={}, update=None, upsert=False, sort=None, full_response=False, **kwargs):
+    def find_and_modify(self, query=None, update=None, upsert=False, sort=None, full_response=False, **kwargs):
         return  self.__collect.find_and_modify(query=query, update=update, upsert=upsert, sort=sort, full_response=full_response, **kwargs)
 
     def ensure_index(self, key_or_list, cache_for=300, **kwargs):
-        return self.__collect.ensure_index(key_or_list, cache_for=300, **kwargs)
+        return self.__collect.ensure_index(key_or_list, cache_for=cache_for, **kwargs)
 
     def find_new_one(self, *args, **kwargs):
         cur = list(self.__collect.find(*args, **kwargs).limit(1).sort('_id', DESCENDING))
@@ -233,7 +320,7 @@ class BaseBaseModel(object):
             column = self.column
 
         l = self.__collect.find(condition, column, skip=skip, limit=limit, sort=sort)
-        
+
         as_dict, as_list = {}, []
         for i in l:
             as_dict[unicode(i['_id'])] = i
@@ -241,19 +328,9 @@ class BaseBaseModel(object):
 
         return as_dict, as_list
 
-    @staticmethod
-    def to_objectid(objid):
-        return _es.to_objectid(objid)
-
-    @staticmethod
-    def create_objectid():
-        """return ObjectId
-        """
-        return ObjectId()
-
     def create(self, record=None, **args):
         """init the new record
-        function:    
+        function:
             创建一个新的record，并为数据一致性做初始化
         """
         if isinstance(record, list) or isinstance(record, tuple):
@@ -263,8 +340,8 @@ class BaseBaseModel(object):
         if isinstance(record, dict):
             record = self._valid_record(record)
 
-        return self.insert(record, **args)
-    
+        return self.__collect.insert(record, **args)
+
     def _valid_record(self, record):
         if not isinstance(record, dict):
             raise Exception("%s record is not dict" % record)
@@ -313,56 +390,6 @@ class BaseBaseModel(object):
 
             return [callback(self.to_one_str(i)) for i in values]
 
-    @staticmethod
-    def utctimestamp(seconds=None):
-        if seconds:
-            return long(time.mktime(time.gmtime(seconds)))
-        else:
-            return long(time.mktime(time.gmtime()))
-   
-    @staticmethod
-    def timestamp():
-        return long(time.time())
-
-    @staticmethod
-    def datetime(dt=None):
-        if dt:
-            return datetime.strptime(dt, '%Y-%m-%d %H:%M')
-        else:
-            return datetime.now()
-
-    @staticmethod
-    def utcdatetime(dt=None):
-        if dt:
-            return datetime.strptime(dt, '%Y-%m-%d %H:%M')
-        else:
-            return datetime.utcnow()
-
-    @staticmethod
-    def to_one_str(value, *args, **kwargs):
-        """string化的单个record对象
-        """
-        if kwargs.get('wrapper'):
-            return BaseModel._wrapper_to_one_str(value)
-
-        return _es.to_dict_str(value)
-
-    @classmethod
-    @convert_to_record
-    def _wrapper_to_one_str(cls, value):
-        return _es.to_dict_str(value)
-
-    @staticmethod
-    def default_encode(v):
-        return _es.default_encode(v)
-
-    @staticmethod
-    def json_encode(v):
-        return _es.json_encode(v)
-
-    @staticmethod
-    def json_decode(v):
-        return _es.json_decode(v)
 
 
 class BaseModel(BaseBaseModel):

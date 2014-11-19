@@ -1,56 +1,57 @@
 # -*- coding:utf-8 -*-
 
-
 import tornado.web
 import tornado.escape
 
 from pymongo import ASCENDING, DESCENDING
 from bson.objectid import ObjectId
 
-from settings import (
-    CDN as _CDN,
-    LANG as _LANG,
-)
 from utils import (
-    escape as _es,
+    escape as _es, 
     httputil as _ht,
+    session
 )
+
 from core.exceptions import ResponseError
-from conf import locale, global_setting
+from config import locale as LOCALE
 
 import loggers
+
+from settings import (
+    LANG as _LANG,
+)
+
 logger = loggers.getLogger(__file__)
+
 
 class BaseBaseHandler(tornado.web.RequestHandler):
     '''
-    request parameter:
-        _get_params = {
-                'need':[
-                    ('skip', int), 
-                    ('limit', int), 
-                ],
-                'option':[
-                    ('jsoncallback', basestring, None),
-                ]
-            }
+    config request parameter like this:
+    _get_params = {
+            'need':[
+                ('skip', int),
+                ('limit', int),
+            ],
+            'option':[
+                ('jsoncallback', basestring, None),
+            ]
+        }
 
     '''
 
-    _required_params = [('jsoncallback', basestring, None), ('skip', int, 0), ('limit', int, 0)]
-    _types = [ObjectId, None, basestring, int, float, list, file]
-    _params = None
+    _required_params = [('skip', int, 0), ('limit', int, 0)]
+    _types = [ObjectId, None, basestring, int, float, list, file, bool]
     _data = None
 
-    context = None
-    template_path = None
-
     def initialize(self):
+        # request context
         self.context = self.get_context()
+
+        # app template path if exist must end with slash like user/
         self.template_path = ''
 
     def render(self, template_name, **kwargs):
-        super(BaseBaseHandler, self).render(('%s%s') % (self.template_path, template_name),
-                                            context=self.context, **kwargs)
+        super(BaseBaseHandler, self).render('%s%s' % (self.template_path, template_name), context=self.context, **kwargs)
 
     def sort_by(self, sort):
         return {1: ASCENDING, -1: DESCENDING}.get(sort, ASCENDING)
@@ -61,58 +62,59 @@ class BaseBaseHandler(tornado.web.RequestHandler):
 
         }
 
+    def to_objectid(self, objid):
+        return _es.to_objectid(objid)
+
+    def to_int(self, value):
+        return _es.to_int(value)
+
+    def to_float(self, value):
+        return _es.to_float(value)
+
+    def to_bool(self, value):
+        return _es.to_bool(value)
+
+    def utf8(self, v):
+        return tornado.escape.utf8(v)
+
     def static_url(self, path, include_host=None, v=None, **kwargs):
         is_debug = self.application.settings.get('debug', False)
         
         # In debug mode, load static files from localhost
-        if is_debug or not (is_debug ^ _CDN['is']):
+        if is_debug: 
             return super(BaseBaseHandler, self).static_url(path, include_host, **kwargs)
 
         v = kwargs.get('v', '')
 
         return ('{host}/{path}?v={v}' if v else '{host}/{path}').format(host=_CDN['host'], path=path, v=v)
 
-    @staticmethod
-    def to_objectid(objid):
-        return _es.to_objectid(objid)
 
-    @staticmethod
-    def to_int(value):
-        return _es.to_int(value)
-
-    @staticmethod
-    def to_float(value):
-        return _es.to_float(value)
-
-    @staticmethod
-    def utf8(v):
-        return tornado.escape.utf8(v)
-
-    @staticmethod
-    def encode_http_params(**kw):
+    def encode_http_params(self, **kw):
+        """
+        url parameter encode
+        """
         return _ht.encode_http_params(**kw)
 
-    @staticmethod
-    def json_encode(data):
+    def json_encode(self, data):
         return _es.json_encode(data)
 
-    @staticmethod
-    def json_decode(data):
+    def json_decode(self, data):
         return _es.json_decode(data)
 
-    @staticmethod
-    def recur_to_str(v):
-        return _es.recursive_to_str(v)
-
+    # write output json
     def wo_json(self, data):
         callback = self.get_argument('jsoncallback', None)
         if callback:
             return self.write('%s(%s)' % (callback, self.json_encode(data)))
 
-        self.write(self.json_encode(data))
+        self.write(self.json_encode(data))       
 
+    # read in json
     def ri_json(self, data):
         return self.json_decode(data)
+
+    def recur_to_str(self, v):
+        return _es.recursive_to_str(v)
 
     @property
     def parameter(self):
@@ -123,10 +125,6 @@ class BaseBaseHandler(tornado.web.RequestHandler):
         method = self.request.method.lower()
         arguments = self.request.arguments
         files = self.request.files
-
-        params = getattr(self, '_%s_params' % method, None)
-        if params is None:
-            return {}
 
         rpd = {}  # request parameter dict
 
@@ -139,7 +137,7 @@ class BaseBaseHandler(tornado.web.RequestHandler):
                     rpd[key] = default
                     return
 
-                if tp in [ObjectId, int, float]:
+                if tp in [ObjectId, int, float, bool]:
                     rpd[key] = getattr(self, 'to_%s' % getattr(tp, '__name__').lower())(self.get_argument(key))
                     return
 
@@ -156,41 +154,32 @@ class BaseBaseHandler(tornado.web.RequestHandler):
                     rpd[key] = default
                     return
 
-                rpd[key] = self.request.files[key]
+                rpd[key] = self.request.files[key]                
+        
+        for key, tp, default in self._required_params:
+            filter_parameter(key, tp, default)
+        
+        params = getattr(self, '_%s_params' % method, None)
+        if params is None:
+            return rpd
 
+        #need parameter
         for key, tp in params.get('need', []):
             if tp == list:
                 filter_parameter(key, tp, [])
             else:
                 filter_parameter(key, tp)
 
-        for option_params in [params.get('option', []), self._required_params]:
-            for key, tp, default in option_params:
-                filter_parameter(key, tp, default)
+        #option parameter
+        for key, tp, default in params.get('option', []):
+            filter_parameter(key, tp, default)
 
         return rpd
-
-    def http_error(self, status_code=404, **kwargs):
-        raise tornado.web.HTTPError(status_code)
-
-
-class BaseHandler(BaseBaseHandler):
-
-    MAX_COUNT = 50
-
-    def get_context(self):
-        context = super(BaseHandler, self).get_context()
-        context.update({
-
-        })
-
-        return context
 
     def get(self, *args, **kwargs):
         try:
             self.GET(*args, **kwargs)
         except ResponseError as e:
-            e.msg = locale.LANG_MESSAGE[_LANG].get(e.code)
             resp = self.init_resp(e.code, e.msg)
         except Exception as e:
             logger.exception(e)
@@ -204,7 +193,6 @@ class BaseHandler(BaseBaseHandler):
         try:
             self.POST(*args, **kwargs)
         except ResponseError as e:
-            e.msg = locale.LANG_MESSAGE[_LANG].get(e.code)
             resp = self.init_resp(e.code, e.msg)
         except Exception as e:
             logger.exception(e)
@@ -214,38 +202,52 @@ class BaseHandler(BaseBaseHandler):
 
         self.wo_resp(resp)
 
+    @staticmethod
+    def init_resp(code=0, msg=None):
+        resp = {
+            'code': code,
+            'msg': LOCALE.LANG_MESSAGE[_LANG].get(code) or msg,
+            'res': {},
+        }
+
+        return resp
+
     def POST(self, *args, **kwargs):
         pass
 
     def GET(self, *args, **kwargs):
         pass
 
+    def route(self, route, *args, **kwargs):
+        getattr(self,  "do_%s"%route, lambda *args, **kwargs: None)(*args, **kwargs)
+
     def wo_resp(self, resp):
         if resp['code'] != 0:
             return self.wo_json(resp)
 
         if isinstance(self._data, dict):
-            resp['data'].update(self._data)
+            resp['res'].update(self._data)
 
         return self.wo_json(resp)
 
-    def get_current_user(self):
-        return {
-            'uid': self.to_objectid('53dc9f72c4e1fd6d1d9b1585'),
-            'nickname': u'三月沙',
-            'from': 'qq',
-        }
 
-    @staticmethod
-    def init_resp(code=0):
-        resp = {
-            'code': code,
-            'msg': locale.LANG_MESSAGE[_LANG].get(code),
-            'data': {},
-        }
+class MixinHandler(BaseBaseHandler):
 
-        return resp
+    pass
 
-    def check_xsrf_cookie(self):
-        pass
 
+class BaseHandler(MixinHandler):
+
+    _session = None
+    
+    def initialize(self):
+        super(BaseHandler, self).initialize()
+        self._params = self.parameter
+        self._skip = 0
+        self._limit = 0
+
+    def prepare(self):
+        super(BaseHandler, self).prepare()
+
+        self._skip = abs(self._params['skip']) if self._params.get('skip', None) else 0
+        self._limit = abs(self._params['limit']) if self._params.get('limit', None) else 20
