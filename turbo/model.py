@@ -7,11 +7,8 @@ import functools
 from bson.objectid import ObjectId
 from pymongo import ASCENDING, DESCENDING
 
-import loggers
-
-from utils import escape as _es
-
-logger = loggers.getLogger(__file__)
+from turbo.log import model_log
+from turbo.util import escape as _es, import_object
 
 
 class Record(dict):
@@ -81,9 +78,18 @@ class MixinModel(object):
 
         return _es.to_dict_str(value)
 
-    @classmethod
+    @staticmethod
+    def to_str(values, callback=None):
+        """string化的多个record组成的list对象
+        """
+        if callback and callable(callback):
+            return [callback(MixinModel.to_one_str(i)) for i in values]
+
+        return [MixinModel.to_one_str(i) for i in values]
+
+    @staticmethod
     @convert_to_record
-    def _wrapper_to_one_str(cls, value):
+    def _wrapper_to_one_str(value):
         return _es.to_dict_str(value)
 
     @staticmethod
@@ -107,6 +113,20 @@ class MixinModel(object):
         """return ObjectId
         """
         return ObjectId()
+
+    _instance = {}
+
+    @staticmethod
+    def instance(name):
+        """
+        instance application model
+        """
+        if not MixinModel._instance.get(name):
+            model_name = name.split('.')
+            ins_name = '.'.join(['models', model_name[0], 'model', model_name[1]])
+            MixinModel._instance[name] = import_object(ins_name)()
+
+        return MixinModel._instance[name]
 
 
 class BaseBaseModel(MixinModel):
@@ -163,7 +183,7 @@ class BaseBaseModel(MixinModel):
         # gridfs as private variable
         self.__gridfs = self.__db_file.get(db_name, None)
         if self.__gridfs is None:
-            logger.warning("%s is invalid gridfs" % self.__gridfs)
+            model_log.warning("%s is invalid gridfs" % self.__gridfs)
 
     def __setitem__(self, k, v):
         setattr(self, k, v)
@@ -378,18 +398,6 @@ class BaseBaseModel(MixinModel):
 
     def inc(self, spec_or_id, key, num=1):
         self.__collect.update(spec_or_id, {'$inc': {key: num}})
-
-    def to_str(self, values, callback=None):
-        """string化的多个record组成的list对象
-        """
-        if callback is None:
-            return [self.to_one_str(i) for i in values]
-        else:
-            if not callable(callback):
-                raise Exception("callback argument is not callable")
-
-            return [callback(self.to_one_str(i)) for i in values]
-
 
 
 class BaseModel(BaseBaseModel):
