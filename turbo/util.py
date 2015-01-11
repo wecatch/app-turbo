@@ -12,49 +12,49 @@ from turbo.log import util_log
 
 class _Escape(object):
 
-    @staticmethod
-    def to_list_str(value):
+    @classmethod
+    def to_list_str(cls, value):
         """递归序列化list
         """
         for index, v in enumerate(value):
             if isinstance(v, dict):
-                value[index] = to_dict_str(v)
+                value[index] = cls.to_dict_str(v)
                 continue
 
             if isinstance(v, list):
-                value[index] = to_list_str(v)
+                value[index] = cls.to_list_str(v)
                 continue
 
-            value[index] = default_encode(v)
+            value[index] = cls.default_encode(v)
 
         return value
 
-    @staticmethod   
-    def to_dict_str(value):
+    @classmethod
+    def to_dict_str(cls, value):
         """递归序列化dict
         """
         for k, v in value.items():
             if isinstance(v, dict):
-                value[k] = to_dict_str(v)
+                value[k] = cls.to_dict_str(v)
                 continue
 
             if isinstance(v, list):
-                value[k] = to_list_str(v)
+                value[k] = cls.to_list_str(v)
                 continue
 
-            value[k] = default_encode(v)
+            value[k] = cls.default_encode(v)
 
         return value
 
-    @staticmethod
-    def default_encode(v):
+    @classmethod
+    def default_encode(cls, v):
         """数据类型转换
         """
         if isinstance(v, ObjectId):
             return unicode(v)
 
         if isinstance(v, datetime):
-            return format_time(v)
+            return cls.format_time(v)
 
         return v
 
@@ -64,15 +64,15 @@ class _Escape(object):
         """
         return time.mktime(dt.timetuple())
 
-    @staticmethod
-    def recursive_to_str(v):
+    @classmethod
+    def recursive_to_str(cls, v):
         if isinstance(v, list):
-            return to_list_str(v)
+            return cls.to_list_str(v)
 
         if isinstance(v, dict):
-            return to_dict_str(v)
+            return cls.to_dict_str(v)
 
-        return default_encode(v)
+        return cls.default_encode(v)
 
     @staticmethod
     def to_objectid(objid):
