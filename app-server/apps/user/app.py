@@ -4,9 +4,11 @@ from base import BaseHandler
 
 import loggers
 
+from turbo import logger
+
 from helpers import user
 
-logger = loggers.getLogger(__file__)
+logger = logger.getLogger(__file__)
 
 
 class ListCommentHandler(BaseHandler):
