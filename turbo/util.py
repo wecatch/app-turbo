@@ -1,5 +1,7 @@
 # -*- coding:utf-8 -*-
 
+import os
+import sys
 from datetime import datetime
 import time
 import logging 
@@ -162,3 +164,14 @@ def import_object(name):
         return getattr(obj, parts[-1])
     except AttributeError:
         raise ImportError("No module named %s" % parts[-1])
+
+
+def join_sys_path(currfile, dir_level_num=3):
+    """
+    find certain path then load into sys path
+    """
+    root_path = os.path.abspath(currfile)
+    for i in range(0, dir_level_num):
+        root_path = os.path.dirname(root_path)
+
+    sys.path.append(root_path)

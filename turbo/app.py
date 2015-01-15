@@ -1,5 +1,7 @@
 # -*- coding:utf-8 -*-
 
+from collections import namedtuple
+
 import tornado.web
 import tornado.escape
 
@@ -228,4 +230,7 @@ class BaseBaseHandler(tornado.web.RequestHandler):
 
 
 class BaseHandler(BaseBaseHandler):
+    pass
+
+def start():
     pass

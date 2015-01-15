@@ -12,6 +12,17 @@ from tornado.options import define, options
 
 import setting
 
+import turbo
+
+turbo.register.regisger_app(setting)
+
+turbo.register.start()
+
+
+from turbo.register import regisger_app
+from turbo.util import join_sys_path
+
+
 from apps import urlpatterns
 
 define("port", default=8888, type=int)
