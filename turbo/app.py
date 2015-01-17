@@ -1,9 +1,8 @@
 # -*- coding:utf-8 -*-
 
-from collections import namedtuple
-
 import tornado.web
 import tornado.escape
+from tornado.options import define, options
 
 from pymongo import ASCENDING, DESCENDING
 from bson.objectid import ObjectId
@@ -232,5 +231,30 @@ class BaseBaseHandler(tornado.web.RequestHandler):
 class BaseHandler(BaseBaseHandler):
     pass
 
-def start():
-    pass
+
+class ErrorHandler(tornado.web.RequestHandler):
+
+    def initialize(self,status_code):
+        self.set_status(status_code)
+
+    def prepare(self):
+        self.render('404.html',error_code = self._status_code)
+
+
+class Application(tornado.web.Application):
+
+    def __init__(self, handlers, error_handler=None, **settings):
+        tornado.web.Application.__init__(self, handlers, **settings)
+        tornado.web.ErrorHandler = error_handler or ErrorHandler
+
+
+define("port", default=8888, type=int)
+
+
+def start(port=8888):
+    print 'system started ...'
+    tornado.options.parse_command_line()
+    http_server = tornado.httpserver.HTTPServer(Application(), xheaders=True)
+    http_server.listen(port)
+    ioloop = tornado.ioloop.IOLoop.instance()
+    ioloop.start()
