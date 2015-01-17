@@ -7,9 +7,7 @@ import logging
 
 from bson.objectid import ObjectId
 
-import realpath
-
-from utils import escape as es
+from turbo.util import escape as es
 
 class EscapeTest(unittest.TestCase):
 

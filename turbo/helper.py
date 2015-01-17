@@ -1,11 +1,11 @@
+from tornado.util import import_object
 
 from turbo.log import helper_log
-from turbo.util import import_object
 
 class HelperObjectDict(dict):
 
     def __setitem__(self, name, value):
-        self[self.__convert_name[name]] = value
+        self[self._convert_name[name]] = value
 
     def __getattr__(self, name):
         try:
@@ -14,9 +14,9 @@ class HelperObjectDict(dict):
             raise ValueError(name)
 
     def __setattr__(self, name, value):
-        self[name] = value
+        self[self._convert_name(name)] = value
 
-    def __convert_name(self, name):
+    def _convert_name(self, name):
         """
         convert CamelCase style to under_score_case
         """

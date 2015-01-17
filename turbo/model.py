@@ -137,7 +137,7 @@ class BaseBaseModel(MixinModel):
     name = None                            # mongodb collection name
     field = None                           # collection key
     column = None                          # need to query field
-    __operators = {
+    _operators = {
         '$set': '',
         '$unset': '',
         '$rename': '',
@@ -259,7 +259,7 @@ class BaseBaseModel(MixinModel):
 
         """
         for opk in document.keys():
-            if not opk.startswith('$') or opk not in self.__operators:
+            if not opk.startswith('$') or opk not in self._operators:
                 raise Exception("invalid document update operator")
 
         return self.__collect.update(spec, document, multi=multi, **kwargs)

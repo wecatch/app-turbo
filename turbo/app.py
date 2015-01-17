@@ -1,23 +1,33 @@
 # -*- coding:utf-8 -*-
 
 import tornado.web
+import tornado.httpserver
 import tornado.escape
+import tornado.ioloop
 from tornado.options import define, options
+from tornado.util import ObjectDict
 
 from pymongo import ASCENDING, DESCENDING
 from bson.objectid import ObjectId
 
+from turbo.core.exceptions import ResponseError
 from turbo.util import escape as _es
 import turbo.httputil as _ht 
 from turbo.log import app_log
-from turbo.core.exceptions import ResponseError
+from turbo.register import app_config
 
-#TODO config 
-from config import locale as LOCALE
-#TODO lang setting 
-from settings import (
-    LANG as _LANG,
-)
+
+class AppConfig(object):
+
+    def __init__(self):
+        self.app_name = None
+        self.urls = []
+        self.app_setting = None
+        self.error_handler = None
+        self.lang = 'zh_CN'
+        
+
+app_config = AppConfig()
 
 
 class BaseBaseHandler(tornado.web.RequestHandler):
@@ -74,7 +84,7 @@ class BaseBaseHandler(tornado.web.RequestHandler):
     def utf8(self, v):
         return tornado.escape.utf8(v)
 
-    def static_url(self, path, include_host=None, v=None, **kwargs):
+    def static_url(self, path, include_host=None, host=None, v=None, **kwargs):
         is_debug = self.application.settings.get('debug', False)
         
         # In debug mode, load static files from localhost
@@ -83,7 +93,7 @@ class BaseBaseHandler(tornado.web.RequestHandler):
 
         v = kwargs.get('v', '')
 
-        return ('{host}/{path}?v={v}' if v else '{host}/{path}').format(host=_CDN['host'], path=path, v=v)
+        return ('{host}/{path}?v={v}' if v else '{host}/{path}').format(host, path=path, v=v)
 
 
     def encode_http_params(self, **kw):
@@ -203,7 +213,7 @@ class BaseBaseHandler(tornado.web.RequestHandler):
     def init_resp(code=0, msg=None):
         resp = {
             'code': code,
-            'msg': LOCALE.LANG_MESSAGE[_LANG].get(code) or msg,
+            'msg': msg,
             'res': {},
         }
 
@@ -234,27 +244,19 @@ class BaseHandler(BaseBaseHandler):
 
 class ErrorHandler(tornado.web.RequestHandler):
 
-    def initialize(self,status_code):
+    def initialize(self, status_code):
         self.set_status(status_code)
 
     def prepare(self):
-        self.render('404.html',error_code = self._status_code)
-
-
-class Application(tornado.web.Application):
-
-    def __init__(self, handlers, error_handler=None, **settings):
-        tornado.web.Application.__init__(self, handlers, **settings)
-        tornado.web.ErrorHandler = error_handler or ErrorHandler
-
-
-define("port", default=8888, type=int)
+        self.render('404.html', error_code=self._status_code)
 
 
 def start(port=8888):
-    print 'system started ...'
+    tornado.web.ErrorHandler = app_config.error_handler or ErrorHandler
+    app_log.info('system started ...')
     tornado.options.parse_command_line()
-    http_server = tornado.httpserver.HTTPServer(Application(), xheaders=True)
+    application = tornado.web.Application(app_config.urls, **app_config.settings)
+    http_server = tornado.httpserver.HTTPServer(application, xheaders=True)
     http_server.listen(port)
     ioloop = tornado.ioloop.IOLoop.instance()
     ioloop.start()

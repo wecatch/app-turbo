@@ -9,8 +9,7 @@ class DataObject(object):
     '''
     object cahced by app
     '''
-    __slots__ = ['key', 'expire', 'value', 'last_visit_atime', 'data_source']
-
+    
     def __init__(self, key, data_source, expire):
         self.key = key
         self.expire = expire
@@ -29,9 +28,9 @@ class ObjectCache(object):
     """App local cache object 
 
     Attribute:
-        __data: cache all data
+        _data: cache all data
     """
-    __data = {}
+    _data = {}
 
     @staticmethod
     def create(data_source, name=None, expire=600):
@@ -60,16 +59,16 @@ class ObjectCache(object):
             obj_key = uuid.uuid4()
 
         obj_data = DataObject(obj_key, data_source, expire)
-        ObjectCache.__data[obj_key] = obj_data
+        ObjectCache._data[obj_key] = obj_data
 
         return obj_key
 
     @staticmethod
     def get(obj_key, *args, **kwargs):
-        if obj_key not in ObjectCache.__data:
+        if obj_key not in ObjectCache._data:
             raise Exception("%s is invalid key" % obj_key)
 
-        obj_data = ObjectCache.__data[obj_key]
+        obj_data = ObjectCache._data[obj_key]
 
         if obj_data.value is None or obj_data.is_expired():
             obj_data.value = obj_data.data_source(*args, **kwargs)
@@ -79,5 +78,5 @@ class ObjectCache(object):
 
     @staticmethod
     def remove(obj_key):
-        if obj_key in ObjectCache.__data:
-            ObjectCache.__data[obj_key].value = None
+        if obj_key in ObjectCache._data:
+            ObjectCache._data[obj_key].value = None

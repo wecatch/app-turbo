@@ -1,3 +1,3 @@
 
 # app template
-TEMPLATE_PATH = ''
+TEMPLATE_PATH = 'app'

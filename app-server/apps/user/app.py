@@ -2,39 +2,23 @@
 
 from base import BaseHandler
 
-import loggers
-
 from turbo import logger
-
-from helpers import user
 
 logger = logger.getLogger(__file__)
 
 
-class ListCommentHandler(BaseHandler):
+class HomeHandler(BaseHandler):
 
-    _get_params = {
-            'need':[
-                ('page', int),
-            ],
-            'option':[
-                ('name', basestring, None),
-            ]
-        }
-
-    def GET(self, route, _id):
-        skip = self._params['skip']
-        limit = self._params['limit']
-
-        callback = getattr(self, 'do_%s_comment'%route, None)
-        self._data = callback(route, _id) if callback else self.http_error(404)
-
-    def do_food_comment(self, route, _id):
-        return {'cos': []}
-
-
-class FoodHandler(BaseHandler):
-
-    def get(self, _id):
-        logger.info('a')
+    def get(self, *args, **kwargs):
         self.render('index.html')
+
+
+class ApiHandler(BaseHandler):
+
+    def GET(self, route, *args, **kwargs):
+        self.route(route, *args, **kwargs)
+
+    def do_route(self, *args, **kwargs):
+        self.data = {
+            'hello': 'world'
+        }

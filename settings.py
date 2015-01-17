@@ -2,4 +2,4 @@
 turbo app project
 """
 
-TURBO_PROJECT_NAME = ''
+TURBO_PROJECT_NAME = 'app-turbo'
