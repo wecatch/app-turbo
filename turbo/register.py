@@ -1,5 +1,5 @@
 from turbo.app import app_config
-from turbo.util import join_sys_path, import_object
+from turbo.util import join_sys_path
 
 
 def regisger_app(app_name, app_setting, main_file):
