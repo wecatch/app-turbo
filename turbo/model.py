@@ -34,7 +34,7 @@ def convert_to_record(func):
         if result is not None:
             if isinstance(result, dict):
                 return Record(result)
-
+            
             return (Record(i) for i in result)
 
         return result

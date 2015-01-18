@@ -12,7 +12,7 @@ from bson.objectid import ObjectId
 from turbo.log import util_log
 
 
-class _Escape(object):
+class TurboEscape(object):
 
     @classmethod
     def to_list_str(cls, value):
@@ -134,15 +134,23 @@ class _Escape(object):
             return time.mktime(t.timetuple())
 
 
-escape = _Escape()
+escape = TurboEscape()
+
+
+def get_base_dir(currfile, dir_level_num=3):
+    """
+    find certain path according to currfile
+    """
+    root_path = os.path.abspath(currfile)
+    for i in range(0, dir_level_num):
+        root_path = os.path.dirname(root_path)
+
+    return root_path
 
 
 def join_sys_path(currfile, dir_level_num=3):
     """
     find certain path then load into sys path
     """
-    root_path = os.path.abspath(currfile)
-    for i in range(0, dir_level_num):
-        root_path = os.path.dirname(root_path)
-
+    root_path = get_base_dir(currfile, dir_level_num)
     sys.path.append(root_path)

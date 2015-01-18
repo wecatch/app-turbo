@@ -3,69 +3,60 @@
 import os
 import logging
 
-#TODO setting server config
-import setting
+from turbo.app import app_config
 
-_formater = logging.Formatter('%(levelname)s:%(asctime)s %(name)s:%(lineno)d:%(funcName)s %(message)s')
+formater = logging.Formatter('%(levelname)s:%(asctime)s %(name)s:%(lineno)d:%(funcName)s %(message)s')
 
-def _getSimpleHanlder(currfile, logfile, maxBytes=50*1024*1024, backupCount=3):
-    #root logger default warning change to debug
-    logger = logging.getLogger(currfile)
 
-    #local call get logger
-    if logger.handlers:
-        return logger
-
-    logger.setLevel(logging.DEBUG)
-
-    from logging import handlers
-    fh = handlers.RotatingFileHandler(logfile, maxBytes=maxBytes, backupCount=backupCount)
-    fh.setLevel(logging.DEBUG)
-
+def init_logger(logger, logfile, maxBytes, backupCount):
     ch = logging.StreamHandler()
     ch.setLevel(logging.DEBUG)
-
-    fh.setFormatter(_formater)
-    ch.setFormatter(_formater)
-
-    logger.addHandler(fh)
+    ch.setFormatter(formater)
     logger.addHandler(ch)
+    
+    if logfile:
+        fh = logging.handlers.RotatingFileHandler(logfile, maxBytes=maxBytes, backupCount=backupCount)
+        fh.setLevel(logging.INFO if app_config.log_level is None else app_config.log_level)
+        fh.setFormatter(formatter)
+        logger.addHandler(fh)
 
     return logger
 
 
 def getLogger(currfile, logfile=None, maxBytes=500*1024*1024, backupCount=3):
-    if logfile:
-        return _getSimpleHanlder(currfile, logfile, maxBytes, backupCount)
 
     if not logging.root.handlers:
-        ch = logging.StreamHandler()
-        ch.setLevel(logging.DEBUG)
-        ch.setFormatter(_formater)
-        logging.root.addHandler(ch)
+        init_logger(logging.root, logfile, maxBytes, backupCount)
 
     path = os.path.abspath(currfile)
     if os.path.isfile(path):
         file_name = os.path.basename(path)
-        dot_index = file_name.rfind('.')
-        if dot_index < 0:
-            raise Exception("%s is invliad python module" % currfile)
-
-        module_name = file_name[0:dot_index]
+        module_name = file_name[0:file_name.rfind('.py')]
         logger_name_list = [module_name]
 
-        # find server root dir util find it or to root dir '/'
-        while 1:
+        # find project root dir util find it or to root dir '/'
+        while True:
+            # root path check
             path = os.path.dirname(path)
+            if path == '/':
+                break
+
+            # project root path
             dirname = os.path.basename(path)
-            if dirname == setting.SERVER_NAME or dirname == '/':
+            if dirname == app_config.project_name:
                 break
             logger_name_list.append(dirname)
 
         logger_name_list.reverse()
-        return logging.getLogger('.'.join(logger_name_list))
-    else:
-        if isinstance(currfile, basestring) and currfile.strip():
-            return logging.getLogger(currfile)
 
-        return logging.getLogger()
+        return logging.getLogger('.'.join(logger_name_list))
+
+    if isinstance(currfile, basestring) and currfile.strip():
+        logger = logging.getLogger(currfile)
+
+        if logger.handlers:
+            return logger
+
+        return init_logger(logger, logfile, maxBytes, backupCount)
+
+    return logging.getLogger()

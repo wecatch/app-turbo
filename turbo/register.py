@@ -1,14 +1,16 @@
 from turbo.app import app_config
-from turbo.util import join_sys_path
+from turbo.util import join_sys_path, get_base_dir
 
 
-def regisger_app(app_name, app_setting, main_file):
+def regisger_app(app_name, app_setting, web_application_setting, main_file):
     """insert current project root path into sys path
 
     """
     join_sys_path(main_file, dir_level_num=2)
     app_config.app_name = app_name
     app_config.app_setting = app_setting
+    app_config.project_name = os.path.basename(get_base_dir(currfile, 2))
+    app_config.web_application_setting = web_application_setting
     
 
 def register_url(url, handler, name=None, kwargs=None):

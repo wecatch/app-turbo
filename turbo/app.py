@@ -14,7 +14,6 @@ from turbo.core.exceptions import ResponseError
 from turbo.util import escape as _es
 import turbo.httputil as _ht 
 from turbo.log import app_log
-from turbo.register import app_config
 
 
 class AppConfig(object):
@@ -22,9 +21,12 @@ class AppConfig(object):
     def __init__(self):
         self.app_name = None
         self.urls = []
-        self.app_setting = None
         self.error_handler = None
         self.lang = 'zh_CN'
+        self.app_setting = None
+        self.web_application_setting = None
+        self.project_name = None
+        self.log_level = None
         
 
 app_config = AppConfig()
@@ -255,7 +257,7 @@ def start(port=8888):
     tornado.web.ErrorHandler = app_config.error_handler or ErrorHandler
     app_log.info('system started ...')
     tornado.options.parse_command_line()
-    application = tornado.web.Application(app_config.urls, **app_config.settings)
+    application = tornado.web.Application(app_config.urls, **app_config.web_application_setting)
     http_server = tornado.httpserver.HTTPServer(application, xheaders=True)
     http_server.listen(port)
     ioloop = tornado.ioloop.IOLoop.instance()
