@@ -1,4 +1,5 @@
 # -*- coding:utf-8 -*-
+from __future__ import absolute_import, print_function
 
 import tornado.web
 import tornado.httpserver
@@ -239,8 +240,8 @@ class ErrorHandler(tornado.web.RequestHandler):
 
 
 def start(port=8888):
+    app_log.info(app_config.app_name+' app start')
     tornado.web.ErrorHandler = app_config.error_handler or ErrorHandler
-    app_log.info('system started ...')
     tornado.options.parse_command_line()
     application = tornado.web.Application(app_config.urls, **app_config.web_application_setting)
     http_server = tornado.httpserver.HTTPServer(application, xheaders=True)

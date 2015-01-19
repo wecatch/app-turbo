@@ -38,7 +38,7 @@ def install_helper(installing_helper_list, package_space):
         
         for hp in getattr(helper_package, '__all__', []):
             try:
-                module =  import_object('.'.join('helpers', item, hp))
+                module =  import_object('.'.join(['helpers', item, hp]))
             except ImportError:
                 raise ImportError("No module named %s in %s package" % (hp, item))
 

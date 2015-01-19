@@ -2,9 +2,9 @@
 
 from base import BaseHandler
 
-from turbo import logger
+import turbo.log
 
-logger = logger.getLogger(__file__)
+logger = turbo.log.getLogger(__file__)
 
 
 class HomeHandler(BaseHandler):
@@ -15,10 +15,13 @@ class HomeHandler(BaseHandler):
 
 class ApiHandler(BaseHandler):
 
-    def GET(self, route, *args, **kwargs):
-        self.route(route, *args, **kwargs)
+    def GET(self, route=None, *args, **kwargs):
+        self.route('route', *args, **kwargs)
 
     def do_route(self, *args, **kwargs):
+        print logger.handlers
+        logger.info('msg')
         self.data = {
-            'hello': 'world'
+            'hello': 'world',
+            'h': logger.handlers
         }

@@ -5,10 +5,9 @@ import app
 
 
 register.register_group_urls('', [
-    ('/', app.HomeHandler, 'home'),
+    ('/', app.HomeHandler),
     ('/index', app.HomeHandler, 'index'),
+    ('/home', app.HomeHandler, 'home'),
 ])
 
 register.register_url('/v1/api', app.ApiHandler)
-
-print 'asdf'
