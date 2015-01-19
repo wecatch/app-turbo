@@ -152,5 +152,9 @@ def join_sys_path(currfile, dir_level_num=3):
     """
     find certain path then load into sys path
     """
-    root_path = get_base_dir(currfile, dir_level_num)
+    if os.path.isdir(currfile):
+        root_path = currfile
+    else:
+        root_path = get_base_dir(currfile, dir_level_num)
+    
     sys.path.append(root_path)

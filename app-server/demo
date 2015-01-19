@@ -1,0 +1,7 @@
+INFO:2015-01-19 19:20:36,190 tornado.general:191:_check_file /home/zhyq/wecatch/app-turbo/turbo/logger.py modified; restarting server
+INFO:2015-01-19 19:20:39,278 tornado.general:191:_check_file /home/zhyq/wecatch/app-turbo/turbo/logger.py modified; restarting server
+INFO:2015-01-19 19:20:40,364 tornado.general:191:_check_file /home/zhyq/wecatch/app-turbo/turbo/logger.py modified; restarting server
+INFO:2015-01-19 19:20:41,456 tornado.general:191:_check_file /home/zhyq/wecatch/app-turbo/turbo/logger.py modified; restarting server
+INFO:2015-01-19 19:20:44,551 tornado.general:191:_check_file /home/zhyq/wecatch/app-turbo/turbo/logger.py modified; restarting server
+INFO:2015-01-19 19:21:14,654 tornado.general:191:_check_file /home/zhyq/wecatch/app-turbo/app-server/setting.py modified; restarting server
+INFO:2015-01-19 19:21:24,738 tornado.general:191:_check_file /home/zhyq/wecatch/app-turbo/app-server/setting.py modified; restarting server

@@ -3,31 +3,34 @@
 import os
 import logging
 
-from turbo.app import app_config
+from turbo.conf import app_config
 
-formater = logging.Formatter('%(levelname)s:%(asctime)s %(name)s:%(lineno)d:%(funcName)s %(message)s')
+formatter = logging.Formatter('%(levelname)s:%(asctime)s %(name)s:%(lineno)d:%(funcName)s %(message)s')
 
+def init_file_logger(logger, logfile, maxBytes, backupCount):
+    fh = logging.handlers.RotatingFileHandler(logfile, maxBytes=maxBytes, backupCount=backupCount)
+    fh.setLevel(logging.INFO if app_config.log_level is None else app_config.log_level)
+    fh.setFormatter(formatter)
+    logger.addHandler(fh)
+    
 
-def init_logger(logger, logfile, maxBytes, backupCount):
+def init_logger(logger):
     ch = logging.StreamHandler()
     ch.setLevel(logging.DEBUG)
-    ch.setFormatter(formater)
+    ch.setFormatter(formatter)
     logger.addHandler(ch)
-    
-    if logfile:
-        fh = logging.handlers.RotatingFileHandler(logfile, maxBytes=maxBytes, backupCount=backupCount)
-        fh.setLevel(logging.INFO if app_config.log_level is None else app_config.log_level)
-        fh.setFormatter(formatter)
-        logger.addHandler(fh)
-
-    return logger
 
 
 def getLogger(currfile, logfile=None, maxBytes=500*1024*1024, backupCount=3):
 
     if not logging.root.handlers:
-        init_logger(logging.root, logfile, maxBytes, backupCount)
+        root_logger = logging.getLogger()
+        init_logger(root_logger)
 
+        if logfile:
+            init_file_logger(root_logger, logfile, maxBytes, backupCount)
+
+    logging.getLogger().info('adsfas')
     path = os.path.abspath(currfile)
     if os.path.isfile(path):
         file_name = os.path.basename(path)
@@ -57,6 +60,6 @@ def getLogger(currfile, logfile=None, maxBytes=500*1024*1024, backupCount=3):
         if logger.handlers:
             return logger
 
-        return init_logger(logger, logfile, maxBytes, backupCount)
+        return logging.getLogger(currfile)
 
     return logging.getLogger()

@@ -1,10 +1,14 @@
- #-*- coding:utf-8 -*-
+
+from turbo import register
 
 import app
 
-prefix = ''
 
-urls = [
-    ('/(food|other)/([0-9a-f]{24})/comment', app.ListCommentHandler, None, 'comment'),
-    ('/food/([0-9a-f]{24})', app.FoodHandler, None, 'food'),
-]
+register.register_group_urls('', [
+    ('/', app.HomeHandler, 'home'),
+    ('/index', app.HomeHandler, 'index'),
+])
+
+register.register_url('/v1/api', app.ApiHandler)
+
+print 'asdf'
