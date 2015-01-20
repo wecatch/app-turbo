@@ -1,20 +1,18 @@
-from tornado.util import import_object
 
+from turbo.util import import_object
 from turbo.log import helper_log
+from turbo import model
 
 class HelperObjectDict(dict):
 
     def __setitem__(self, name, value):
-        self[self._convert_name[name]] = value
+        return super(HelperObjectDict, self).setdefault(self._convert_name(name), value)
 
     def __getattr__(self, name):
         try:
             return self[name]
         except KeyError:
             raise ValueError(name)
-
-    def __setattr__(self, name, value):
-        self[self._convert_name(name)] = value
 
     def _convert_name(self, name):
         """
@@ -33,20 +31,18 @@ class HelperObjectDict(dict):
 
 def install_helper(installing_helper_list, package_space):
     for item in installing_helper_list:
-        helper_package = import_object('helpers'+'.'+item)
+        # db model package
+        package = import_object('.'.join(['helpers', item]), package_space)
         package_space[item] = HelperObjectDict()
-        
-        for hp in getattr(helper_package, '__all__', []):
+        # all py files  included by package
+        all_modules = getattr(package, '__all__', [])
+        for m in all_modules:
             try:
-                module =  import_object('.'.join(['helpers', item, hp]))
-            except ImportError:
-                raise ImportError("No module named %s in %s package" % (hp, item))
+                module =  import_object('.'.join(['helpers',item, m]), package_space)
+            except ImportError, e:
+                raise ImportError("No module named %s in %s package" % (m, item))
 
-            for m in getattr(module, 'MODEL_SLOTS', []):
-                try:
-                    model = getattr(module, m, None)
-                except AttributeError:
-                    raise ImportError("No model named %s in %s module" % (m, module))
-
-                package_space[item][model.__name__] = model()
-
+            for model_name in getattr(module, 'MODEL_SLOTS', []):
+                model = getattr(module, model_name, None)
+                if model:
+                    package_space[item][model.__name__] = model()

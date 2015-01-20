@@ -4,4 +4,5 @@ from settings import INSTALLED_HELPERS
 
 import turbo.helper
 
-turbo.helper.install_helper(INSTALLED_HELPERS, globals())
+for item in INSTALLED_HELPERS:
+    turbo.helper.install_helper(INSTALLED_HELPERS, globals())

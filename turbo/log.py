@@ -8,9 +8,9 @@ from turbo.conf import app_config
 formatter = logging.Formatter('%(levelname)s:%(asctime)s %(name)s:%(lineno)d:%(funcName)s %(message)s')
 
 
-def init_file_logger(logger, logfile, maxBytes, backupCount):
-    fh = logging.handlers.RotatingFileHandler(logfile, maxBytes=maxBytes, backupCount=backupCount)
-    fh.setLevel(logging.INFO if app_config.log_level is None else app_config.log_level)
+def init_file_logger(logger, log_path, log_size, log_count):
+    fh = logging.handlers.RotatingFileHandler(log_path, maxBytes=log_size, backupCount=log_count)
+    fh.setLevel(app_config.get_log_level)
     fh.setFormatter(formatter)
     logger.addHandler(fh)
     
@@ -22,14 +22,14 @@ def init_logger(logger):
     logger.addHandler(ch)
 
 
-def getLogger(currfile=None, logfile=None, maxBytes=500*1024*1024, backupCount=3):
+def getLogger(currfile=None, log_path=None, log_size=500*1024*1024, log_count=3):
 
     if not logging.root.handlers:
         root_logger = logging.getLogger()
-        root_logger.setLevel(logging.WARNING)
+        root_logger.setLevel(app_config.get_log_level)
         init_logger(root_logger)
-        if logfile:
-            init_file_logger(root_logger, logfile, maxBytes, backupCount)
+        if log_path:
+            init_file_logger(root_logger, log_path, log_size, log_count)
 
     path = os.path.abspath(currfile)
     if os.path.isfile(path):
@@ -56,7 +56,7 @@ def getLogger(currfile=None, logfile=None, maxBytes=500*1024*1024, backupCount=3
 
     if isinstance(currfile, basestring) and currfile.strip():
         logger = logging.getLogger(currfile)
-        logger.setLevel(logging.INFO if app_config.log_level is None else app_config.log_level)
+        logger.setLevel(app_config.get_log_level)
 
         if logger.handlers:
             return logger

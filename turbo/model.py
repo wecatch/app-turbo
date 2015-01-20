@@ -1,5 +1,7 @@
 # -*- coding:utf-8 -*-
 
+from turbo.util import import_object
+
 from datetime import datetime
 import time
 import functools
@@ -8,7 +10,7 @@ from bson.objectid import ObjectId
 from pymongo import ASCENDING, DESCENDING
 
 from turbo.log import model_log
-from turbo.util import escape as _es, import_object
+from turbo.util import escape as _es
 
 
 class Record(dict):
@@ -116,17 +118,26 @@ class MixinModel(object):
 
     _instance = {}
 
-    @staticmethod
-    def instance(name):
+    @classmethod
+    def instance(cls, name):
         """
         instance application model
         """
-        if not MixinModel._instance.get(name):
+        if not cls._instance.get(name):
             model_name = name.split('.')
             ins_name = '.'.join(['models', model_name[0], 'model', model_name[1]])
-            MixinModel._instance[name] = import_object(ins_name)()
+            cls._instance[name] = cls.import_model(ins_name)()
 
-        return MixinModel._instance[name]
+        return cls._instance[name]
+
+    @classmethod
+    def import_model(cls, ins_name):
+        try:
+            package_space = getattr(cls,  'package_space')
+        except AttributeError:
+            raise NotImplementedError
+        else:
+            return import_object(ins_name, package_space)
 
 
 class BaseBaseModel(MixinModel):

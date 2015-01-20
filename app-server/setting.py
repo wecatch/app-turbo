@@ -22,12 +22,14 @@ WEB_APPLICATION_SETTING = ObjectDict(
 
 # turbo app setting 
 APP_SETTING = ObjectDict(
-    log_path=os.path.join("/var/log/", APP_NAME+'.log'),
-    log_size=500*1024*1024,
-    log_count=3,
+    log=ObjectDict(
+        log_path=os.path.join("/var/log/", APP_NAME+'.log'),
+        log_size=500*1024*1024,
+        log_count=3,
+    )
 )
 
 # check if app start in debug
 if os.path.exists(os.path.join(BASE_APP_DIR, '__test__')):
     WEB_APPLICATION_SETTING['debug'] = True
-    APP_SETTING['log_path'] = os.path.join("", APP_NAME+'.log')
+    APP_SETTING.log.log_path = os.path.join("", APP_NAME+'.log')

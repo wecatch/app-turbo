@@ -158,3 +158,15 @@ def join_sys_path(currfile, dir_level_num=3):
         root_path = get_base_dir(currfile, dir_level_num)
     
     sys.path.append(root_path)
+
+
+def import_object(name, package_space=None):
+    if name.count('.') == 0:
+        return __import__(name, package_space, None)
+
+    parts = name.split('.')
+    obj = __import__('.'.join(parts[:-1]), package_space, None, [parts[-1]], 0)
+    try:
+        return getattr(obj, parts[-1])
+    except AttributeError:
+        raise ImportError("No module named %s" % parts[-1])

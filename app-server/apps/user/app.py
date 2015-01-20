@@ -1,8 +1,10 @@
 #-*- coding:utf-8 -*-
 
-from base import BaseHandler
 
 import turbo.log
+
+from base import BaseHandler
+from helpers import user as user_helper
 
 logger = turbo.log.getLogger(__file__)
 
@@ -19,9 +21,8 @@ class ApiHandler(BaseHandler):
         self.route('route', *args, **kwargs)
 
     def do_route(self, *args, **kwargs):
-        print logger.handlers
         logger.info('msg')
-        self.data = {
+        self._data = {
             'hello': 'world',
-            'h': logger.handlers
+            'user': user_helper.user.hello_user()
         }

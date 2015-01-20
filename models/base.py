@@ -8,12 +8,15 @@ from pymongo import ASCENDING, DESCENDING
 
 #todo change name
 import turbo.model
+import turbo.util
 
 from settings import MONGO_DB_MAPPING as _MONGO_DB_MAPPING
 
+package_space = globals()
 
 class MixinModel(turbo.model.MixinModel):
-    pass
+
+    package_space = package_space
 
 
 class BaseModel(turbo.model.BaseModel, MixinModel):
