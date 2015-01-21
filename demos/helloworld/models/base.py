@@ -12,11 +12,11 @@ import turbo.util
 
 from settings import MONGO_DB_MAPPING as _MONGO_DB_MAPPING
 
-package_space = globals()
+_PACKAGE_SPACE = globals()
 
 class MixinModel(turbo.model.MixinModel):
 
-    package_space = package_space
+    package_space = _PACKAGE_SPACE
 
 
 class BaseModel(turbo.model.BaseModel, MixinModel):

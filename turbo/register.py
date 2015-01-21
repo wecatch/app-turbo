@@ -4,11 +4,17 @@ import logging
 from turbo.conf import app_config
 from turbo.util import join_sys_path, get_base_dir, import_object
 from turbo import log
+import turbo.helper
+from turbo.helper import install_helper
 
 
-def install_app(package_space):
+def _install_app(package_space):
     for app in getattr(import_object('apps.settings', package_space), 'INSTALLED_APPS'):
        _ = import_object('.'.join(['apps', app]), package_space)        
+
+
+def _install_helper(package_space):
+    turbo.helper.install_helper(getattr(import_object('helpers.settings', package_space), 'INSTALLED_HELPERS'), package_space)      
 
 
 def regisger_app(app_name, app_setting, web_application_setting, mainfile, package_space):
@@ -19,7 +25,7 @@ def regisger_app(app_name, app_setting, web_application_setting, mainfile, packa
     app_config.project_name = os.path.basename(get_base_dir(mainfile, 2))
     app_config.web_application_setting = web_application_setting
     log.init_file_logger(logging.getLogger(), **app_setting.log)
-    install_app(package_space)
+    _install_app(package_space)
 
 
 def register_url(url, handler, name=None, kwargs=None):
