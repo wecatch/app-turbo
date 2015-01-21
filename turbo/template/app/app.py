@@ -2,23 +2,24 @@
 
 from base import BaseHandler
 
-from turbo import logger
+import turbo.log
 
-logger = logger.getLogger(__file__)
+logger = turbo.log.getLogger(__file__)
 
 
 class HomeHandler(BaseHandler):
 
-	def get(self, *args, **kwargs):
+	def get(self):
 		self.render('index.html')
 
 
 class ApiHandler(BaseHandler):
 
-	def GET(self, route, *args, **kwargs):
-		self.route(route, *args, **kwargs)
+	def GET(self, route=None, *args, **kwargs):
+		self.route('route', *args, **kwargs)
 
 	def do_route(self, *args, **kwargs):
+        logger.info('api handler is calling')
 		self.data = {
 			'hello': 'world'
 		}
