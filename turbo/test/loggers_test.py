@@ -9,9 +9,9 @@ import threading
 
 import realpath
 
-from turbo import logger
+from turbo import log
 
-test_log = logger.getLogger(__file__)
+test_log = log.getLogger(__file__)
 currpath = os.path.abspath(__file__)
 
 class GetLoggerTest(unittest.TestCase):

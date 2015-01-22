@@ -8,9 +8,7 @@ import urllib
 
 from bson.objectid import ObjectId
 
-import realpath
-
-from utils import httputil as hu
+import turbo.httputil  as hu
 
 
 class HttpUtilTest(unittest.TestCase):
