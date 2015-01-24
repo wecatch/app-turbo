@@ -13,10 +13,6 @@ def _install_app(package_space):
        _ = import_object('.'.join(['apps', app]), package_space)        
 
 
-def _install_helper(package_space):
-    turbo.helper.install_helper(getattr(import_object('helpers.settings', package_space), 'INSTALLED_HELPERS'), package_space)      
-
-
 def regisger_app(app_name, app_setting, web_application_setting, mainfile, package_space):
     """insert current project root path into sys path
     """
@@ -24,7 +20,7 @@ def regisger_app(app_name, app_setting, web_application_setting, mainfile, packa
     app_config.app_setting = app_setting
     app_config.project_name = os.path.basename(get_base_dir(mainfile, 2))
     app_config.web_application_setting = web_application_setting
-    log.init_file_logger(logging.getLogger(), **app_setting.log)
+    log.getLogger(**app_setting.log)
     _install_app(package_space)
 
 
