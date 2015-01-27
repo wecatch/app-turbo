@@ -74,18 +74,6 @@ class BaseBaseHandler(tornado.web.RequestHandler):
     def utf8(self, v):
         return tornado.escape.utf8(v)
 
-    def static_url(self, path, include_host=None, host='', **kwargs):
-        is_debug = self.application.settings.get('debug', False)
-        
-        # In debug mode, load static files from localhost
-        if is_debug: 
-            return super(BaseBaseHandler, self).static_url(path, include_host, **kwargs)
-
-        v = kwargs.get('v', '')
-
-        return ('{host}/{path}?v={v}' if v else '{host}/{path}').format(host, path=path, v=v)
-
-
     def encode_http_params(self, **kw):
         """
         url parameter encode
