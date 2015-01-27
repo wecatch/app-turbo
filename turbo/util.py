@@ -165,7 +165,7 @@ def import_object(name, package_space=None):
         return __import__(name, package_space, None)
 
     parts = name.split('.')
-    obj = __import__('.'.join(parts[:-1]), package_space, None, [parts[-1]], 0)
+    obj = __import__('.'.join(parts[:-1]), package_space, None, [str(parts[-1])], 0)
     try:
         return getattr(obj, parts[-1])
     except AttributeError:
