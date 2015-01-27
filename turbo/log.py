@@ -75,9 +75,8 @@ def getLogger(currfile=None, level=None, log_path=None, log_size=500*1024*1024, 
         logger = logging.getLogger()
 
     # keep the root logger at least have one streamhandler
-    if logger == logging.root:
-        if not logger.handlers:
-            _init_stream_logger(logger)
+    if not logger.root.handlers:
+        _init_stream_logger(logger.root)
 
     if log_path:
         _init_file_logger(logger, level, log_path, log_size, log_count)
