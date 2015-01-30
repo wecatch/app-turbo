@@ -127,7 +127,7 @@ class TurboEscape(object):
             return datetime.fromtimestamp(t)
 
     @staticmethod
-    def to_time(t, micro=True):
+    def to_time(t, micro=False):
         if micro:
             return time.mktime(t.timetuple())*1000
         else:
