@@ -299,33 +299,36 @@ class BaseBaseModel(MixinModel):
 
         return None
 
-    def delete(self, objid):
+    def delete(self, _id):
         """gridfs delete method
         """
-        return self.__gridfs.delete(self.to_objectid(objid))
+        return self.__gridfs.delete(self.to_objectid(_id))
 
-    def get(self, objid):
+    def get(self, _id):
         """gridfs get method
         """
-        return self.__gridfs.get(self.to_objectid(objid))
+        return self.__gridfs.get(self.to_objectid(_id))
 
-    def read(self, objid):
+    def read(self, _id):
         """gridfs read method
         """
-        return self.__gridfs.get(self.to_objectid(objid)).read()
+        return self.__gridfs.get(self.to_objectid(_id)).read()
 
-    def find_by_id(self, objid, column=None):
+    def find_by_id(self, _id, column=None):
         """find record by _id
         """
-        if isinstance(objid, list):
-            return (self.find_by_id(i, column) for i in objid if i)
+        if isinstance(_id, list):
+            return (self.find_by_id(i, column) for i in _id if i)
 
-        document_id = self.to_objectid(objid)
+        document_id = self.to_objectid(_id)
 
         if document_id is None:
             return None
 
         return self.__collect.find_one({'_id': document_id}, column)
+
+    def remove_by_id(self, _id):
+        return self.__collect.remove({'_id': self.to_objectid(_id)})
 
     def find_and_modify(self, query=None, update=None, upsert=False, sort=None, full_response=False, **kwargs):
         return  self.__collect.find_and_modify(query=query, update=update, upsert=upsert, sort=sort, full_response=full_response, **kwargs)
