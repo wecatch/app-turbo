@@ -28,12 +28,20 @@ def register_url(url, handler, name=None, kwargs=None):
     """insert url into tornado application handlers group
     
     :arg str url: url 
-    :arg object handler: url mapping handler 
+    :handler object handler: url mapping handler 
     :name reverse url name
     :kwargs dict tornado handler initlize args
     """
-    app_config.urls.append((url, handler, kwargs, name))
+    if name is None and kwargs is None:
+        app_config.urls.append((url, handler))
+        return
 
+    if name is None:
+        app_config.urls.append((url, handler, kwargs))
+        return
+
+    app_config.urls.append((url, handler, kwargs, name))
+    
 
 def register_group_urls(prefix, urls):
     for item in urls:
