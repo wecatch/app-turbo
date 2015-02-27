@@ -69,7 +69,7 @@ class BaseBaseHandler(tornado.web.RequestHandler):
         return _es.to_float(value)
 
     def to_bool(self, value):
-        return _es.to_bool(value)
+        return bool(value)
 
     def utf8(self, v):
         return tornado.escape.utf8(v)
