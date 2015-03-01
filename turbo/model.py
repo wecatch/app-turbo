@@ -1,10 +1,11 @@
 # -*- coding:utf-8 -*-
 
-from turbo.util import import_object
-
 from datetime import datetime
 import time
 import functools
+from collections import defaultdict
+
+from turbo.util import import_object
 
 from bson.objectid import ObjectId
 from pymongo import ASCENDING, DESCENDING
@@ -138,6 +139,14 @@ class MixinModel(object):
             raise NotImplementedError
         else:
             return import_object(ins_name, package_space)
+
+    @staticmethod
+    @property
+    def default_record():
+        """
+        generate one default record which return '' when key is empty 
+        """
+        return defaultdict(lambda: '')
 
 
 class BaseBaseModel(MixinModel):
@@ -317,7 +326,7 @@ class BaseBaseModel(MixinModel):
     def find_by_id(self, _id, column=None):
         """find record by _id
         """
-        if isinstance(_id, list):
+        if isinstance(_id, list) or isinstance(_id, tuple):
             return (self.find_by_id(i, column) for i in _id if i)
 
         document_id = self.to_objectid(_id)
@@ -328,6 +337,9 @@ class BaseBaseModel(MixinModel):
         return self.__collect.find_one({'_id': document_id}, column)
 
     def remove_by_id(self, _id):
+        if isinstance(_id, list) or isinstance(_id, tuple):
+            return (self.remove_by_id(i) for i in _id)
+
         return self.__collect.remove({'_id': self.to_objectid(_id)})
 
     def find_and_modify(self, query=None, update=None, upsert=False, sort=None, full_response=False, **kwargs):
