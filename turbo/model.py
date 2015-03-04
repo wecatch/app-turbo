@@ -72,23 +72,23 @@ class MixinModel(object):
         else:
             return datetime.utcnow()
 
-    @staticmethod
-    def to_one_str(value, *args, **kwargs):
+    @classmethod
+    def to_one_str(cls, value, *args, **kwargs):
         """string化的单个record对象
         """
         if kwargs.get('wrapper'):
-            return MixinModel._wrapper_to_one_str(value)
+            return cls._wrapper_to_one_str(value)
 
         return _es.to_dict_str(value)
 
-    @staticmethod
-    def to_str(values, callback=None):
+    @classmethod
+    def to_str(cls, values, callback=None):
         """string化的多个record组成的list对象
         """
         if callback and callable(callback):
-            return [callback(MixinModel.to_one_str(i)) for i in values]
+            return [callback(cls.to_one_str(i)) for i in values]
 
-        return [MixinModel.to_one_str(i) for i in values]
+        return [cls.to_one_str(i) for i in values]
 
     @staticmethod
     @convert_to_record
