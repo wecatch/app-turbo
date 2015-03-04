@@ -161,22 +161,31 @@ class BaseBaseHandler(tornado.web.RequestHandler):
 
         return rpd
 
-    def get(self, *args, **kwargs):
-        try:
-            self.GET(*args, **kwargs)
-        except ResponseError as e:
-            resp = self.init_resp(e.code, e.msg)
-        except Exception as e:
-            app_log.exception(e, exc_info=True)
-            resp = self.init_resp(1)
-        else:
-            resp = self.init_resp()
+    def head(self, *args, **kwargs):
+        self._method_call('HEAD', *args, **kwargs)
 
-        self.wo_resp(resp)
+    def get(self, *args, **kwargs):
+        self._method_call('GET', *args, **kwargs)
 
     def post(self, *args, **kwargs):
+        self._method_call('POST', *args, **kwargs)
+
+    def delete(self, *args, **kwargs):
+        self._method_call('DELETE', *args, **kwargs)
+
+    def patch(self, *args, **kwargs):
+        self._method_call('PATCH', *args, **kwargs)
+
+    def put(self, *args, **kwargs):
+        self._method_call('PUT', *args, **kwargs)
+
+    def options(self, *args, **kwargs):
+        self._method_call('OPTIONS', *args, **kwargs)
+
+    def _method_call(self, method, *args, **kwargs):
+        api_call = getattr(self, method)
         try:
-            self.POST(*args, **kwargs)
+            api_call(*args, **kwargs)
         except ResponseError as e:
             resp = self.init_resp(e.code, e.msg)
         except Exception as e:
@@ -189,24 +198,25 @@ class BaseBaseHandler(tornado.web.RequestHandler):
 
     @staticmethod
     def init_resp(code=0, msg=None):
+        """
+        responsibility for rest api code msg
+        can override for other style 
+
+        :args code 0, rest api code 
+        :args msg None, rest api msg
+
+        """
         resp = {
             'code': code,
             'msg': msg,
             'res': {},
         }
-
         return resp
 
-    def POST(self, *args, **kwargs):
-        pass
-
-    def GET(self, *args, **kwargs):
-        pass
-
-    def route(self, route, *args, **kwargs):
-        getattr(self,  "do_%s"%route, lambda *args, **kwargs: None)(*args, **kwargs)
-
     def wo_resp(self, resp):
+        """
+        can override for other style
+        """
         if resp['code'] != 0:
             return self.wo_json(resp)
 
@@ -214,6 +224,31 @@ class BaseBaseHandler(tornado.web.RequestHandler):
             resp['res'].update(self._data)
 
         return self.wo_json(resp)
+
+    def HEAD(self, *args, **kwargs):
+        raise NotImplementedError()
+
+    def GET(self, *args, **kwargs):
+        raise NotImplementedError()
+
+    def POST(self, *args, **kwargs):
+        raise NotImplementedError()
+
+    def DELETE(self, *args, **kwargs):
+        raise NotImplementedError
+
+    def PATCH(self, *args, **kwargs):
+        raise NotImplementedError()
+
+    def PUT(self, *args, **kwargs):
+        raise NotImplementedError()
+
+    def OPTIONS(self, *args, **kwargs):
+        raise NotImplementedError()
+
+    def route(self, route, *args, **kwargs):
+        getattr(self,  "do_%s"%route, lambda *args, **kwargs: None)(*args, **kwargs)
+
 
 
 class BaseHandler(BaseBaseHandler):
