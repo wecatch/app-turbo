@@ -39,8 +39,9 @@ def install_helper(installing_helper_list, package_space):
         for m in all_modules:
             try:
                 module =  import_object('.'.join(['helpers',item, m]), package_space)
-            except ImportError, e:
-                raise ImportError("No module named %s in %s package" % (m, item))
+            except Exception as e:
+                helper_log.error("module %s in %s package import failed" % (m, item))
+                raise e
 
             for model_name in getattr(module, 'MODEL_SLOTS', []):
                 model = getattr(module, model_name, None)
