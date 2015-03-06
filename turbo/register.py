@@ -13,7 +13,7 @@ def _install_app(package_space):
        _ = import_object('.'.join(['apps', app]), package_space)        
 
 
-def regisger_app(app_name, app_setting, web_application_setting, mainfile, package_space):
+def register_app(app_name, app_setting, web_application_setting, mainfile, package_space):
     """insert current project root path into sys path
     """
     app_config.app_name = app_name
@@ -23,6 +23,7 @@ def regisger_app(app_name, app_setting, web_application_setting, mainfile, packa
     log.getLogger(**app_setting.log)
     _install_app(package_space)
 
+regisger_app = register_app
 
 def register_url(url, handler, name=None, kwargs=None):
     """insert url into tornado application handlers group
