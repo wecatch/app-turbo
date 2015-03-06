@@ -189,7 +189,7 @@ class BaseBaseHandler(tornado.web.RequestHandler):
         except ResponseError as e:
             resp = self.init_resp(e.code, e.msg)
         except Exception as e:
-            app_log.exception(e, exc_info=True)
+            app_log.error(e, exc_info=True)
             resp = self.init_resp(1)
         else:
             resp = self.init_resp()
