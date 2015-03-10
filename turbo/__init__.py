@@ -18,6 +18,8 @@
 
 from __future__ import absolute_import, division, print_function, with_statement
 
+from .conf import app_config
+
 # version is a human-readable version number.
 
 # version_info is a four-tuple for programmatic comparison. The first
