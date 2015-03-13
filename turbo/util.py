@@ -67,7 +67,7 @@ class TurboEscape(object):
         return time.mktime(dt.timetuple())
 
     @classmethod
-    def recursive_to_str(cls, v):
+    def to_str(cls, v):
         if isinstance(v, list):
             return cls.to_list_str(v)
 

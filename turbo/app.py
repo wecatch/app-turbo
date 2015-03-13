@@ -71,6 +71,9 @@ class BaseBaseHandler(tornado.web.RequestHandler):
     def to_bool(self, value):
         return bool(value)
 
+    def to_str(self, v):
+        return _es.to_str(v)
+
     def utf8(self, v):
         return tornado.escape.utf8(v)
 
@@ -97,9 +100,6 @@ class BaseBaseHandler(tornado.web.RequestHandler):
     # read in json
     def ri_json(self, data):
         return self.json_decode(data)
-
-    def recur_to_str(self, v):
-        return _es.recursive_to_str(v)
 
     @property
     def parameter(self):
@@ -196,7 +196,7 @@ class BaseBaseHandler(tornado.web.RequestHandler):
         except ResponseError as e:
             resp = self.init_resp(e.code, e.msg)
         except tornado.web.HTTPError as e:
-            raise tornado.web.HTTPError(405)
+            raise tornado.web.HTTPError(e)
         except Exception as e:
             app_log.error(e, exc_info=True)
             resp = self.init_resp(1)

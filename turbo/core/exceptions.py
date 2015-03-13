@@ -2,7 +2,7 @@
 
 class ResponseError(Exception):
 
-    def __init__(self, code=None, msg=None):
+    def __init__(self, code='', msg=''):
         self.code = code
         self.msg = msg 
         super(ResponseError, self).__init__(msg)
