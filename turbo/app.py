@@ -71,6 +71,9 @@ class BaseBaseHandler(tornado.web.RequestHandler):
     def to_bool(self, value):
         return bool(value)
 
+    def to_str(self, v):
+        return _es.to_str(v)
+
     def utf8(self, v):
         return tornado.escape.utf8(v)
 
@@ -97,9 +100,6 @@ class BaseBaseHandler(tornado.web.RequestHandler):
     # read in json
     def ri_json(self, data):
         return self.json_decode(data)
-
-    def recur_to_str(self, v):
-        return _es.recursive_to_str(v)
 
     @property
     def parameter(self):
@@ -148,14 +148,21 @@ class BaseBaseHandler(tornado.web.RequestHandler):
         if params is None:
             return rpd
 
-        #need parameter
-        for key, tp in params.get('need', []):
-            if tp == list:
-                filter_parameter(key, tp, [])
-            else:
-                filter_parameter(key, tp)
+        #need arguments
+        try:
+            for key, tp in params.get('need', []):
+                if tp == list:
+                    filter_parameter(key, tp, [])
+                else:
+                    filter_parameter(key, tp)
+        except ValueError as e:
+            app_log.error('%s request need arguments parse error: %s' % (method, e))
+            raise ValueError(e)
+        except Exception as e:
+            app_log.error('%s request need arguments parse error: %s' % (method, e))
+            raise e
 
-        #option parameter
+        #option arguments
         for key, tp, default in params.get('option', []):
             filter_parameter(key, tp, default)
 
@@ -188,6 +195,8 @@ class BaseBaseHandler(tornado.web.RequestHandler):
             api_call(*args, **kwargs)
         except ResponseError as e:
             resp = self.init_resp(e.code, e.msg)
+        except tornado.web.HTTPError as e:
+            raise tornado.web.HTTPError(e)
         except Exception as e:
             app_log.error(e, exc_info=True)
             resp = self.init_resp(1)
@@ -226,25 +235,25 @@ class BaseBaseHandler(tornado.web.RequestHandler):
         return self.wo_json(resp)
 
     def HEAD(self, *args, **kwargs):
-        raise NotImplementedError()
+        raise tornado.web.HTTPError(405)
 
     def GET(self, *args, **kwargs):
-        raise NotImplementedError()
+        raise tornado.web.HTTPError(405)
 
     def POST(self, *args, **kwargs):
-        raise NotImplementedError()
+        raise tornado.web.HTTPError(405)
 
     def DELETE(self, *args, **kwargs):
-        raise NotImplementedError
+        raise tornado.web.HTTPError(405)
 
     def PATCH(self, *args, **kwargs):
-        raise NotImplementedError()
+        raise tornado.web.HTTPError(405)
 
     def PUT(self, *args, **kwargs):
-        raise NotImplementedError()
+        raise tornado.web.HTTPError(405)
 
     def OPTIONS(self, *args, **kwargs):
-        raise NotImplementedError()
+        raise tornado.web.HTTPError(405)
 
     def route(self, route, *args, **kwargs):
         getattr(self,  "do_%s"%route, lambda *args, **kwargs: None)(*args, **kwargs)

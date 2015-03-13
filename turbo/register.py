@@ -3,7 +3,6 @@ import logging
 
 from turbo.conf import app_config
 from turbo.util import join_sys_path, get_base_dir, import_object
-from turbo import log
 import turbo.helper
 from turbo.helper import install_helper
 
@@ -20,10 +19,8 @@ def register_app(app_name, app_setting, web_application_setting, mainfile, packa
     app_config.app_setting = app_setting
     app_config.project_name = os.path.basename(get_base_dir(mainfile, 2))
     app_config.web_application_setting = web_application_setting
-    log.getLogger(**app_setting.log)
     _install_app(package_space)
 
-regisger_app = register_app
 
 def register_url(url, handler, name=None, kwargs=None):
     """insert url into tornado application handlers group

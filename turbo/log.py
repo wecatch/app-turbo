@@ -68,7 +68,7 @@ def getLogger(currfile=None, level=None, log_path=None, log_size=500*1024*1024, 
         elif isinstance(currfile, basestring) and currfile.strip():
             #normal logger
             logger = logging.getLogger(currfile)
-            logger.setLevel(app_config.get_log_level)
+            logger.setLevel(app_config.log_level)
             logger = logging.getLogger(currfile)
 
     if not logger:
