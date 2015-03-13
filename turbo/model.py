@@ -431,5 +431,20 @@ class BaseModel(BaseBaseModel):
 
     """
 
-    def __init__(self, db_name='test', _MONGO_DB_MAPPING=None):
-        super(BaseModel, self).__init__(db_name, _MONGO_DB_MAPPING)
+    @classmethod
+    def create_model(cls, name, field=None, db_name=None):
+        """
+        dynamic create new model
+        :args field table field, if field is None or {}, this model can not use create method
+        """
+        if field:
+            attrs = {'name': name, 'field': field}
+        else:
+            def create(self, *args, **kwargs):
+                raise NotImplementedError()
+            attrs = {'name': name, 'field': {'_id': ObjectId()}, 'create': create}
+
+        new_model = type(name, (cls, ), attrs)
+        new_object = new_model(db_name) if db_name else new_model()
+
+        return new_object
