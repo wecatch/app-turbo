@@ -14,16 +14,7 @@ from turbo.log import model_log
 from turbo.util import escape as _es
 
 
-class Record(dict):
-    """a dict object to replace default mongodb record
-
-    """
-    def __init__(self, record, *args, **kwargs):
-        super(Record, self).__init__(*args, **kwargs)
-        self.update(record)
-
-    def __getitem__(self, key, default=None):
-        return super(Record, self).get(key, default)
+_record = defaultdict(lambda: None)
 
 
 def convert_to_record(func):
@@ -36,9 +27,9 @@ def convert_to_record(func):
         result = func(self, *args, **kwargs)
         if result is not None:
             if isinstance(result, dict):
-                return Record(result)
+                return _record(result)
             
-            return (Record(i) for i in result)
+            return (_record(i) for i in result)
 
         return result
 
@@ -141,7 +132,6 @@ class MixinModel(object):
             return import_object(ins_name, package_space)
 
     @staticmethod
-    @property
     def default_record():
         """
         generate one default record which return '' when key is empty 
