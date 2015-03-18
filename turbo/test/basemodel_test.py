@@ -128,9 +128,6 @@ class BaseModelTest(unittest.TestCase):
 
     def test_create_model(self):
         self.assertEqual(self.m.create_model('tag').find_one() is not None, True)
-        import uuid
-        with self.assertRaises(Exception):
-            self.m.create_model('tag', db_name=uuid.uuid1())
 
         with self.assertRaises(NotImplementedError):
             self.m.create_model('tag').create()
