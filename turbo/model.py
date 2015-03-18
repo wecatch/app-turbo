@@ -14,7 +14,7 @@ from turbo.log import model_log
 from turbo.util import escape as _es
 
 
-_record = defaultdict(lambda: None)
+_record = lambda x: defaultdict(lambda: None, x)
 
 
 def convert_to_record(func):

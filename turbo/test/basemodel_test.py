@@ -6,6 +6,7 @@ import unittest
 import datetime
 import json
 import StringIO
+import inspect
 
 
 from turbo.model import BaseModel
@@ -79,28 +80,19 @@ class BaseModelTest(unittest.TestCase):
 
     def test_find_wrapper(self):
         # test find wrapper=True return generator 
-        l = self.m.find(limit=10, wrapper=True)
-        for i in l:
-            pass
-        self.assertTrue(len(list(l)) == 0)
-       
-        # test find return default generator and if checker
-        def test_if(s):
-            if s:
-                return True 
-            return False
-
-        self.assertTrue(test_if(self.m.find({'_id':'sd'}, limit=10, wrapper=True)))
-        self.assertTrue(test_if(self.m.find({'_id':'sd'}, limit=10)))
-
-        # test find wrapper=True 
-        for i in self.m.find({}, skip=0, limit=3, wrapper=True):
-            self.assertTrue(i['rd'] is None)
-
-        # test find wrapper=True 
-        for i in self.m.find({}, skip=0, limit=3, wrapper=False):
+        one = self.m.find_one()
+        with self.assertRaises(KeyError):
+            one['keyerror']
+        
+        one = self.m.find_one(wrapper=True)
+        self.assertEqual(one['keyerror'], None)
+        
+        for one in self.m.find(limit=5):
             with self.assertRaises(KeyError):
-                i['rd']
+                one['keyerror']
+
+        for one in self.m.find(limit=5, wrapper=True):
+            self.assertEqual(one['keyerror'], None)
 
 
     def test_put(self):
