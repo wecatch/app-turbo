@@ -15,10 +15,12 @@ def _install_app(package_space):
 def register_app(app_name, app_setting, web_application_setting, mainfile, package_space):
     """insert current project root path into sys path
     """
+    from turbo import log
     app_config.app_name = app_name
     app_config.app_setting = app_setting
     app_config.project_name = os.path.basename(get_base_dir(mainfile, 2))
     app_config.web_application_setting = web_application_setting
+    log.getLogger(**app_setting.log)
     _install_app(package_space)
 
 
