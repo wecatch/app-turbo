@@ -1,5 +1,5 @@
 site_name: turbo
 pages:
 - [index.md, Home]
-- [about.md, About]
+- [intro.md, Introduction]
 theme: readthedocs
