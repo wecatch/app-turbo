@@ -11,7 +11,7 @@ turbo 的诞生旨在为基于 [tornado](http://tornado.readthedocs.org/en/stabl
 
 目录结构
 
-```
+```sh
 
 	├── app-server
 	├── conf
@@ -24,7 +24,7 @@ turbo 的诞生旨在为基于 [tornado](http://tornado.readthedocs.org/en/stabl
 ## app-server 
 
     
-``` 
+```sh
 
 	├── apps
 	│   ├── base.py
@@ -56,7 +56,7 @@ app-server 的配置文件，包含 tornado 和 app-server 的配置
 ## models
 
 
-```
+```sh
 
 	├── base.py
 	├── __init__.py
@@ -89,7 +89,7 @@ app-server 的配置文件，包含 tornado 和 app-server 的配置
 目录结构
 
 
-```
+```sh
 
 	helpers/
 	   ├── user         
@@ -100,7 +100,6 @@ app-server 的配置文件，包含 tornado 和 app-server 的配置
 	   ├── settings.py         
 
 ```
-
 
 
 
@@ -119,7 +118,7 @@ app-server 的配置文件，包含 tornado 和 app-server 的配置
 # demo
 
 
-```
+```sh
 
 git clone https://github.com/wecatch/app-turbo.git
 

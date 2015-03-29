@@ -8,16 +8,20 @@ turbo 是一个用以加速建立普通 web 站点和 rest api 的后端解决�
 
 快速安装
 
-```
+```sh
+
 pip install turbo
+
 ```
 
 安装最新版
 
-```
+```sh
+
 git clone https://github.com/wecatch/app-turbo.git 
 cd app-turbo
 python setup.py install
+
 ```
 
 
