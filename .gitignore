@@ -57,4 +57,4 @@ node_modules
 .ssh
 .idea
 __test__
-docs/site
+site
