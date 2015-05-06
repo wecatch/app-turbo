@@ -7,7 +7,7 @@ import logging
 
 from bson.objectid import ObjectId
 
-from turbo.util import escape as es
+from turbo.util import escape as es, camel_to_underscore
 
 class EscapeTest(unittest.TestCase):
 
@@ -49,26 +49,29 @@ class EscapeTest(unittest.TestCase):
         now = datetime.now()
         objid = ObjectId()
         number = 10
-        self.check_value_type(es.recursive_to_str(self.record))
-        self.check_value_type(es.recursive_to_str(self.values))
-        self.check_value_type(es.recursive_to_str(now))
-        self.check_value_type(es.recursive_to_str(objid))
-        self.check_value_type(es.recursive_to_str(number))
+        self.check_value_type(es.to_str(self.record))
+        self.check_value_type(es.to_str(self.values))
+        self.check_value_type(es.to_str(now))
+        self.check_value_type(es.to_str(objid))
+        self.check_value_type(es.to_str(number))
     
     def test_tobjectid(self):
         es.to_int('s')
 
     def test_json_encode(self):
-        self.assertTrue(es.json_encode(es.recursive_to_str(self.values)) is not None)
+        self.assertTrue(es.json_encode(es.to_str(self.values)) is not None)
     
     def test_json_decode(self):
         self.assertTrue(type(es.json_decode(
-            es.json_encode(es.recursive_to_str(self.values))
+            es.json_encode(es.to_str(self.values))
             )).__name__ == 'list'
         )
 
     def test_to_list_str(self):
         [self.check_value_type(v)  for v in es.to_list_str(self.values)]
+    
+    def test_camel_to_underscore(self):
+        self.assertEqual(camel_to_underscore('HelloWorld'), 'hello_world')
 
     def check_value_type(self, v):
         if isinstance(v, list):

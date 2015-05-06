@@ -170,3 +170,18 @@ def import_object(name, package_space=None):
         return getattr(obj, parts[-1])
     except AttributeError:
         raise ImportError("No module named %s" % parts[-1])
+
+
+def camel_to_underscore(name):
+    """
+    convert CamelCase style to under_score_case
+    """
+    as_list = []
+    length = len(name)
+    for index, i in enumerate(name):
+        if index !=0 and index != length-1 and i.isupper():
+            as_list.append('_%s'%i.lower())
+        else:
+            as_list.append(i.lower())
+
+    return ''.join(as_list)
