@@ -12,7 +12,7 @@ logger = turbo.log.getLogger(__file__)
 class HomeHandler(BaseHandler):
 
     def get(self, *args, **kwargs):
-        self.render('index.html')
+        self.render('index.html', who = self._params['who'])
 
 
 class ApiHandler(BaseHandler):
@@ -23,6 +23,8 @@ class ApiHandler(BaseHandler):
     def do_route(self, *args, **kwargs):
         logger.info('msg')
         self._data = {
-            'hello': 'world',
-            'user': user_helper.user.hello_user()
+            'hello': '%s world' % self._params['who'],
+            'user': user_helper.user.hello_user(),
+            'skip': self._params['skip'],
+            'limit': self._params['limit'],
         }

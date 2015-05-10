@@ -23,20 +23,35 @@ from turbo.conf import app_config
 class BaseBaseHandler(tornado.web.RequestHandler):
     """
     config request parameter like this:
-    _get_params = {
-            'need':[
-                ('skip', int),
-                ('limit', int),
-            ],
-            'option':[
-                ('jsoncallback', basestring, None),
-            ]
-        }
 
+    attrs:
+        _get_params: need and option arguments for request hander like
+                        _get_params = {
+                                'need':[
+                                    ('skip', int),
+                                    ('limit', int),
+                                ],
+                                'option':[
+                                    ('jsoncallback', basestring, None),
+                                ]
+                            }
+        _post_params: the same to _get_params for post method
+
+        _required_params: required arguments for all sub handler that element is three tuple like  [('skip', int, 0), ('limit', int, 0)]
+        _get_required_params: the same to _required_params for get method
+        _post_required_params: the same to _required_params for post method
+        _put_required_params: the same to _required_params for put method 
+        _delete_required_params: the same to _required_params for delete method
+        _head_required_params: the same to _required_params for head method 
+        _patch_required_params: the same to _required_params for patch method 
+        _options_required_params: the same to _required_params for options method 
+    
     """
 
-    #override in subclass
-    _required_params = [('skip', int, 0), ('limit', int, 0)] 
+    # override in subclass
+    _required_params = [('skip', int, 0), ('limit', int, 0)]
+    # override in subclass to extract the most need arguments
+    
     _types = [ObjectId, None, basestring, int, float, list, file, bool]
     _data = None
 
@@ -141,8 +156,16 @@ class BaseBaseHandler(tornado.web.RequestHandler):
 
                 rpd[key] = self.request.files[key]                
         
-        for key, tp, default in self._required_params:
-            filter_parameter(key, tp, default)
+        required_params = getattr(self, '_required_params', None)
+        if isinstance(required_params, list):
+            for key, tp, default in required_params:
+                filter_parameter(key, tp, default)
+
+        #extract method required params
+        method_required_params = getattr(self, '_%s_required_params' % method, None)
+        if isinstance(method_required_params, list):
+            for key, tp, default in method_required_params:
+                filter_parameter(key, tp, default)
         
         params = getattr(self, '_%s_params' % method, None)
         if params is None:

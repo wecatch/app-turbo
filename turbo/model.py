@@ -142,11 +142,11 @@ class MixinModel(object):
 class BaseBaseModel(MixinModel):
     """mongodb 基础api 访问
 
+    name = None                            mongodb collection name
+    field = None                           collection key
+    column = None                          need to query field
     """
 
-    name = None                            # mongodb collection name
-    field = None                           # collection key
-    column = None                          # need to query field
     _operators = {
         '$set': '',
         '$unset': '',
