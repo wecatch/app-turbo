@@ -2,7 +2,7 @@
 
 import os
 import sys
-from datetime import datetime
+from datetime import datetime, date
 import time
 import logging 
 import json
@@ -56,6 +56,9 @@ class TurboEscape(object):
             return unicode(v)
 
         if isinstance(v, datetime):
+            return cls.format_time(v)
+        
+        if isinstance(v, date):
             return cls.format_time(v)
 
         return v
