@@ -13,7 +13,7 @@ from tornado.util import ObjectDict
 from pymongo import ASCENDING, DESCENDING
 from bson.objectid import ObjectId
 
-from turbo.core.exceptions import ResponseError
+from turbo.core.exceptions import ResponseMsg, ResponseError
 from turbo.util import escape as _es
 import turbo.httputil as _ht 
 from turbo.log import app_log
@@ -216,7 +216,7 @@ class BaseBaseHandler(tornado.web.RequestHandler):
         api_call = getattr(self, method)
         try:
             api_call(*args, **kwargs)
-        except ResponseError as e:
+        except ResponseMsg as e:
             resp = self.init_resp(e.code, e.msg)
         except tornado.web.HTTPError as e:
             raise e
