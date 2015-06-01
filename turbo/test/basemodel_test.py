@@ -2,7 +2,6 @@
 
 import os
 import sys
-import unittest
 import datetime
 import json
 import StringIO
@@ -10,6 +9,7 @@ import inspect
 
 
 from turbo.model import BaseModel
+from turbo.test.util import unittest
 from bson.objectid import ObjectId
 
 from pymongo import MongoClient

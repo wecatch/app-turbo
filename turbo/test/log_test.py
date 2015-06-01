@@ -2,13 +2,13 @@
 
 import os
 import sys
-import unittest
 import random
 import time
 import threading
 import logging
 
 from turbo import log
+from turbo.test.util import unittest
 
 test_log = log.getLogger(__file__)
 

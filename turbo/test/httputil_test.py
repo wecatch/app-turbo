@@ -2,13 +2,14 @@
 
 import sys
 
-import unittest
 import logging
 import urllib
 
 from bson.objectid import ObjectId
 
 import turbo.httputil  as hu
+from turbo.test.util import unittest
+
 
 
 class HttpUtilTest(unittest.TestCase):

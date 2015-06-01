@@ -1,13 +1,14 @@
 #-*- coding:utf-8 -*-
-import unittest
 from datetime import datetime
 import copy
 import time
 import logging
 
+
 from bson.objectid import ObjectId
 
 from turbo.util import escape as es, camel_to_underscore
+from turbo.test.util import unittest
 
 class EscapeTest(unittest.TestCase):
 
