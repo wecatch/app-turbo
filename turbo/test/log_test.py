@@ -1,4 +1,5 @@
 #-*- coding:utf-8 -*-
+from __future__ import absolute_import, division, print_function, with_statement
 
 import os
 import sys
@@ -14,7 +15,7 @@ test_log = log.getLogger(__file__)
 
 base_path = os.path.abspath(__file__)
 base_name = os.path.basename(base_path)
-test_log_name = '.'.join(base_path.split('/')[1:-1]+[base_name.replace('.py', '')])
+test_log_name = '.'.join(base_path.split('/')[1:-1]+[base_name.split('.')[0]])
 
 
 class GetLoggerTest(unittest.TestCase):

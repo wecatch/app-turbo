@@ -1,4 +1,5 @@
 #-*- coding:utf-8 -*-
+from __future__ import absolute_import, division, print_function, with_statement
 
 import sys
 
@@ -19,6 +20,7 @@ class HttpUtilTest(unittest.TestCase):
 
     def tearDown(self):
         pass
+        
     def test_encode_http_params(self):
         keyword = '美女'
         paras = hu.encode_http_params(k=10, h=2, key='ass', keyword=keyword)

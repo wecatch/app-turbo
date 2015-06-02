@@ -1,4 +1,6 @@
 #-*- coding:utf-8 -*-
+from __future__ import absolute_import, division, print_function, with_statement
+
 
 from turbo.test.util import unittest
 
@@ -21,8 +23,13 @@ def main():
 
     result = unittest.TestResult()
     testSuite.run(result)
-    print result
+    for k, v in result.errors:
+        print(k)
+        print(v)
 
+    for k, v in result.failures:
+        print(k)
+        print(v)
 
 if __name__ == '__main__':
     main()

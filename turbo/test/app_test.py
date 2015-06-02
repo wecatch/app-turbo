@@ -10,6 +10,7 @@ import threading
 import logging
 import requests
 import multiprocessing
+import time
 
 from turbo.test.util import unittest
 
@@ -18,7 +19,9 @@ from turbo.conf import app_config
 from turbo import register
 
 app_config.app_name = 'app_test'
-app_config.web_application_setting = {}
+app_config.web_application_setting = {
+    'xsrf_cookies': False
+}
 
 #logger = logging.getLogger()
 
@@ -26,13 +29,13 @@ app_config.web_application_setting = {}
 class HomeHandler(app.BaseBaseHandler):
 
     def get(self):
-        pass
+        self.write('get')
 
     def post(self):
-        pass
+        self.write('post')
 
     def put(self):
-        pass
+        self.write('put')
 
 
 class ApiHandler(app.BaseBaseHandler):
@@ -96,6 +99,7 @@ class ApiHandler(app.BaseBaseHandler):
 
 def run_server():
     register.register_url('/', HomeHandler)
+    register.register_url('', HomeHandler)
     register.register_url('/api', ApiHandler)
     app.start()
 
@@ -108,6 +112,7 @@ class AppTest(unittest.TestCase):
         self.home_url = 'http://localhost:8888'
         self.api_url = 'http://localhost:8888/api'
         self.pid = server.pid
+        time.sleep(1)
 
     def tearDown(self):
         os.kill(self.pid, signal.SIGKILL)
@@ -125,8 +130,7 @@ class AppTest(unittest.TestCase):
         resp = requests.get(self.api_url)
         self.assertEqual(resp.status_code, 200)
 
-        resp = requests.get(self.api_url)
-        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(resp.json()['res']['value'], 'python')
 
 
     def test_post_api(self):

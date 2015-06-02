@@ -1,4 +1,6 @@
 #-*- coding:utf-8 -*-
+from __future__ import absolute_import, division, print_function, with_statement
+
 
 import os
 import sys
@@ -174,7 +176,7 @@ class BaseModelTest(unittest.TestCase):
         pass
 
     def log(self, one):
-        print one
+        print(one)
 
 if __name__ == '__main__':
     unittest.main()
