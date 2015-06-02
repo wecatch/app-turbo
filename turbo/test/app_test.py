@@ -11,6 +11,7 @@ import logging
 import requests
 import multiprocessing
 import time
+from bson.objectid import ObjectId
 
 from turbo.test.util import unittest
 
@@ -26,9 +27,10 @@ app_config.web_application_setting = {
 #logger = logging.getLogger()
 
 
-class HomeHandler(app.BaseBaseHandler):
+class HomeHandler(app.BaseHandler):
 
     def get(self):
+        assert self.is_ajax() == False
         self.write('get')
 
     def post(self):
@@ -38,7 +40,7 @@ class HomeHandler(app.BaseBaseHandler):
         self.write('put')
 
 
-class ApiHandler(app.BaseBaseHandler):
+class ApiHandler(app.BaseHandler):
 
     _get_required_params = [
         ('skip', int, 0),
@@ -50,7 +52,11 @@ class ApiHandler(app.BaseBaseHandler):
             ('action', None),
         ],
         'option': [
-            ('who', basestring, 'python')
+            ('who', basestring, 'python'),
+            ('bool', bool, False),
+            ('int', int, 0),
+            ('float', float, 0),
+            ('objectid', ObjectId, None),
         ]
     }
 
@@ -72,6 +78,7 @@ class ApiHandler(app.BaseBaseHandler):
         assert self._params['limit'] == 20
         assert self._params['who'] == 'python'
         assert self._params['action'] is None
+        assert self.is_ajax() == True
 
         self._data = {
             'value': self._params['who']
@@ -127,18 +134,18 @@ class AppTest(unittest.TestCase):
 
 
     def test_get_api(self):
-        resp = requests.get(self.api_url)
+        resp = requests.get(self.api_url, headers={'X-Requested-With': 'XMLHttpRequest'})
         self.assertEqual(resp.status_code, 200)
-
         self.assertEqual(resp.json()['res']['value'], 'python')
 
-
     def test_post_api(self):
-        resp = requests.post(self.api_url, data={'limit': 10, 'who': 'ruby'})
+        resp = requests.post(self.api_url, headers={'X-Requested-With': 'XMLHttpRequest'}, data={'limit': 10, 'who': 'ruby'})
         self.assertEqual(resp.status_code, 200)
-
         self.assertEqual(resp.json()['res']['value'], 'ruby')
 
+    def test_404(self):
+        resp = requests.get(self.home_url+'/hello')
+        self.assertTrue(resp.content.find('404') != -1)
 
 
 if __name__ == '__main__':

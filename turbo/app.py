@@ -20,7 +20,53 @@ from turbo.log import app_log
 
 from turbo.conf import app_config
 
-class BaseBaseHandler(tornado.web.RequestHandler):
+
+class _Mixin(tornado.web.RequestHandler):
+
+    @staticmethod
+    def to_objectid(objid):
+        return _es.to_objectid(objid)
+
+    @staticmethod
+    def to_int(value):
+        return _es.to_int(value)
+
+    @staticmethod
+    def to_float(value):
+        return _es.to_float(value)
+
+    @staticmethod
+    def to_bool(value):
+        return bool(value)
+
+    @staticmethod
+    def to_str(v):
+        return _es.to_str(v)
+
+    @staticmethod
+    def utf8(v):
+        return tornado.escape.utf8(v)
+
+    @staticmethod
+    def encode_http_params(**kw):
+        """
+        url parameter encode
+        """
+        return _ht.encode_http_params(**kw)
+
+    @staticmethod
+    def json_encode(data):
+        return _es.json_encode(data)
+
+    @staticmethod
+    def json_decode(data):
+        return _es.json_decode(data)
+
+    def is_ajax(self):
+        return self.request.headers.get('X-Requested-With', None) == 'XMLHttpRequest'
+
+
+class _BaseBaseHandler(_Mixin):
     """
     config request parameter like this:
 
@@ -73,36 +119,6 @@ class BaseBaseHandler(tornado.web.RequestHandler):
         return {
 
         }
-
-    def to_objectid(self, objid):
-        return _es.to_objectid(objid)
-
-    def to_int(self, value):
-        return _es.to_int(value)
-
-    def to_float(self, value):
-        return _es.to_float(value)
-
-    def to_bool(self, value):
-        return bool(value)
-
-    def to_str(self, v):
-        return _es.to_str(v)
-
-    def utf8(self, v):
-        return tornado.escape.utf8(v)
-
-    def encode_http_params(self, **kw):
-        """
-        url parameter encode
-        """
-        return _ht.encode_http_params(**kw)
-
-    def json_encode(self, data):
-        return _es.json_encode(data)
-
-    def json_decode(self, data):
-        return _es.json_decode(data)
 
     # write output json
     def wo_json(self, data):
@@ -282,8 +298,7 @@ class BaseBaseHandler(tornado.web.RequestHandler):
         getattr(self,  "do_%s"%route, lambda *args, **kwargs: None)(*args, **kwargs)
 
 
-
-class BaseHandler(BaseBaseHandler):
+class BaseHandler(_BaseBaseHandler):
     pass
 
 
@@ -293,7 +308,9 @@ class ErrorHandler(tornado.web.RequestHandler):
         self.set_status(status_code)
 
     def prepare(self):
-        self.render('404.html', error_code=self._status_code)
+        t = tornado.template.Template('<h1>{{error_code}}</h1>')
+        self.write(t.generate(error_code=self._status_code))
+        self.finish()
 
 
 def start(port=8888):
