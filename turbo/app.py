@@ -21,7 +21,7 @@ from turbo.log import app_log
 from turbo.conf import app_config
 
 
-class _Mixin(tornado.web.RequestHandler):
+class Mixin(tornado.web.RequestHandler):
 
     @staticmethod
     def to_objectid(objid):
@@ -66,7 +66,7 @@ class _Mixin(tornado.web.RequestHandler):
         return self.request.headers.get('X-Requested-With', None) == 'XMLHttpRequest'
 
 
-class _BaseBaseHandler(_Mixin):
+class BaseBaseHandler(Mixin):
     """
     config request parameter like this:
 
@@ -298,7 +298,7 @@ class _BaseBaseHandler(_Mixin):
         getattr(self,  "do_%s"%route, lambda *args, **kwargs: None)(*args, **kwargs)
 
 
-class BaseHandler(_BaseBaseHandler):
+class BaseHandler(BaseBaseHandler):
     pass
 
 
