@@ -1,4 +1,6 @@
 # -*- coding:utf-8 -*-
+from __future__ import absolute_import, division, print_function, with_statement
+
 
 from datetime import datetime
 import time
@@ -36,7 +38,7 @@ def convert_to_record(func):
     return wrapper
 
 
-class MixinModel(object):
+class _MixinModel(object):
 
     @staticmethod
     def utctimestamp(seconds=None):
@@ -139,7 +141,7 @@ class MixinModel(object):
         return defaultdict(lambda: '')
 
 
-class BaseBaseModel(MixinModel):
+class _BaseBaseModel(_MixinModel):
     """mongodb 基础api 访问
 
     name = None                            mongodb collection name
@@ -416,7 +418,7 @@ class BaseBaseModel(MixinModel):
         self.__collect.update(spec_or_id, {'$inc': {key: num}})
 
 
-class BaseModel(BaseBaseModel):
+class BaseModel(_BaseBaseModel):
     """全局公共业务方法
 
     """
