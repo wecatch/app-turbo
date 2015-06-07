@@ -18,19 +18,24 @@ from tornado.util import ObjectDict
 
 from turbo.conf import app_config
 
+
 class Session(object):
 
-    def __init__(self, app, handler, store):
+
+    def __init__(self, app, handler, store, session_config=None):
         self.store = store
         self.handler = handler
         self.app = app
 
         self._data = ObjectDict()
-        self._last_cleanup_time = 0
-        self._config = app_config.session_config['cookie']
+
+        self._config = app_config.session_config if session_config is None else session_config 
+        self._session_name = self._config.name
+
         self.__getitem__ = self._data.__getitem__
         self.__setitem__ = self._data.__setitem__
         self.__delitem__ = self._data.__delitem__
+        self._processor()
 
     def __contains__(self, name):
         return name in self._data
@@ -47,48 +52,70 @@ class Session(object):
     def __delattr__(self, name):
         delattr(self._data, name)
 
+    def _processor(self):
+        """Application processor to setup session for every request"""
+        #self._cleanup() TODO clean timeout session from store
+        self._load()
+
     def _load(self):
         """Load the session from the store, by the id from cookie"""
+
+        self.session_id = self._get_session_id()
 
         # protection against session_id tampering
         if self.session_id and not self._valid_session_id(self.session_id):
             self.session_id = None
 
-        self._check_expiry()
+        if self.session_id:
+            d = self.store[self.session_id]
+            self.update(d)
 
-    def _check_expiry(self):
-        # check for expiry
-        if self.session_id and self.session_id not in self.store:
-            if self._config.ignore_expiry:
-                self.session_id = None
-            else:
-                return self.expired()
+        if not self.session_id:
+            self.session_id = self._generate_session_id()
 
-    def expired(self):
-        """Called when an expired session is atime"""
-        self._killed = True
-        self._save()
-        raise SessionExpired(self._config.expired_message)
+            if self._initializer and isinstance(self._initializer, dict):
+                self.update(deepcopy(self._initializer))
 
     def _save(self):
         if not self.get('_killed'):
-            self._setcookie(self.session_id)
+            self._set_session_id(self.session_id)
             self.store[self.session_id] = dict(self._data)
         else:
-            self._setcookie(self.session_id, expires=-1)
+            self._set_session_id(self.session_id)
 
     def _valid_session_id(self):
         return True
 
-    def _setcookie(self, session_id, expires='', **kw):
-        cookie_name = self._config.cookie_name
+    def _set_session_id(self, session_id):
         cookie_domain = self._config.cookie_domain
         cookie_path = self._config.cookie_path
-        secure = self._config.secure
-        if secure:
-            self.handler.set_secure_cookie(cookie_name, session_id, expires=expires, domain=cookie_domain, path=cookie_path, **kwargs)
+        expires = self._config.expires 
+        self._set_cookie(self._session_name, session_id, expires=expires, domain=cookie_domain, path=cookie_path, **kwargs)
+
+    def _get_session_id(self):
+        return self._get_cookie(self._session_name)
+
+    @property
+    def _set_cookie(self):
+        if self._config.secure:
+            return self.handler.set_secure_cookie
         else:
-            self.handler.set_cookie()
+            return self.handler.set_cookie
+
+    @property
+    def _get_cookie(self):
+        if self._config.secure:
+            return self.handler.get_secure_cookie
+        else:
+            return self.handler.get_cookie
+
+    # def _cleanup(self):
+    #     """Cleanup the stored sessions"""
+    #     current_time = time.time()
+    #     timeout = self._config.timeout
+    #     if current_time - self._last_cleanup_time > timeout:
+    #         self.store.cleanup(timeout)
+    #         self._last_cleanup_time = current_time
 
     def _generate_session_id(self):
         """Generate a random id for session"""
@@ -103,6 +130,9 @@ class Session(object):
                 break
         return session_id
 
+    def kill(self):
+        """Kill the session, make it no longer available"""
+        del self.store[self.session_id]
 
 class Store(object):
 

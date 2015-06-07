@@ -38,7 +38,7 @@ def convert_to_record(func):
     return wrapper
 
 
-class _MixinModel(object):
+class MixinModel(object):
 
     @staticmethod
     def utctimestamp(seconds=None):
@@ -141,7 +141,7 @@ class _MixinModel(object):
         return defaultdict(lambda: '')
 
 
-class _BaseBaseModel(_MixinModel):
+class BaseBaseModel(MixinModel):
     """mongodb 基础api 访问
 
     name = None                            mongodb collection name
@@ -418,7 +418,7 @@ class _BaseBaseModel(_MixinModel):
         self.__collect.update(spec_or_id, {'$inc': {key: num}})
 
 
-class BaseModel(_BaseBaseModel):
+class BaseModel(BaseBaseModel):
     """全局公共业务方法
 
     """
