@@ -1,7 +1,6 @@
 from __future__ import absolute_import, division, print_function, with_statement
 
-import os
-import time
+import os, time, base64
 from copy import deepcopy
 try:
     import cPickle as pickle
@@ -21,16 +20,20 @@ from turbo.conf import app_config
 
 class Session(object):
 
+    __slots__ = ['store', 'handler', 'app', '_data', '_initializer', '_session_object'
+        '__getitem__', '__setitem__', '__delitem__']
 
-    def __init__(self, app, handler, store, session_config=None):
+    def __init__(self, app, handler, store, initializer, session_config=None, session_object=None):
         self.store = store
         self.handler = handler
         self.app = app
 
         self._data = ObjectDict()
+        self._initializer = initializer
 
         self._config = app_config.session_config if session_config is None else session_config 
         self._session_name = self._config.name
+        self._session_object = session_object if isinstance(session_object, SessionObject) else CookieObject(app, handler, self._config)
 
         self.__getitem__ = self._data.__getitem__
         self.__setitem__ = self._data.__setitem__
@@ -60,7 +63,7 @@ class Session(object):
     def _load(self):
         """Load the session from the store, by the id from cookie"""
 
-        self.session_id = self._get_session_id()
+        self.session_id = self._session_object.get_session_id()
 
         # protection against session_id tampering
         if self.session_id and not self._valid_session_id(self.session_id):
@@ -78,36 +81,13 @@ class Session(object):
 
     def _save(self):
         if not self.get('_killed'):
-            self._set_session_id(self.session_id)
+            self._session_object.set_session_id(self.session_id)
             self.store[self.session_id] = dict(self._data)
         else:
-            self._set_session_id(self.session_id)
+            self._session_object.set_session_id(self.session_id)
 
-    def _valid_session_id(self):
+    def _valid_session_id(self, session_id):
         return True
-
-    def _set_session_id(self, session_id):
-        cookie_domain = self._config.cookie_domain
-        cookie_path = self._config.cookie_path
-        expires = self._config.expires 
-        self._set_cookie(self._session_name, session_id, expires=expires, domain=cookie_domain, path=cookie_path, **kwargs)
-
-    def _get_session_id(self):
-        return self._get_cookie(self._session_name)
-
-    @property
-    def _set_cookie(self):
-        if self._config.secure:
-            return self.handler.set_secure_cookie
-        else:
-            return self.handler.set_cookie
-
-    @property
-    def _get_cookie(self):
-        if self._config.secure:
-            return self.handler.get_secure_cookie
-        else:
-            return self.handler.get_cookie
 
     # def _cleanup(self):
     #     """Cleanup the stored sessions"""
@@ -133,6 +113,49 @@ class Session(object):
     def kill(self):
         """Kill the session, make it no longer available"""
         del self.store[self.session_id]
+
+
+class SessionObject(object):
+
+
+    def __init__(self, app, handler, session_config):
+        self.app = app
+        self.handler = handler
+        self._config = session_config
+        self._session_name = self._config.name
+
+    def get_session_id(self):
+        raise NotImplementedError
+
+    def set_session_id(self, session_id, **kwargs):
+        raise NotImplementedError
+
+
+class CookieObject(SessionObject):
+
+    def set_session_id(self, session_id, **kwargs):
+        cookie_domain = self._config.cookie_domain
+        cookie_path = self._config.cookie_path
+        expires = self._config.expires 
+        self._set_cookie(self._session_name, session_id, expires=expires, domain=cookie_domain, path=cookie_path, **kwargs)
+
+    def get_session_id(self):
+        return self._get_cookie(self._session_name)
+
+    @property
+    def _set_cookie(self):
+        if self._config.secure:
+            return self.handler.set_secure_cookie
+        else:
+            return self.handler.set_cookie
+
+    @property
+    def _get_cookie(self):
+        if self._config.secure:
+            return self.handler.get_secure_cookie
+        else:
+            return self.handler.get_cookie
+
 
 class Store(object):
 

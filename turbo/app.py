@@ -17,9 +17,8 @@ from turbo.core.exceptions import ResponseMsg, ResponseError
 from turbo.util import escape as _es
 import turbo.httputil as _ht 
 from turbo.log import app_log
-
 from turbo.conf import app_config
-
+from turbo.session import Session, DiskStore
 
 class Mixin(tornado.web.RequestHandler):
 
@@ -100,13 +99,15 @@ class BaseBaseHandler(Mixin):
     
     _types = [ObjectId, None, basestring, int, float, list, file, bool]
     _data = None
+    session = None
+    session_initializer = None
 
     def initialize(self):
         # request context
         self.context = self.get_context()
-
         # app template path if exist must end with slash like user/
         self.template_path = ''
+        self.session = Session(self.application, self, DiskStore())
 
     def render(self, template_name, **kwargs):
         super(BaseBaseHandler, self).render('%s%s' % (self.template_path, template_name), context=self.context, **kwargs)
@@ -296,6 +297,17 @@ class BaseBaseHandler(Mixin):
 
     def route(self, route, *args, **kwargs):
         getattr(self,  "do_%s"%route, lambda *args, **kwargs: None)(*args, **kwargs)
+
+    def on_finish(self):
+        self._processor()
+        super(BaseBaseHandler, self).on_finish()
+
+    def _processor(self):
+        """
+        can override in son class to do some clean work after request
+        """
+        pass
+
 
 
 class BaseHandler(BaseBaseHandler):
