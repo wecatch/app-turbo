@@ -74,7 +74,7 @@ class Session(object):
             self.update(d)
 
         if not self.session_id:
-            self.session_id = self._generate_session_id()
+            self.session_id = self._session_object.generate_session_id()
 
             if self._initializer and isinstance(self._initializer, dict):
                 self.update(deepcopy(self._initializer))
@@ -97,18 +97,6 @@ class Session(object):
     #         self.store.cleanup(timeout)
     #         self._last_cleanup_time = current_time
 
-    def _generate_session_id(self):
-        """Generate a random id for session"""
-
-        while True:
-            rand = os.urandom(16)
-            now = time.time()
-            secret_key = self._config.secret_key
-            session_id = sha1("%s%s%s%s" %(rand, now, self.handler.request.remote_ip, secret_key))
-            session_id = session_id.hexdigest()
-            if session_id not in self.store:
-                break
-        return session_id
 
     def kill(self):
         """Kill the session, make it no longer available"""
@@ -118,9 +106,11 @@ class Session(object):
 class SessionObject(object):
 
 
-    def __init__(self, app, handler, session_config):
+    def __init__(self, app, handler, store, session_config):
         self.app = app
         self.handler = handler
+        self.store = store
+
         self._config = session_config
         self._session_name = self._config.name
 
@@ -129,6 +119,19 @@ class SessionObject(object):
 
     def set_session_id(self, session_id, **kwargs):
         raise NotImplementedError
+
+    def generate_session_id(self):
+        """Generate a random id for session"""
+        secret_key = self._config.secret_key
+        while True:
+            rand = os.urandom(16)
+            now = time.time()
+            session_id = sha1("%s%s%s%s" %(rand, now, self.handler.request.remote_ip, secret_key))
+            session_id = session_id.hexdigest()
+            if session_id not in self.store:
+                break
+
+        return session_id
 
 
 class CookieObject(SessionObject):
