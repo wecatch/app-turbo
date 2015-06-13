@@ -99,27 +99,34 @@ class BaseBaseHandler(Mixin):
     
     _types = [ObjectId, None, basestring, int, float, list, file, bool]
     _data = None
+    
     session = None
     session_initializer = None
+    session_config = None
+    session_object = None
+    session_store = DiskStore()
 
     def initialize(self):
-        # request context
-        self.context = self.get_context()
+        self.session = Session(self.application, 
+            self, 
+            self.session_store, 
+            self.session_initializer, 
+            self.session_config,
+            self.session_object
+        )
         # app template path if exist must end with slash like user/
+        # request context
         self.template_path = ''
-        self.session = Session(self.application, self, DiskStore())
 
     def render(self, template_name, **kwargs):
-        super(BaseBaseHandler, self).render('%s%s' % (self.template_path, template_name), context=self.context, **kwargs)
+        super(BaseBaseHandler, self).render('%s%s' % (self.template_path, template_name), context=self.get_context(), **kwargs)
 
     def sort_by(self, sort):
         return {1: ASCENDING, -1: DESCENDING}.get(sort, ASCENDING)
 
     # request context
     def get_context(self):
-        return {
-
-        }
+        return ObjectDict(session=self.session)
 
     # write output json
     def wo_json(self, data):

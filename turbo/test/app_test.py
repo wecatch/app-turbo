@@ -147,6 +147,10 @@ class AppTest(unittest.TestCase):
         resp = requests.get(self.home_url+'/hello')
         self.assertTrue(resp.content.find('404') != -1)
 
+    def test_context(self):
+        """TODO"""
+        pass
+
 
 if __name__ == '__main__':
     unittest.main()

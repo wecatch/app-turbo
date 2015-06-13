@@ -130,6 +130,9 @@ class SessionObject(object):
     def set_session_id(self, session_id, **kwargs):
         raise NotImplementedError
 
+    def clear_session_id(self):
+        raise NotImplementedError
+
 
 class CookieObject(SessionObject):
 
@@ -141,6 +144,9 @@ class CookieObject(SessionObject):
 
     def get_session_id(self):
         return self._get_cookie(self._session_name)
+
+    def clear_session_id(self):
+        self.handler.clear_cookie(self._session_name)
 
     @property
     def _set_cookie(self):
@@ -155,6 +161,20 @@ class CookieObject(SessionObject):
             return self.handler.get_secure_cookie
         else:
             return self.handler.get_cookie
+
+
+
+class HeaderSessionIdTransmission(object):
+
+    def get_session_id(self):
+        return self.handler.request.headers.get(self._session_name)
+
+    def set_session_id(self, sid):
+        self.handler.set_header(self._session_name, sid)
+
+    def clear_session_id(self):
+        pass
+
 
 
 class Store(object):
@@ -225,7 +245,7 @@ class DiskStore(Store):
             pickled = open(path).read()
             return self.decode(pickled)
         else:
-            raise KeyError, key
+            return ObjectDict()
 
     def __setitem__(self, key, value):
         path = self._get_path(key)
