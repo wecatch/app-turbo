@@ -20,7 +20,7 @@ from turbo.conf import app_config
 
 class Session(object):
 
-    __slots__ = ['store', 'handler', 'app', '_data', '_initializer', '_session_object'
+    __slots__ = ['store', 'handler', 'app', '_data', '_dirty', '_initializer', '_session_object'
         '__getitem__', '__setitem__', '__delitem__']
 
     def __init__(self, app, handler, store, initializer, session_config=None, session_object=None):
@@ -33,11 +33,12 @@ class Session(object):
 
         self._config = app_config.session_config if session_config is None else session_config 
         self._session_name = self._config.name
-        self._session_object = session_object if isinstance(session_object, SessionObject) else CookieObject(app, handler, self._config)
+        self._session_object = session_object if isinstance(session_object, SessionObject) else CookieObject(app, handler, store, self._config)
 
         self.__getitem__ = self._data.__getitem__
         self.__setitem__ = self._data.__setitem__
         self.__delitem__ = self._data.__delitem__
+        self._dirty = False
         self._processor()
 
     def __contains__(self, name):
@@ -50,6 +51,7 @@ class Session(object):
         if name in self.__slots__:
             super(Session, self).__setattr__(self, name, value)
         else:
+            self._dirty = True
             setattr(self._data, name, value)
         
     def __delattr__(self, name):
@@ -74,15 +76,15 @@ class Session(object):
             self.update(d)
 
         if not self.session_id:
-            self.session_id = self._generate_session_id()
+            self.session_id = self._session_object.generate_session_id()
 
             if self._initializer and isinstance(self._initializer, dict):
                 self.update(deepcopy(self._initializer))
 
     def _save(self):
-        if not self.get('_killed'):
+        if self._dirty:
             self._session_object.set_session_id(self.session_id)
-            self.store[self.session_id] = dict(self._data)
+            self.store[self.session_id] = self._data
         else:
             self._session_object.set_session_id(self.session_id)
 
@@ -97,18 +99,6 @@ class Session(object):
     #         self.store.cleanup(timeout)
     #         self._last_cleanup_time = current_time
 
-    def _generate_session_id(self):
-        """Generate a random id for session"""
-
-        while True:
-            rand = os.urandom(16)
-            now = time.time()
-            secret_key = self._config.secret_key
-            session_id = sha1("%s%s%s%s" %(rand, now, self.handler.request.remote_ip, secret_key))
-            session_id = session_id.hexdigest()
-            if session_id not in self.store:
-                break
-        return session_id
 
     def kill(self):
         """Kill the session, make it no longer available"""
@@ -118,9 +108,11 @@ class Session(object):
 class SessionObject(object):
 
 
-    def __init__(self, app, handler, session_config):
+    def __init__(self, app, handler, store, session_config):
         self.app = app
         self.handler = handler
+        self.store = store
+
         self._config = session_config
         self._session_name = self._config.name
 
@@ -132,6 +124,19 @@ class SessionObject(object):
 
     def clear_session_id(self):
         raise NotImplementedError
+
+    def generate_session_id(self):
+        """Generate a random id for session"""
+        secret_key = self._config.secret_key
+        while True:
+            rand = os.urandom(16)
+            now = time.time()
+            session_id = sha1("%s%s%s%s" %(rand, now, self.handler.request.remote_ip, secret_key))
+            session_id = session_id.hexdigest()
+            if session_id not in self.store:
+                break
+
+        return session_id
 
 
 class CookieObject(SessionObject):
@@ -163,7 +168,6 @@ class CookieObject(SessionObject):
             return self.handler.get_cookie
 
 
-
 class HeaderSessionIdTransmission(object):
 
     def get_session_id(self):
@@ -173,7 +177,7 @@ class HeaderSessionIdTransmission(object):
         self.handler.set_header(self._session_name, sid)
 
     def clear_session_id(self):
-        pass
+        self.headers.set_header(self._session_name, '')
 
 
 
