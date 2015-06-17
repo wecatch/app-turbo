@@ -102,10 +102,10 @@ class BaseBaseHandler(Mixin):
     _data = None
     
     session = None
-    session_initializer = None
+    session_initializer = None 
     session_config = None
     session_object = None
-    session_store = DiskStore()
+    session_store = None # store for session
 
     def initialize(self):
         self.session = Session(self.application, 

@@ -25,16 +25,16 @@ class Session(object):
         '_initializer', 'session_id', '_session_object', '_session_name', '__getitem__', '__setitem__', '__delitem__']
 
     def __init__(self, app, handler, store, initializer, session_config=None, session_object=None):
-        self.store = store
         self.handler = handler
         self.app = app
+        self.store = store or DiskStore(app_config.store_config.diskpath)
 
+        self._config = session_config or app_config.session_config  
+        self._session_name = self._config.name
+        self._session_object = session_object or CookieObject(app, handler, self.store, self._config)
+        
         self._data = ObjectDict()
         self._initializer = initializer
-
-        self._config = app_config.session_config if session_config is None else session_config 
-        self._session_name = self._config.name
-        self._session_object = session_object if isinstance(session_object, SessionObject) else CookieObject(app, handler, store, self._config)
 
         self.__getitem__ = self._data.__getitem__
         self.__setitem__ = self._data.__setitem__
@@ -78,7 +78,8 @@ class Session(object):
 
         if self.session_id:
             d = self.store[self.session_id]
-            self.update(d)
+            if isinstance(d, dict):
+                self.update(d)
 
         if not self.session_id:
             self.session_id = self._session_object.generate_session_id()
@@ -152,12 +153,12 @@ class CookieObject(SessionObject):
         cookie_domain = self._config.cookie_domain
         cookie_path = self._config.cookie_path
         cookie_expires = self._config.cookie_expires
-        session_log.error(cookie_domain)
-        # expires=cookie_expires, domain=cookie_domain, path=cookie_path
         if self._config.secure:
-            return self.handler.set_secure_cookie(name, value, expires_days=1, domain=cookie_domain, path='/')
+            return self.handler.set_secure_cookie(name, value,
+                expires_days=cookie_expires/(3600*24), domain=cookie_domain, path=cookie_path)
         else:
-            return self.handler.set_cookie(name, value)
+            return self.handler.set_cookie(name, value, expires=cookie_expires, domain=cookie_domain, path=cookie_path)
+    
     def _get_cookie(self, name):
         if self._config.secure:
             return self.handler.get_secure_cookie(name)
@@ -175,7 +176,6 @@ class HeaderObject(object):
 
     def clear_session_id(self):
         self.headers.set_header(self._session_name, '')
-
 
 
 class Store(object):
@@ -223,7 +223,7 @@ class DiskStore(Store):
             ...
         KeyError: 'a'
     """
-    def __init__(self, root='session'):
+    def __init__(self, root):
         # if the storage root doesn't exists, create it.
         if not os.path.exists(root):
             os.makedirs(
@@ -274,3 +274,32 @@ class DiskStore(Store):
                 os.remove(path)
 
 
+class RedisStore(Store):
+
+    def __init__(self, **kwargs):
+        self.timeout = kwargs.get('timeout') or app_config.session_config.timeout
+
+    def __contains__(self, key):
+        return self.get_connection(key).exists(key)
+
+    def __setitem__(self, key, value):
+        conn = self.get_connection(key)
+        conn.hset(key, 'data', self.encode(value))
+        conn.expire(key, self.timeout)
+
+    def __getitem__(self, key):
+        data = self.get_connection(key).hget(key, 'data')
+        if data:
+            return self.decode(data)
+        else:
+            return ObjectDict()
+
+    def __delitem__(self, key):
+        self.get_connection(key).delete(key)
+
+    def cleanup(self, timeout):
+        pass
+
+    def get_connection(self, key):
+        import redis
+        return redis.Redis()

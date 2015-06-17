@@ -22,6 +22,10 @@ class AppConfig(object):
         timeout=86400, # session timeout 24 hours in seconds
     )
 
+    __store_config = ObjectDict(
+        diskpath='/tmp/session',
+    )
+
     def __init__(self):
         self.app_name = ''
         self.urls = []
@@ -30,6 +34,7 @@ class AppConfig(object):
         self.web_application_setting = {}
         self.project_name = None
         self.session_config = deepcopy(self.__cookie_session_config)
+        self.store_config = deepcopy(self.__store_config)
 
     @property
     def log_level(self):
