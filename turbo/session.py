@@ -16,12 +16,13 @@ except ImportError:
 from tornado.util import ObjectDict
 
 from turbo.conf import app_config
+from turbo.log  import session_log
 
 
 class Session(object):
 
-    __slots__ = ['store', 'handler', 'app', '_data', '_dirty', '_initializer', '_session_object'
-        '__getitem__', '__setitem__', '__delitem__']
+    __slots__ = ['store', 'handler', 'app', '_data', '_dirty', '_config',
+        '_initializer', 'session_id', '_session_object', '_session_name', '__getitem__', '__setitem__', '__delitem__']
 
     def __init__(self, app, handler, store, initializer, session_config=None, session_object=None):
         self.store = store
@@ -38,18 +39,22 @@ class Session(object):
         self.__getitem__ = self._data.__getitem__
         self.__setitem__ = self._data.__setitem__
         self.__delitem__ = self._data.__delitem__
+
         self._dirty = False
         self._processor()
 
     def __contains__(self, name):
         return name in self._data
 
+    def __len__(self):
+        return len(self._data)
+
     def __getattr__(self, name):
         return getattr(self._data, name)
     
     def __setattr__(self, name, value):
         if name in self.__slots__:
-            super(Session, self).__setattr__(self, name, value)
+            super(Session, self).__setattr__(name, value)
         else:
             self._dirty = True
             setattr(self._data, name, value)
@@ -59,7 +64,7 @@ class Session(object):
 
     def _processor(self):
         """Application processor to setup session for every request"""
-        #self._cleanup() TODO clean timeout session from store
+        self.store.cleanup(self._config.timeout)
         self._load()
 
     def _load(self):
@@ -81,27 +86,20 @@ class Session(object):
             if self._initializer and isinstance(self._initializer, dict):
                 self.update(deepcopy(self._initializer))
 
-    def _save(self):
+        self._session_object.set_session_id(self.session_id)
+
+    def save(self):
         if self._dirty:
-            self._session_object.set_session_id(self.session_id)
             self.store[self.session_id] = self._data
-        else:
-            self._session_object.set_session_id(self.session_id)
 
     def _valid_session_id(self, session_id):
         return True
 
-    # def _cleanup(self):
-    #     """Cleanup the stored sessions"""
-    #     current_time = time.time()
-    #     timeout = self._config.timeout
-    #     if current_time - self._last_cleanup_time > timeout:
-    #         self.store.cleanup(timeout)
-    #         self._last_cleanup_time = current_time
-
-
     def kill(self):
         """Kill the session, make it no longer available"""
+        del self.store[self.session_id]
+
+    def clear(self):
         del self.store[self.session_id]
 
 
@@ -119,7 +117,7 @@ class SessionObject(object):
     def get_session_id(self):
         raise NotImplementedError
 
-    def set_session_id(self, session_id, **kwargs):
+    def set_session_id(self, session_id):
         raise NotImplementedError
 
     def clear_session_id(self):
@@ -141,11 +139,8 @@ class SessionObject(object):
 
 class CookieObject(SessionObject):
 
-    def set_session_id(self, session_id, **kwargs):
-        cookie_domain = self._config.cookie_domain
-        cookie_path = self._config.cookie_path
-        expires = self._config.expires 
-        self._set_cookie(self._session_name, session_id, expires=expires, domain=cookie_domain, path=cookie_path, **kwargs)
+    def set_session_id(self, session_id):
+        self._set_cookie(self._session_name, session_id)
 
     def get_session_id(self):
         return self._get_cookie(self._session_name)
@@ -153,22 +148,24 @@ class CookieObject(SessionObject):
     def clear_session_id(self):
         self.handler.clear_cookie(self._session_name)
 
-    @property
-    def _set_cookie(self):
+    def _set_cookie(self, name, value):
+        cookie_domain = self._config.cookie_domain
+        cookie_path = self._config.cookie_path
+        cookie_expires = self._config.cookie_expires
+        session_log.error(cookie_domain)
+        # expires=cookie_expires, domain=cookie_domain, path=cookie_path
         if self._config.secure:
-            return self.handler.set_secure_cookie
+            return self.handler.set_secure_cookie(name, value, expires_days=1, domain=cookie_domain, path='/')
         else:
-            return self.handler.set_cookie
-
-    @property
-    def _get_cookie(self):
+            return self.handler.set_cookie(name, value)
+    def _get_cookie(self, name):
         if self._config.secure:
-            return self.handler.get_secure_cookie
+            return self.handler.get_secure_cookie(name)
         else:
-            return self.handler.get_cookie
+            return self.handler.get_cookie(name)
 
 
-class HeaderSessionIdTransmission(object):
+class HeaderObject(object):
 
     def get_session_id(self):
         return self.handler.request.headers.get(self._session_name)
@@ -198,9 +195,9 @@ class Store(object):
         """removes all the expired sessions"""
         raise NotImplementedError
 
-    def encode(self, session_dict):
+    def encode(self, session_data):
         """encodes session dict as a string"""
-        pickled = pickle.dumps(session_dict)
+        pickled = pickle.dumps(session_data)
         return base64.encodestring(pickled)
 
     def decode(self, session_data):
@@ -226,7 +223,7 @@ class DiskStore(Store):
             ...
         KeyError: 'a'
     """
-    def __init__(self, root):
+    def __init__(self, root='session'):
         # if the storage root doesn't exists, create it.
         if not os.path.exists(root):
             os.makedirs(

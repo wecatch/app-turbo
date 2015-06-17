@@ -20,6 +20,7 @@ from turbo.log import app_log
 from turbo.conf import app_config
 from turbo.session import Session, DiskStore
 
+
 class Mixin(tornado.web.RequestHandler):
 
     @staticmethod
@@ -108,7 +109,7 @@ class BaseBaseHandler(Mixin):
 
     def initialize(self):
         self.session = Session(self.application, 
-            self, 
+            self,
             self.session_store, 
             self.session_initializer, 
             self.session_config,
@@ -313,7 +314,7 @@ class BaseBaseHandler(Mixin):
         """
         can override in son class to do some clean work after request
         """
-        pass
+        self.session.save()
 
 
 

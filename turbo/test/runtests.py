@@ -12,6 +12,7 @@ TEST_MODULES = [
     'log_test',
     'httputil_test',
     'app_test',
+    'session_test',
 ]
 
 

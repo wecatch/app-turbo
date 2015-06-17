@@ -9,14 +9,17 @@ class AppConfig(object):
     __cookie_session_config = ObjectDict(
         name='session_id',
         cookie_domain=None,
-        cookie_path=None,
-        expired=86400,  # 24 hours in seconds
-        secret_key='fLjUfxqXtfNoIldA0A0J' # generate session id 
+        cookie_path='/',
+        cookie_expires=86400,  # cookie expired  24 hours in seconds
+        secure = True,
+        secret_key='fLjUfxqXtfNoIldA0A0J', # generate session id,
+        timeout=86400, # session timeout 24 hours in seconds
     )
 
     __header_session_config = ObjectDict(
         name='session_id',
-        secret_key='fLjUfxqXtfNoIldA0A0J' # generate session id 
+        secret_key='fLjUfxqXtfNoIldA0A0J', # generate session id 
+        timeout=86400, # session timeout 24 hours in seconds
     )
 
     def __init__(self):
