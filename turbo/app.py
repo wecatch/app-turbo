@@ -100,24 +100,30 @@ class BaseBaseHandler(Mixin):
     
     _types = [ObjectId, None, basestring, int, float, list, file, bool]
     _data = None
-    
-    session = None
+    _session = None
+
     session_initializer = None 
     session_config = None
     session_object = None
     session_store = None # store for session
 
     def initialize(self):
-        self.session = Session(self.application, 
-            self,
-            self.session_store, 
-            self.session_initializer, 
-            self.session_config,
-            self.session_object
-        )
         # app template path if exist must end with slash like user/
         # request context
         self.template_path = ''
+
+    @property
+    def session(self):
+        if not self._session:
+            self._session = Session(self.application, 
+                self,
+                self.session_store, 
+                self.session_initializer, 
+                self.session_config,
+                self.session_object
+            )
+
+        return self._session
 
     def render(self, template_name, **kwargs):
         super(BaseBaseHandler, self).render('%s%s' % (self.template_path, template_name), context=self.get_context(), **kwargs)

@@ -6,7 +6,7 @@ from copy import deepcopy
 
 class AppConfig(object):
     
-    __cookie_session_config = ObjectDict(
+    _cookie_session_config = ObjectDict(
         name='session_id',
         cookie_domain=None,
         cookie_path='/',
@@ -16,13 +16,7 @@ class AppConfig(object):
         timeout=86400, # session timeout 24 hours in seconds
     )
 
-    __header_session_config = ObjectDict(
-        name='session_id',
-        secret_key='fLjUfxqXtfNoIldA0A0J', # generate session id 
-        timeout=86400, # session timeout 24 hours in seconds
-    )
-
-    __store_config = ObjectDict(
+    _store_config = ObjectDict(
         diskpath='/tmp/session',
     )
 
@@ -33,8 +27,8 @@ class AppConfig(object):
         self.app_setting = {}
         self.web_application_setting = {}
         self.project_name = None
-        self.session_config = deepcopy(self.__cookie_session_config)
-        self.store_config = deepcopy(self.__store_config)
+        self.session_config = self._cookie_session_config
+        self.store_config = self._store_config
 
     @property
     def log_level(self):

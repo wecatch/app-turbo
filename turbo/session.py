@@ -16,32 +16,48 @@ except ImportError:
 from tornado.util import ObjectDict
 
 from turbo.conf import app_config
-from turbo.log  import session_log
+from turbo.log import session_log
 
 
 class Session(object):
 
     __slots__ = ['store', 'handler', 'app', '_data', '_dirty', '_config',
-        '_initializer', 'session_id', '_session_object', '_session_name', '__getitem__', '__setitem__', '__delitem__']
+        '_initializer', 'session_id', '_session_object', '_session_name']
 
     def __init__(self, app, handler, store, initializer, session_config=None, session_object=None):
         self.handler = handler
         self.app = app
         self.store = store or DiskStore(app_config.store_config.diskpath)
 
-        self._config = session_config or app_config.session_config  
+        self._config = deepcopy(app_config.session_config)
+        if session_config:
+            self._config.update(session_config)
+
         self._session_name = self._config.name
-        self._session_object = session_object or CookieObject(app, handler, self.store, self._config)
+
+        self._session_object = (session_object or CookieObject)(app, handler, self.store, self._config)
         
         self._data = ObjectDict()
         self._initializer = initializer
 
-        self.__getitem__ = self._data.__getitem__
-        self.__setitem__ = self._data.__setitem__
-        self.__delitem__ = self._data.__delitem__
+        self.session_id = None
 
         self._dirty = False
         self._processor()
+
+    def __getitem__(self, name):
+        if name not in self._data:
+            session_log.error('%s key not exist in %s session' % (name, self.session_id))
+
+        return self._data.get(name, None)
+
+    def __setitem__(self, name, value):
+        self._data[name] = value
+        self._dirty = True
+
+    def __delitem__(self, name):
+        del self._data[name]
+        self._dirty = True
 
     def __contains__(self, name):
         return name in self._data
@@ -61,6 +77,14 @@ class Session(object):
         
     def __delattr__(self, name):
         delattr(self._data, name)
+        self._dirty = True
+
+    def __iter__(self):
+        for key in self._data:
+            yield key
+
+    def __repr__(self):
+        return str(self._data)
 
     def _processor(self):
         """Application processor to setup session for every request"""
@@ -78,12 +102,13 @@ class Session(object):
 
         if self.session_id:
             d = self.store[self.session_id]
-            if isinstance(d, dict):
+            if isinstance(d, dict) and d:
                 self.update(d)
 
         if not self.session_id:
             self.session_id = self._session_object.generate_session_id()
 
+        if not self._data:
             if self._initializer and isinstance(self._initializer, dict):
                 self.update(deepcopy(self._initializer))
 
@@ -112,7 +137,10 @@ class SessionObject(object):
         self.handler = handler
         self.store = store
 
-        self._config = session_config
+        self._config = deepcopy(app_config.session_config)
+        if session_config:
+            self._config.update(session_config)
+
         self._session_name = self._config.name
 
     def get_session_id(self):
@@ -166,7 +194,7 @@ class CookieObject(SessionObject):
             return self.handler.get_cookie(name)
 
 
-class HeaderObject(object):
+class HeaderObject(SessionObject):
 
     def get_session_id(self):
         return self.handler.request.headers.get(self._session_name)
