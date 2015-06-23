@@ -320,8 +320,9 @@ class BaseBaseHandler(Mixin):
         """
         can override in son class to do some clean work after request
         """
-        self.session.save()
-
+        session_save = getattr(self.session, 'save', None)
+        if session_save:
+            session_save()
 
 
 class BaseHandler(BaseBaseHandler):
