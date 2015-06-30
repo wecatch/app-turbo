@@ -58,3 +58,4 @@ node_modules
 .idea
 __test__
 site
+*~

@@ -2,4 +2,10 @@ site_name: turbo
 pages:
 - [index.md, Home]
 - [intro.md, Introduction]
+- [quickstart.md, Quickstart]
+- [tutorial/index.md, Tutorial]
+- [tutorial/helpers.md, 'Tutorial', 'helpers']
+- [tutorial/models.md, 'Tutorial', 'models']
+- [tutorial/db.md, 'Tutorial', 'db']
+
 theme: readthedocs
