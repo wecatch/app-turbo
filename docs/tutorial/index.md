@@ -1,12 +1,12 @@
 turbo Tutorial
 =================
 
-turbo 的主要结构分为
+turbo 应用的主要结构分为
 
-- models
-- helpers
-- app-server
-- db
+- [models](model)
+- [helpers](helper)
+- [app-server](app-server)
+- [db](db)
 
 
-可以根据项目的情况自由拆解
+app-server 是个独立的应用server

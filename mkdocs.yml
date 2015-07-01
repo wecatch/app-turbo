@@ -4,8 +4,8 @@ pages:
 - [intro.md, Introduction]
 - [quickstart.md, Quickstart]
 - [tutorial/index.md, Tutorial]
-- [tutorial/helpers.md, 'Tutorial', 'helpers']
-- [tutorial/models.md, 'Tutorial', 'models']
+- [tutorial/helper.md, 'Tutorial', 'helper']
+- [tutorial/model.md, 'Tutorial', 'model']
 - [tutorial/db.md, 'Tutorial', 'db']
 
 theme: readthedocs
