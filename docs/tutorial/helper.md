@@ -33,9 +33,11 @@ from helpers import wallpaper as wallpaper_helper
 
 #### helper 是如何实现在外部被引用的
 
-在 helpers 目录下的每个的 helper 中，例如 wallpaper, 其 __init__.py 的 **__all__** 属性中指定所有需要导出的模块，例如
+在 helpers 目录下的每个的 helper 中，例如 wallpaper, 其 **__init__.py** 的 **__all__** 属性中指定所有需要导出的模块，例如
 
 ```python
+
+# __init__.py
 
 __all__ = ['album', 'img2tag']  # 导出 album.py 和 img2tag.py 
 
