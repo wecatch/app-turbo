@@ -164,6 +164,7 @@ class BaseBaseModel(MixinModel):
         '$pop': '',
         '$pushAll': '',
         '$push': '',
+        '$pull': '',
     }
 
     def __init__(self, db_name='test', _MONGO_DB_MAPPING=None):
