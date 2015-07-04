@@ -7,5 +7,6 @@ pages:
 - [tutorial/helper.md, 'Tutorial', 'helper']
 - [tutorial/model.md, 'Tutorial', 'model']
 - [tutorial/db.md, 'Tutorial', 'db']
+- [tutorial/app.md, 'Tutorial', 'app-server']
 
 theme: readthedocs
