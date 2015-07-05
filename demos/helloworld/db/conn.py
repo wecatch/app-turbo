@@ -11,11 +11,7 @@ import gridfs
 
 import setting
 
-if os.path.exists(os.path.join(os.path.dirname(os.path.abspath(__file__)), '__test__')):
-    mc = MongoClient(host='localhost')
-    mc.read_preference = read_preferences.ReadPreference.SECONDARY
-else:
-    mc = MongoReplicaSetClient(host=','.join(setting.HOSTS), replicaSet=setting.REPL_SET_NAME)
+mc = MongoClient(host='localhost')
 
 # test
 test = mc['test']
