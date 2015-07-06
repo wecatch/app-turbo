@@ -1,0 +1,87 @@
+#!/usr/bin/python
+# coding=utf-8
+
+"""
+   命令行处理差异工具
+"""
+import os
+from docopt import docopt
+from turbo.fake import project_template as pt
+
+SERVER = 'test'
+APP = 'test'
+
+def walkDir(fdir, project, server, app, topdown=False):
+    os.mkdir(os.path.join('.', project))
+    curr = os.path.abspath(os.path.join('.', project))
+    copies = []
+    for root, dirs, files in os.walk(fdir, topdown):
+        for d in dirs:
+            path = ''.join([curr, root.replace(fdir, ''), '/', d])
+            if not os.path.exists(path):
+                os.makedirs(path)
+        path = ''.join([curr, root.replace(fdir, '')])
+        flag = True
+        for f in files:
+            name = None
+            if not f.endswith('.py'):
+                continue
+            if f.startswith('html_'):
+                name = f.replace('html_', '').replace('.py', '.html')
+            if (name or f).startswith('test_'):
+                name = (name or f).replace('test_', '')
+                childpath = ''.join([path, '/', app])
+                if not os.path.exists(childpath):
+                    os.makedirs(childpath)
+                # os.system('cp %s %s' % (''.join([root, '/', f]), ''.join([childpath, '/', name])))
+                copies.append((''.join([root, '/', f]), ''.join([childpath, '/', name])))
+            else:
+                if f == '__init__.py':
+                    flag = False
+                # os.system('cp %s %s' % (''.join([root, '/', f]), ''.join([path, '/', name or f])))
+                copies.append((''.join([root, '/', f]), ''.join([path, '/', name or f])))
+        if flag and not path.endswith('/templates'):
+            copies.append(''.join([path, '/__init__.py']))
+    for one in copies:
+        if type(one) == tuple:
+            fromfi = open(one[0], 'r')
+            datas = fromfi.read()
+            fromfi.close()
+            tofi = open(one[1], 'w')
+            datas = tofi.write(datas.replace('{{test}}', app))
+            tofi.close()
+        else:
+            fi = open(one, 'w')
+            fi.write('')
+            fi.close()
+
+if __name__ == '__main__':
+    project_path = os.path.dirname(pt.__file__)
+    helpdoc = """turbo init project, server or app.
+    Usage:
+      turbo (-h | --help)
+      turbo startproject [-p|--project] <project> [-s|--server] <server> [-a|--app] <app>
+      turbo startserver  [-s|--server] <server> [-a|--app] <app>
+      turbo startapp     [-a|--app] <app>
+
+    Options:
+      -h,  --help        Show help document.
+      -p,  --project     Set name of project to start a project.
+      -s,  --server      Set name of server to start a server, it is set 'test' defaultly when project name is set.
+      -a,  --app         Set name of app to start a app, it is set 'test' defaultly when project name is set or server name is set.
+    """
+    rgs = docopt(helpdoc)
+    if rgs.get('startproject', False):
+        if rgs.get('-p') or rgs.get('--project'):
+            project = rgs.get('<project>')
+            server = rgs.get('<server>') or SERVER
+            app = rgs.get('<app>') or APP
+            walkDir(project_path, project, server, app)
+        else:
+            print "Please use 'turbo -h'"
+    elif rgs.get('startserver', False):
+        print "Please use 'turbo -h'"
+    elif rgs.get('startapp', False):
+        print "Please use 'turbo -h'"
+    else:
+        print "Please use 'turbo -h'"

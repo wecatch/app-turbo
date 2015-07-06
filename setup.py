@@ -8,7 +8,7 @@ install_requires = [
 
 ]
 
-for k in ['tornado','pymongo', 'requests', 'redis']:
+for k in ['tornado','pymongo', 'requests', 'redis', 'docopt']:
     try:
         __import__(k)
     except ImportError:
@@ -24,4 +24,5 @@ setup(
     description="Turbo is a engine for fast web development based in tornado, mongodb, redis",
     packages=find_packages(exclude=('turbo.template')),
     install_requires=install_requires,
+    scripts=['turbo/bin/turbo-admin'],
 )
