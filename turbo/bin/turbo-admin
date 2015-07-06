@@ -33,6 +33,7 @@ def walkDir(fdir, project, server, app, topdown=False):
                 childpath = ''.join([path, '/', app])
                 if not os.path.exists(childpath):
                     os.makedirs(childpath)
+                    copies.append(''.join([childpath, '/__init__.py']))
                 # os.system('cp %s %s' % (''.join([root, '/', f]), ''.join([childpath, '/', name])))
                 copies.append((''.join([root, '/', f]), ''.join([childpath, '/', name])))
             else:
