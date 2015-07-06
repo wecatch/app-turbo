@@ -1,7 +1,7 @@
-turbo Tutorial
+app-turbo Tutorial
 =================
 
-turbo 应用的主要结构分为
+app-turbo 应用的主要结构分为
 
 - [models](model)
 - [helpers](helper)

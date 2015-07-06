@@ -3,4 +3,4 @@
 # sub app setting
 # try not to include function or class 
 
-TEMPLATE_PATH = 'user/'
+TEMPLATE_PATH = 'app/'

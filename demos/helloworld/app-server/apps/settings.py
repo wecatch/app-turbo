@@ -2,7 +2,7 @@
 
 # installed app list 
 INSTALLED_APPS = (
- 	'user', 
+ 	'app', 
 )
 
 #language
