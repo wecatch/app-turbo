@@ -11,7 +11,7 @@ from turbo.fake import project_template as pt
 SERVER = 'test'
 APP = 'test'
 
-def walkDir(fdir, project, server, app, topdown=False):
+def build_project():
     os.mkdir(os.path.join('.', project))
     curr = os.path.abspath(os.path.join('.', project))
     copies = []
@@ -20,6 +20,7 @@ def walkDir(fdir, project, server, app, topdown=False):
             path = ''.join([curr, root.replace(fdir, ''), '/', d])
             if not os.path.exists(path):
                 os.makedirs(path)
+                
         path = ''.join([curr, root.replace(fdir, '')])
         flag = True
         for f in files:
@@ -55,34 +56,40 @@ def walkDir(fdir, project, server, app, topdown=False):
             fi = open(one, 'w')
             fi.write('')
             fi.close()
+    pass
+
+
+def build_server():
+    pass
+
+
+def build_app():
+    pass
+
+
 
 if __name__ == '__main__':
     project_path = os.path.dirname(pt.__file__)
     helpdoc = """turbo init project, server or app.
     Usage:
-      turbo (-h | --help)
-      turbo startproject [-p|--project] <project> [-s|--server] <server> [-a|--app] <app>
-      turbo startserver  [-s|--server] <server> [-a|--app] <app>
-      turbo startapp     [-a|--app] <app>
+      turbo-admin (-h | --help)
+      turbo-admin startproject  <project>
+      turbo-admin startserver   <server>
+      turbo-admin startapp      <app>
 
     Options:
-      -h,  --help        Show help document.
-      -p,  --project     Set name of project to start a project.
-      -s,  --server      Set name of server to start a server, it is set 'test' defaultly when project name is set.
-      -a,  --app         Set name of app to start a app, it is set 'test' defaultly when project name is set or server name is set.
+      -h,  --help        Show help document
     """
     rgs = docopt(helpdoc)
-    if rgs.get('startproject', False):
-        if rgs.get('-p') or rgs.get('--project'):
-            project = rgs.get('<project>')
-            server = rgs.get('<server>') or SERVER
-            app = rgs.get('<app>') or APP
-            walkDir(project_path, project, server, app)
+    if rgs.get('startproject'):
+        project = rgs.get('<project>')
+        if project:
+            build_project(fdir, project_path, project, server, app)
         else:
             print "Please use 'turbo -h'"
-    elif rgs.get('startserver', False):
+
+    if rgs.get('startserver'):
         print "Please use 'turbo -h'"
-    elif rgs.get('startapp', False):
-        print "Please use 'turbo -h'"
-    else:
+
+    if rgs.get('startapp'):
         print "Please use 'turbo -h'"

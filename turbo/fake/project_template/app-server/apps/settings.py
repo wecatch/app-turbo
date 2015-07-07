@@ -2,8 +2,8 @@
 
 # installed app list 
 INSTALLED_APPS = (
- 	'test', 
+ 	'app', 
 )
 
 #language
-LANG = 'zh_CN'
+LANG = 'en'

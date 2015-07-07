@@ -2,5 +2,5 @@
 
 # installed helper list 
 INSTALLED_HELPERS = (
-    'test',
+    'user',
 )

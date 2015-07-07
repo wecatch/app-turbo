@@ -3,7 +3,7 @@ import sys
 from tornado.util import ObjectDict
 
 # app name
-APP_NAME = 'demo'
+APP_NAME = 'app-server'
 
 # app base bapth
 BASE_APP_DIR = os.path.dirname(os.path.abspath(__file__))
