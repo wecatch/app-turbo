@@ -4,59 +4,51 @@
 """
    命令行处理差异工具
 """
+from __future__ import absolute_import, print_function
+
 import os
 from docopt import docopt
-from turbo.fake import project_template as pt
+from turbo import fake
+from turbo.util import remove_extension
+import shutil
 
-SERVER = 'test'
-APP = 'test'
+html_template = 
+"""
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>hello turbo world</title>
+</head>
+<body>
+    <h1>hello turbo world</h1>
+</body>
+</html>
+"""
 
-def build_project():
-    os.mkdir(os.path.join('.', project))
-    curr = os.path.abspath(os.path.join('.', project))
-    copies = []
-    for root, dirs, files in os.walk(fdir, topdown):
-        for d in dirs:
-            path = ''.join([curr, root.replace(fdir, ''), '/', d])
-            if not os.path.exists(path):
-                os.makedirs(path)
-                
-        path = ''.join([curr, root.replace(fdir, '')])
-        flag = True
-        for f in files:
-            name = None
-            if not f.endswith('.py'):
-                continue
-            if f.startswith('html_'):
-                name = f.replace('html_', '').replace('.py', '.html')
-            if (name or f).startswith('test_'):
-                name = (name or f).replace('test_', '')
-                childpath = ''.join([path, '/', app])
-                if not os.path.exists(childpath):
-                    os.makedirs(childpath)
-                    copies.append(''.join([childpath, '/__init__.py']))
-                # os.system('cp %s %s' % (''.join([root, '/', f]), ''.join([childpath, '/', name])))
-                copies.append((''.join([root, '/', f]), ''.join([childpath, '/', name])))
-            else:
-                if f == '__init__.py':
-                    flag = False
-                # os.system('cp %s %s' % (''.join([root, '/', f]), ''.join([path, '/', name or f])))
-                copies.append((''.join([root, '/', f]), ''.join([path, '/', name or f])))
-        if flag and not path.endswith('/templates'):
-            copies.append(''.join([path, '/__init__.py']))
-    for one in copies:
-        if type(one) == tuple:
-            fromfi = open(one[0], 'r')
-            datas = fromfi.read()
-            fromfi.close()
-            tofi = open(one[1], 'w')
-            datas = tofi.write(datas.replace('{{test}}', app))
-            tofi.close()
-        else:
-            fi = open(one, 'w')
-            fi.write('')
-            fi.close()
-    pass
+server_name = 'app-server'
+app_name = 'app'
+
+
+def build_project(project_templeate_path, project):
+    curr_project_path = os.path.abspath(os.path.join('.', project))
+
+    if os.path.exists(curr_project_path):
+        print('%s project existed' % project)
+        return
+
+    shutil.copytree(project_template_path, curr_project_path)
+    for k in ['app-server/__init__.py', '__init__.py']:
+        try:
+            os.remove(os.path.join(curr_project_path, k))
+        except Exception, e:
+            pass
+
+    remove_extension(curr_project_path, '.pyc')
+    os.makedirs(os.path.join(curr_project_path, 'app-server/templates/app'))
+    os.mkdir(os.path.join(curr_project_path, 'app-server/static'))
+    with open(os.path.join(curr_project_path, 'app-server/templates/app/index.html'), 'w') as index:
+        index.write(html_template)
 
 
 def build_server():
@@ -69,7 +61,8 @@ def build_app():
 
 
 if __name__ == '__main__':
-    project_path = os.path.dirname(pt.__file__)
+    project_templeate_path = os.path.dirname(fake.__file__)
+    project_template_path = os.path.join(project_templeate_path, 'project_template')
     helpdoc = """turbo init project, server or app.
     Usage:
       turbo-admin (-h | --help)
@@ -84,12 +77,12 @@ if __name__ == '__main__':
     if rgs.get('startproject'):
         project = rgs.get('<project>')
         if project:
-            build_project(fdir, project_path, project, server, app)
+            build_project(project_template_path, project)
         else:
-            print "Please use 'turbo -h'"
+            print("use 'turbo -h'")
 
     if rgs.get('startserver'):
-        print "Please use 'turbo -h'"
+        print("turbo-admin startserver <server>")
 
     if rgs.get('startapp'):
-        print "Please use 'turbo -h'"
+        print("turbo-admin startapp <app>")

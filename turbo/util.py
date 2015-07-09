@@ -188,3 +188,93 @@ def camel_to_underscore(name):
             as_list.append(i.lower())
 
     return ''.join(as_list)
+
+
+def remove_folder(path, foldername):
+    if not foldername:
+        return 
+
+    if not os.path.isdir(path):
+        return
+
+    dir_content = os.listdir(path)
+    if not dir_content:
+        return 
+
+    for item in dir_content:
+        child_path = os.path.join(path, item)
+
+        if not os.path.isdir(child_path):
+            continue
+
+        if item != foldername:
+            remove_folder(child_path, foldername)
+            continue
+
+        #os.rmdir can't be allowed to deldte not empty
+        for root, dirs, files in os.walk(child_path, topdown=False):
+            for name in files:
+                os.remove(os.path.join(root, name))
+
+            for name in dirs:
+                os.rmdir(os.path.join(root, name))
+        try:
+            os.rmdir(child_path)
+        except Exception as e:
+            raise e
+
+
+def remove_file(path, filename):
+    if not filename:
+        return 
+
+    if not os.path.isdir(path):
+        return
+
+    dir_content = os.listdir(path)
+    if not dir_content:
+        return 
+
+    for item in dir_content:
+        child_path = os.path.join(path, item)
+
+        if os.path.isdir(child_path):
+            remove_file(child_path, filename)
+            continue
+
+        if item != filename:
+            continue
+
+        try:
+            os.remove(child_path)
+        except Exception as e:
+            raise e
+
+
+def remove_extension(path, extension):
+    if not extension:
+        return 
+
+    if not os.path.isdir(path):
+        return
+
+    dir_content = os.listdir(path)
+    if not dir_content:
+        return 
+
+    for item in dir_content:
+        child_path = os.path.join(path, item)
+
+        if os.path.isdir(child_path):
+            remove_extension(child_path, extension)
+            continue
+
+        name, ext = os.path.splitext(item)
+
+        if ext != extension:
+            continue
+
+        try:
+            os.remove(child_path)
+        except Exception as e:
+            raise e
