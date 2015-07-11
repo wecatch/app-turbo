@@ -1,0 +1,141 @@
+#!/usr/bin/python
+# coding=utf-8
+
+"""
+   命令行处理差异工具
+"""
+from __future__ import absolute_import, print_function
+
+import os
+from docopt import docopt
+from turbo import fake
+from turbo.util import remove_extension
+import shutil
+
+HTML_TEMPLATE = """
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>hello turbo world</title>
+</head>
+<body>
+    <h1>hello turbo world</h1>
+</body>
+</html>
+"""
+
+SERVER_NAME = 'app-server'
+APP_NAME = 'app'
+
+
+def build_project(project_template_path, project):
+    global SERVER_NAME, APP_NAME, HTML_TEMPLATE
+    project_path = os.path.abspath(os.path.join('.', project))
+
+    if os.path.exists(project_path):
+        print('%s project existed' % project)
+        return
+
+    shutil.copytree(project_template_path, project_path, ignore=shutil.ignore_patterns(SERVER_NAME))
+    try:
+        os.remove(os.path.join(project_path, '__init__.py'))
+    except Exception, e:
+        pass
+
+    remove_extension(project_path, '.pyc')
+    build_server(project_template_path, SERVER_NAME, project_path)
+
+
+def build_server(project_template_path, server, cur_path = '.'):
+    global SERVER_NAME, HTML_TEMPLATE
+    server_path = os.path.abspath(os.path.join(cur_path, server))
+
+    if os.path.exists(server_path):
+        print('%s server existed' % server)
+        return
+    
+    shutil.copytree(os.path.join(project_template_path, SERVER_NAME), server_path)
+    
+    try:
+        os.remove(os.path.join(server_path, '__init__.py'))
+    except Exception, e:
+        pass
+
+    remove_extension(server_path, '.pyc')
+    os.makedirs(os.path.join(server_path, 'templates/%s' % APP_NAME))
+    os.mkdir(os.path.join(server_path, 'static'))
+    with open(os.path.join(server_path, 'templates/%s/index.html' % APP_NAME), 'w') as index:
+        index.write(HTML_TEMPLATE.strip())
+
+    change_server_name(server_path, server)
+    change_app_name(os.path.join(server_path, 'apps/%s' % APP_NAME), APP_NAME)
+
+
+def change_server_name(server_path, server):
+    pydata = None
+    pypath = os.path.join(server_path, 'setting.py')
+    with open(pypath, 'r') as setting_file:
+        pydata = setting_file.read().replace('{{server_name}}', server)
+
+    with open(pypath, 'w') as setting_file:
+        setting_file.write(pydata)
+
+
+def change_app_name(app_path, app):
+    pydata = None
+    pypath = os.path.join(app_path, 'setting.py')
+    with open(pypath, 'r') as setting_file:
+        pydata = setting_file.read().replace('{{app_name}}', app)
+
+    with open(pypath, 'w') as setting_file:
+        setting_file.write(pydata)
+
+
+def build_app(project_template_path, app, cur_path = '.'):
+    global SERVER_NAME, APP_NAME
+    app_path = os.path.abspath(os.path.join(cur_path, 'apps/%s' % app))
+
+    if os.path.exists(app_path):
+        print('%s app existed' % app)
+        return
+
+    shutil.copytree(os.path.join(project_template_path, '%s/apps/%s' % (SERVER_NAME, APP_NAME)), app_path)
+    remove_extension(app_path, '.pyc')
+    change_app_name(app_path, app)
+
+
+if __name__ == '__main__':
+    project_template_path = os.path.dirname(fake.__file__)
+    project_template_path = os.path.join(project_template_path, 'project_template')
+    helpdoc = """turbo init project, server or app.
+    Usage:
+      turbo-admin (-h | --help)
+      turbo-admin startproject  <project>
+      turbo-admin startserver   <server>
+      turbo-admin startapp      <app>
+
+    Options:
+      -h,  --help        Show help document
+    """
+    rgs = docopt(helpdoc)
+    if rgs.get('startproject'):
+        project = rgs.get('<project>')
+        if project:
+            build_project(project_template_path, project)
+        else:
+            print("turbo-admin startproject  <project>")
+
+    if rgs.get('startserver'):
+        server = rgs.get('<server>')
+        if server:
+            build_server(project_template_path, server)
+        else:
+            print("turbo-admin startserver <server>")
+
+    if rgs.get('startapp'):
+        app = rgs.get('<app>')
+        if app:
+            build_app(project_template_path, app)
+        else:
+            print("turbo-admin startapp <app>")
