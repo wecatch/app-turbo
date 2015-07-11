@@ -17,10 +17,6 @@ mc = MongoClient(host='localhost')
 test = mc['test']
 test_files = gridfs.GridFS(mc['test_files'])
 
-# egg 
-food = mc['food']
-food_files = gridfs.GridFS(mc['food_files'])
-
 # user 
 user = mc['user']
 user_files = gridfs.GridFS(mc['user_files'])
