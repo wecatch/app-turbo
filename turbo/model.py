@@ -79,9 +79,12 @@ class MixinModel(object):
         """string化的多个record组成的list对象
         """
         if callback and callable(callback):
-            return [callback(cls.to_one_str(i)) for i in values]
+            if isinstance(values, dict):
+                return callback(_es.to_str(values))
 
-        return [cls.to_one_str(i) for i in values]
+            return [callback(_es.to_str(i)) for i in values]
+            
+        return _es.to_str(values)
 
     @staticmethod
     @convert_to_record

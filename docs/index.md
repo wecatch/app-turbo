@@ -1,6 +1,6 @@
 # turbo 
 
-turbo 是一个用以加速建立普通 web 站点和 rest api 的后端解决方案，基于tornado和mongodb。
+app-turbo 是一个用以加速建立普通 web 站点和 RESTful api 的后端解决方案，基于 tornado 和 mongodb。
 
 
 # 安装

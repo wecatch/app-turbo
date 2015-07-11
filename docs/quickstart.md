@@ -27,9 +27,9 @@ python setup.py install
 
 ```
 
-turbo project_name
+turbo startproject project_name
 cd project_name
-turbo app_server_name
+turbo startserver app_server_name
 cd app_server_name
 python main.py 
 
