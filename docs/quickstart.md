@@ -27,10 +27,9 @@ python setup.py install
 
 ```
 
-turbo startproject project_name
+turbo-admin startproject project_name
 cd project_name
-turbo startserver app_server_name
-cd app_server_name
+cd app_name
 python main.py 
 
 ```
@@ -39,8 +38,7 @@ python main.py
 打开浏览器访问
 
 ```
-http://localhost:8888/hello
-http://localhost:8888/v1/hello
+http://localhost:8888
 ```
 
 
