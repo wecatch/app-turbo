@@ -6,10 +6,12 @@ from datetime import datetime, date
 import time
 import logging 
 import json
+from collections import Iterable
 
 from bson.objectid import ObjectId
 
 from turbo.log import util_log
+
 
 
 class TurboEscape(object):
@@ -18,35 +20,37 @@ class TurboEscape(object):
     def to_list_str(cls, value):
         """递归序列化list
         """
+        result = []
         for index, v in enumerate(value):
             if isinstance(v, dict):
-                value[index] = cls.to_dict_str(v)
+                result.append(cls.to_dict_str(v))
                 continue
 
             if isinstance(v, list):
-                value[index] = cls.to_list_str(v)
+                result.append(cls.to_list_str(v))
                 continue
 
-            value[index] = cls.default_encode(v)
+            result.append(cls.default_encode(v))
 
-        return value
+        return result
 
     @classmethod
     def to_dict_str(cls, value):
         """递归序列化dict
         """
+        result = {}
         for k, v in value.items():
             if isinstance(v, dict):
-                value[k] = cls.to_dict_str(v)
+                result[k] = cls.to_dict_str(v)
                 continue
 
             if isinstance(v, list):
-                value[k] = cls.to_list_str(v)
+                result[k] = cls.to_list_str(v)
                 continue
 
-            value[k] = cls.default_encode(v)
+            result[k] = cls.default_encode(v)
 
-        return value
+        return result
 
     @classmethod
     def default_encode(cls, v):
@@ -71,7 +75,7 @@ class TurboEscape(object):
 
     @classmethod
     def to_str(cls, v):
-        if isinstance(v, list):
+        if isinstance(v, Iterable):
             return cls.to_list_str(v)
 
         if isinstance(v, dict):
