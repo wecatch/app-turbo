@@ -37,7 +37,7 @@ class Mixin(tornado.web.RequestHandler):
 
     @staticmethod
     def to_bool(value):
-        return bool(value)
+        return value.lower() in ("yes", "y", "true", "t", "1") and True or False
 
     @staticmethod
     def to_str(v):
