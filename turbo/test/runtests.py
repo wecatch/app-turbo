@@ -13,6 +13,7 @@ TEST_MODULES = [
     'httputil_test',
     'app_test',
     'session_test',
+    'util_test',
 ]
 
 

@@ -6,6 +6,7 @@ from datetime import datetime, date
 import time
 import logging 
 import json
+from collections import Iterable
 
 from bson.objectid import ObjectId
 
@@ -15,18 +16,19 @@ from turbo.log import util_log
 def to_list_str(value):
     """递归序列化list
     """
+    result = []
     for index, v in enumerate(value):
         if isinstance(v, dict):
-            value[index] = to_dict_str(v)
+            result.append(to_dict_str(v))
             continue
 
         if isinstance(v, list):
-            value[index] = to_list_str(v)
+            result.append(to_list_str(v))
             continue
 
-        value[index] = default_encode(v)
+        result.append(default_encode(v))
 
-    return value
+    return result
 
 
 def to_dict_str(value):
@@ -62,7 +64,7 @@ def default_encode(v):
 
 
 def to_str(v):
-    if isinstance(v, list):
+    if isinstance(v, Iterable):
         return to_list_str(v)
 
     if isinstance(v, dict):

@@ -38,7 +38,7 @@ app-server 是 web 应用程序，由一个或多个子 app 组成，每个 app 
 
 ```sh
 
-turbo startserver  app-server
+turbo-admin startserver  app-server
 
 ```
 
