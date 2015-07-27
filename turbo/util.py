@@ -122,7 +122,7 @@ def to_float(value, default=None):
         util_log.error(e)
 
 
-def to_datetime(t, micro=True):
+def to_datetime(t, micro=False):
     if micro:
         return datetime.fromtimestamp(t/1000)
     else:
@@ -146,7 +146,7 @@ class Escape(object):
 
     def __getattr__(self, name):
         if name in self.__slots__:
-            return getattr(self.__gl, name)
+            return self.__gl.get(name)
 
         return getattr(self, name)
 
