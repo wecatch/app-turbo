@@ -12,132 +12,144 @@ from bson.objectid import ObjectId
 from turbo.log import util_log
 
 
-class TurboEscape(object):
-
-    @classmethod
-    def to_list_str(cls, value):
-        """递归序列化list
-        """
-        for index, v in enumerate(value):
-            if isinstance(v, dict):
-                value[index] = cls.to_dict_str(v)
-                continue
-
-            if isinstance(v, list):
-                value[index] = cls.to_list_str(v)
-                continue
-
-            value[index] = cls.default_encode(v)
-
-        return value
-
-    @classmethod
-    def to_dict_str(cls, value):
-        """递归序列化dict
-        """
-        for k, v in value.items():
-            if isinstance(v, dict):
-                value[k] = cls.to_dict_str(v)
-                continue
-
-            if isinstance(v, list):
-                value[k] = cls.to_list_str(v)
-                continue
-
-            value[k] = cls.default_encode(v)
-
-        return value
-
-    @classmethod
-    def default_encode(cls, v):
-        """数据类型转换
-        """
-        if isinstance(v, ObjectId):
-            return unicode(v)
-
-        if isinstance(v, datetime):
-            return cls.format_time(v)
-        
-        if isinstance(v, date):
-            return cls.format_time(v)
-
-        return v
-
-    @staticmethod
-    def format_time(dt):
-        """datetime format
-        """
-        return time.mktime(dt.timetuple())
-
-    @classmethod
-    def to_str(cls, v):
-        if isinstance(v, list):
-            return cls.to_list_str(v)
-
+def to_list_str(value):
+    """递归序列化list
+    """
+    for index, v in enumerate(value):
         if isinstance(v, dict):
-            return cls.to_dict_str(v)
+            value[index] = to_dict_str(v)
+            continue
 
-        return cls.default_encode(v)
+        if isinstance(v, list):
+            value[index] = to_list_str(v)
+            continue
 
-    @staticmethod
-    def to_objectid(objid):
-        """字符对象转换成objectid
-        """  
-        if objid is None:
-            return objid
-            
-        try:
-            objid = ObjectId(objid)
-        except:
-            util_log.error("%s is invalid objectid" % objid)
-            return None
-        
+        value[index] = default_encode(v)
+
+    return value
+
+
+def to_dict_str(value):
+    """递归序列化dict
+    """
+    for k, v in value.items():
+        if isinstance(v, dict):
+            value[k] = to_dict_str(v)
+            continue
+
+        if isinstance(v, list):
+            value[k] = to_list_str(v)
+            continue
+
+        value[k] = default_encode(v)
+
+    return value
+
+
+def default_encode(v):
+    """数据类型转换
+    """
+    if isinstance(v, ObjectId):
+        return unicode(v)
+
+    if isinstance(v, datetime):
+        return format_time(v)
+    
+    if isinstance(v, date):
+        return format_time(v)
+
+    return v
+
+
+def to_str(v):
+    if isinstance(v, list):
+        return to_list_str(v)
+
+    if isinstance(v, dict):
+        return to_dict_str(v)
+
+    return default_encode(v)
+
+
+def format_time(dt):
+    """datetime format
+    """
+    return time.mktime(dt.timetuple())
+
+
+def to_objectid(objid):
+    """字符对象转换成objectid
+    """  
+    if objid is None:
         return objid
-
-    @staticmethod
-    def json_encode(data):
-        try:
-            return json.dumps(data)
-        except Exception as e:
-            util_log.error(e)
-
-    @staticmethod
-    def json_decode(data):
-        try:
-            return json.loads(data)
-        except Exception as e:
-            util_log.error(e)
-
-    @staticmethod
-    def to_int(value, default=None):
-        try:
-            return int(value)
-        except ValueError as e:
-            util_log.error(e)
-
-    @staticmethod
-    def to_float(value, default=None):
-        try:
-            return float(value)
-        except ValueError as e:
-            util_log.error(e)
-
-    @staticmethod
-    def to_datetime(t, micro=True):
-        if micro:
-            return datetime.fromtimestamp(t/1000)
-        else:
-            return datetime.fromtimestamp(t)
-
-    @staticmethod
-    def to_time(t, micro=False):
-        if micro:
-            return time.mktime(t.timetuple())*1000
-        else:
-            return time.mktime(t.timetuple())
+        
+    try:
+        objid = ObjectId(objid)
+    except:
+        util_log.error("%s is invalid objectid" % objid)
+        return None
+    
+    return objid
 
 
-escape = TurboEscape()
+def json_encode(data):
+    try:
+        return json.dumps(data)
+    except Exception as e:
+        util_log.error(e)
+
+
+def json_decode(data):
+    try:
+        return json.loads(data)
+    except Exception as e:
+        util_log.error(e)
+
+
+def to_int(value, default=None):
+    try:
+        return int(value)
+    except ValueError as e:
+        util_log.error(e)
+
+
+def to_float(value, default=None):
+    try:
+        return float(value)
+    except ValueError as e:
+        util_log.error(e)
+
+
+def to_datetime(t, micro=True):
+    if micro:
+        return datetime.fromtimestamp(t/1000)
+    else:
+        return datetime.fromtimestamp(t)
+
+
+def to_time(t, micro=False):
+    if micro:
+        return time.mktime(t.timetuple())*1000
+    else:
+        return time.mktime(t.timetuple())
+
+
+class Escape(object):
+    
+    __slots__ = ['to_list_str', 'to_dict_str', 'default_encode', 'format_time', 'to_objectid', 
+        'to_str', 'to_time', 'to_datetime', 'to_int', 'to_float', 'json_decode', 'json_encode', '__gl']
+
+    def __init__(self, module):
+        self.__gl = module
+
+    def __getattr__(self, name):
+        if name in self.__slots__:
+            return getattr(self.__gl, name)
+
+        return getattr(self, name)
+
+
+escape = Escape(globals())
 
 
 def get_base_dir(currfile, dir_level_num=3):
