@@ -28,4 +28,4 @@ from .conf import app_config
 # or negative for a release candidate or beta (after the base version
 # number has been incremented)
 version = "0.3.5"
-version_info = (0, 3, 5, 100)
+version_info = (0, 3, 5, 0)
