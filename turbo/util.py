@@ -1,5 +1,6 @@
 # -*- coding:utf-8 -*-
 
+import inspect
 import os
 import sys
 from datetime import datetime, date
@@ -64,7 +65,7 @@ def default_encode(v):
 
 
 def to_str(v):
-    if isinstance(v, Iterable):
+    if isinstance(v, list) or isinstance(v, tuple) or inspect.isgenerator(v):
         return to_list_str(v)
 
     if isinstance(v, dict):
