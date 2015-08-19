@@ -65,11 +65,11 @@ def default_encode(v):
 
 
 def to_str(v):
-    if isinstance(v, list) or isinstance(v, tuple) or inspect.isgenerator(v):
-        return to_list_str(v)
-
     if isinstance(v, dict):
         return to_dict_str(v)
+
+    if isinstance(v, Iterable):
+        return to_list_str(v)
 
     return default_encode(v)
 
