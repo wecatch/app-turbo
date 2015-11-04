@@ -182,7 +182,7 @@ class BaseBaseHandler(Mixin):
 
             if tp == file:
                 if key not in files:
-                    rpd[key] = default
+                    rpd[key] = []
                     return
 
                 rpd[key] = self.request.files[key]                
