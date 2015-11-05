@@ -3,6 +3,11 @@ from __future__ import absolute_import, print_function
 
 import os
 
+try:
+    basestring
+except Exception as e:
+    basestring = str
+
 import tornado.web
 import tornado.httpserver
 import tornado.escape
@@ -172,7 +177,7 @@ class BaseBaseHandler(Mixin):
                     rpd[key] = getattr(self, 'to_%s' % getattr(tp, '__name__').lower())(self.get_argument(key))
                     return
 
-                if tp == basestring:
+                if tp == basestring or str:
                     rpd[key] = self.get_argument(key, strip=False)
                     return
 
