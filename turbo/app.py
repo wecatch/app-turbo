@@ -285,9 +285,6 @@ class BaseBaseHandler(Mixin):
         """
         can override for other style
         """
-        if resp['code'] != 0:
-            return self.wo_json(resp)
-
         if isinstance(self._data, dict):
             resp['res'].update(self._data)
 
