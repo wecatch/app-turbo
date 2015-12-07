@@ -177,7 +177,7 @@ class BaseBaseHandler(Mixin):
                     rpd[key] = getattr(self, 'to_%s' % getattr(tp, '__name__').lower())(self.get_argument(key))
                     return
 
-                if tp == basestring or str:
+                if tp == basestring or tp == str:
                     rpd[key] = self.get_argument(key, strip=False)
                     return
 
