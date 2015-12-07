@@ -227,7 +227,8 @@ class BaseBaseModel(MixinModel):
             If replication does not complete in the given timeframe, a timeout exception is raised.
 
         """
-        if not kwargs.get('check') == False:
+        check = kwargs.pop('check', False)
+        if check is True:
             return self.create(doc_or_docs, **kwargs)
 
         return self.__collect.insert(doc_or_docs, **kwargs)
@@ -242,7 +243,8 @@ class BaseBaseModel(MixinModel):
         """collection find_one method
 
         """
-        if kwargs.get('wrapper', False):
+        wrapper = kwargs.pop('wrapper', False)
+        if wrapper is True:
             return self._wrapper_find_one(spec_or_id, *args, **kwargs)
 
         return self.__collect.find_one(spec_or_id, *args, **kwargs)
@@ -251,7 +253,8 @@ class BaseBaseModel(MixinModel):
         """collection find method
 
         """
-        if kwargs.get('wrapper', False):
+        wrapper = kwargs.pop('wrapper', False)
+        if wrapper is True:
             return self._wrapper_find(*args, **kwargs)
 
         return self.__collect.find(*args, **kwargs)
