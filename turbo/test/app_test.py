@@ -56,6 +56,7 @@ class ApiHandler(app.BaseHandler):
             ('int', int, 0),
             ('float', float, 0),
             ('objectid', ObjectId, None),
+            ('list', list, []),
         ]
     }
 
@@ -77,6 +78,7 @@ class ApiHandler(app.BaseHandler):
         assert self._params['limit'] == 20
         assert self._params['who'] == 'python'
         assert self._params['action'] is None
+        assert self._params['list'] == []
         assert self.is_ajax() == True
 
         self._data = {
