@@ -62,13 +62,20 @@ class EscapeTest(unittest.TestCase):
         es.to_int('s')
 
     def test_json_encode(self):
-        self.assertTrue(es.json_encode(es.to_str(self.values)) is not None)
+        self.assertTrue(es.json_encode(es.to_str(self.values), indent=4) is not None)
     
     def test_json_decode(self):
         self.assertTrue(type(es.json_decode(
-            es.json_encode(es.to_str(self.values))
+            es.json_encode(es.to_str(self.values), indent=4)
             )).__name__ == 'list'
         )
+        
+        #error test
+        self.assertTrue(type(es.json_decode(
+            es.json_encode(es.to_str(self.values), invlaid=4)
+            )).__name__ == 'NoneType'
+        )   
+
 
     def test_to_list_str(self):
         [self.check_value_type(v)  for v in es.to_list_str(self.values)]

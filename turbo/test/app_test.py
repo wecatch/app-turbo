@@ -104,6 +104,9 @@ class ApiHandler(app.BaseHandler):
             }
         }
 
+    def wo_json(self, data):
+        self.write(self.json_encode(data, indent=4))
+
 
 def run_server():
     register.register_url('/', HomeHandler)

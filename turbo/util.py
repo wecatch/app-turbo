@@ -95,18 +95,18 @@ def to_objectid(objid):
     return objid
 
 
-def json_encode(data):
+def json_encode(data, **kwargs):
     try:
-        return json.dumps(data)
+        return json.dumps(data, **kwargs)
     except Exception as e:
-        util_log.error(e)
+        util_log.error("Uncaught exception in json_encode", exc_info=True)
 
 
-def json_decode(data):
+def json_decode(data, **kwargs):
     try:
-        return json.loads(data)
+        return json.loads(data, **kwargs)
     except Exception as e:
-        util_log.error(e)
+        util_log.error("Uncaught exception in json_decode", exc_info=True)
 
 
 def to_int(value, default=None):

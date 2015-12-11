@@ -60,12 +60,12 @@ class Mixin(tornado.web.RequestHandler):
         return _ht.encode_http_params(**kw)
 
     @staticmethod
-    def json_encode(data):
-        return _es.json_encode(data)
+    def json_encode(data, **kwargs):
+        return _es.json_encode(data, **kwargs)
 
     @staticmethod
-    def json_decode(data):
-        return _es.json_decode(data)
+    def json_decode(data, **kwargs):
+        return _es.json_decode(data, **kwargs)
 
     def is_ajax(self):
         return self.request.headers.get('X-Requested-With', None) == 'XMLHttpRequest'
