@@ -3,6 +3,7 @@ from __future__ import absolute_import, division, print_function, with_statement
 
 
 from datetime import datetime
+import inspect
 import time
 import functools
 from collections import defaultdict
@@ -10,7 +11,7 @@ from collections import defaultdict
 from turbo.util import import_object
 
 from bson.objectid import ObjectId
-from pymongo import ASCENDING, DESCENDING
+from pymongo import ASCENDING, DESCENDING, collection
 
 from turbo.log import model_log
 from turbo.util import escape as _es
@@ -205,7 +206,17 @@ class BaseBaseModel(MixinModel):
         setattr(self, k, v)
 
     def __getitem__(self, k):
-        getattr(self, k)
+        return getattr(self, k)
+    
+    def __getattr__(self, k):
+        attr = getattr(self.__collect, k)
+        if isinstance(attr, collection.Collection):
+            raise AttributeError("model object '%s' has not attribute '%s'"%(self.name, k))
+
+        return attr
+
+    def sub_collection(self, name):
+        return self.__collect[name] 
 
     def __str__(self):
         if isinstance(self.field, dict):

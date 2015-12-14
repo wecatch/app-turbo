@@ -133,6 +133,12 @@ class BaseModelTest(unittest.TestCase):
 
         with self.assertRaises(NotImplementedError):
             self.m.create_model('tag').create()
+    
+    def test_pymongo_collection_method(self):
+        self.assertEqual(self.m.full_name, 'test.tag')
+    
+    def test_sub_collection(self):
+        self.assertEqual(self.m.sub_collection('test').full_name, 'test.tag.test')
 
     def test_create(self):
         record = {
