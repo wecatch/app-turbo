@@ -257,7 +257,7 @@ class BaseBaseHandler(Mixin):
         except tornado.web.HTTPError as e:
             raise e
         except Exception as e:
-            app_log.error(e, exc_info=True)
+            app_log.error('Uncaught Exception in %s %s call'%(getattr(getattr(self, '__class__'), '__name__'), method), exc_info=True)
             resp = self.init_resp(1)
         else:
             resp = self.init_resp()
