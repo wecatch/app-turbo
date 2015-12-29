@@ -1,7 +1,21 @@
 from __future__ import absolute_import, division, print_function, with_statement
 
+try:
+    basestring
+except Exception as e:
+    basestring = str
 
 import urllib
+
+
+def is_empty(v):
+    if isinstance(v, basestring):
+        if not v:
+            return True
+    if v is None:
+        return True
+
+    return False
 
 
 def utf8(v):
@@ -19,4 +33,4 @@ def encode_http_params(**kw):
 
     _en = utf8 
 
-    return '&'.join([_fo(_en(k), _en(v)) for k, v in kw.items() if v is not None])
+    return '&'.join([_fo(_en(k), _en(v)) for k, v in kw.items() if not is_empty(v)])

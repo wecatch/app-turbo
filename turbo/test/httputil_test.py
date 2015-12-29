@@ -23,7 +23,7 @@ class HttpUtilTest(unittest.TestCase):
         
     def test_encode_http_params(self):
         keyword = '美女'
-        paras = hu.encode_http_params(k=10, h=2, key='ass', keyword=keyword)
+        paras = hu.encode_http_params(k=10, h=2, key='ass', keyword=keyword, empty='')
         self.assertEqual(sorted(paras.split('&')),['h=2', 'k=10', 'key=ass', 'keyword=%s'%urllib.quote(keyword)])
 
 if __name__ == '__main__':
