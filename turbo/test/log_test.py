@@ -43,10 +43,15 @@ class GetLoggerTest(unittest.TestCase):
 
         # file handler one level only have only handler
         logger_two = log.getLogger('logger.two', logging.DEBUG, 'logger_test.log')
+        self.assertEqual(logger_two.level, logging.DEBUG)
         self.assertEqual(len(logger_two.handlers), 1)
+
         logger_two_2 = log.getLogger('logger.two', logging.DEBUG, 'logger_test2.log')
+        self.assertEqual(logger_two_2.level, logging.DEBUG)
         self.assertEqual(len(logger_two.handlers), 1)
-        logger_two_2 = log.getLogger('logger.two', logging.ERROR, 'logger_test3.log')
+        
+        logger_two_3 = log.getLogger('logger.two', logging.ERROR, 'logger_test3.log')
+        self.assertEqual(logger_two_3.level, logging.ERROR)
         self.assertEqual(len(logger_two.handlers), 2)
 
 
