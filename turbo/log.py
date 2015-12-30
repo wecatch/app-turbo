@@ -29,9 +29,9 @@ def _init_file_logger(logger, level, log_path, log_size, log_count):
     logger.addHandler(fh)
     
 
-def _init_stream_logger(logger):
+def _init_stream_logger(logger, level=None):
     ch = logging.StreamHandler()
-    ch.setLevel(logging.DEBUG)
+    ch.setLevel(level or logging.DEBUG)
     ch.setFormatter(_formatter)
     logger.addHandler(ch)
 
@@ -79,7 +79,7 @@ def getLogger(currfile=None, level=None, log_path=None, log_size=500*1024*1024, 
 
     # keep the root logger at least have one streamhandler
     if not logger.root.handlers:
-        _init_stream_logger(logger.root)
+        _init_stream_logger(logger.root, level)
 
     if log_path:
         _init_file_logger(logger, level, log_path, log_size, log_count)
