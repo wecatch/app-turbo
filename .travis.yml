@@ -8,6 +8,7 @@ services:
 
 # command to install dependencies
 install: 
+  - python setup install
   - pip install pymongo
   - pip install tornado
   - pip install redis
