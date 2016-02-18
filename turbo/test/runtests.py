@@ -25,13 +25,16 @@ def main():
 
     result = unittest.TestResult()
     testSuite.run(result)
-    for k, v in result.errors:
-        print(k)
-        print(v)
+    # print(len(result.errors))
+    # print(len(result.failures))
 
-    for k, v in result.failures:
-        print(k)
-        print(v)
+    # for k, v in result.errors:
+    #     print(k)
+    #     print(v)
+
+    # for k, v in result.failures:
+    #     print(k)
+    #     print(v)
 
 if __name__ == '__main__':
     main()

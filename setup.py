@@ -14,6 +14,11 @@ for k in ['tornado','pymongo', 'requests', 'redis', 'docopt']:
     except ImportError:
         install_requires.append(k)
 
+kwargs = {}
+with open('README.md') as f:
+    kwargs['long_description'] = f.read()
+
+
 setup(
     name="turbo",
     version=version,
@@ -22,7 +27,8 @@ setup(
     url="http://github.com/wecatch/app-turbo",
     license="http://www.apache.org/licenses/LICENSE-2.0",
     description="turbo is a engine for fast web development based in tornado, mongodb, redis",
-    packages=find_packages(exclude=('turbo.template')),
+    packages=find_packages(),
     install_requires=install_requires,
     scripts=['turbo/bin/turbo-admin'],
+    **kwargs
 )

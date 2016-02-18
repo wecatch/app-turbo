@@ -1,20 +1,24 @@
 app-turbo
 =========
 
-app-turbo 是一个用以加速建立普通 web 站点和 rest api 的后端决方案，基于
-
-- tornado
-- mongodb
-- redis
+[![Build Status](https://travis-ci.org/wecatch/app-turbo.svg?branch=master)](https://travis-ci.org/wecatch/app-turbo)
 
 
-## app-turbo 包含
+App-turbo is a web framework for fast building web and RESTFul api, based on tornado, mongodb, redis.
 
-- 简易的 orm 封装
-- rest api 服务
-- 日志服务
+
+## app-turbo features
+
+- Easily scale and maintain
+- Rapid development for RESTFul api and web
+- Django or flask app structure
+- Support for easily customizing
+
+
+## app-turbo include
+
+- simple ORM for mongodb
+- RESTful Api support
+- logger
 - session
-- 缓存
-- 异步任务队列
-- 其他
 
