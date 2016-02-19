@@ -9,7 +9,7 @@ App-turbo is a web framework for fast building web and RESTFul api, based on tor
 
 ## app-turbo features
 
-- Easily scale and maintain
+- Easily scale up and maintain
 - Rapid development for RESTFul api and web
 - Django or flask app structure
 - Support for easily customizing
