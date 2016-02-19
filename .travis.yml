@@ -9,7 +9,7 @@ services:
 # command to install dependencies
 install: 
   - pip install pymongo
-  - if [[ $TRAVIS_PYTHON_VERSION == '2.6' ]]; then travis_retry pip install 'tornado<=4.2.0'; fi
+  - if [[ $TRAVIS_PYTHON_VERSION == '2.6' ]]; then travis_retry pip install 'tornado<=4.2.0' unittest2; fi
   - if [[ $TRAVIS_PYTHON_VERSION == '2.7' ]]; then travis_retry pip install tornado; fi
   - pip install redis
   - pip install docopt
@@ -17,4 +17,4 @@ install:
 script: 
   - python setup.py install
   - cd turbo/test
-  - python runtests.py
+  - python -m unittest -v runtests.main

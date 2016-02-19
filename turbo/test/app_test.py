@@ -1,5 +1,6 @@
 from __future__ import absolute_import, division, print_function, with_statement
 
+import socket
 import os
 import signal
 import sys
@@ -20,7 +21,8 @@ from turbo import register
 
 app_config.app_name = 'app_test'
 app_config.web_application_setting = {
-    'xsrf_cookies': False
+    'xsrf_cookies': False,
+    'cookie_secret': 'adasfd' 
 }
 
 #logger = logging.getLogger()
@@ -107,26 +109,48 @@ class ApiHandler(app.BaseHandler):
     def wo_json(self, data):
         self.write(self.json_encode(data, indent=4))
 
+PID = None
+URL = None
 
-def run_server():
+def run_server(port):
     register.register_url('/', HomeHandler)
     register.register_url('', HomeHandler)
     register.register_url('/api', ApiHandler)
-    app.start()
+    app.start(port)
+
+
+def is_used(port):
+    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    if sock.connect_ex(('localhost', port)) == 0:
+        return True
+
+    return False
+
+
+def setUpModule():
+    port = 8888
+    while True:
+        if not is_used(port):
+            break
+        port += 1
+            
+    server = multiprocessing.Process(target=run_server, args=(port,))
+    server.start()
+    global PID, URL
+    URL = 'http://localhost:%s'%port
+    PID = server.pid
+
+
+def tearDownModule():
+    os.kill(PID, signal.SIGKILL)
 
 
 class AppTest(unittest.TestCase):
 
     def setUp(self):
-        server = multiprocessing.Process(target=run_server)
-        server.start()
-        self.home_url = 'http://localhost:8888'
-        self.api_url = 'http://localhost:8888/api'
-        self.pid = server.pid
-        time.sleep(1)
-
-    def tearDown(self):
-        os.kill(self.pid, signal.SIGKILL)
+        global URL 
+        self.home_url = URL 
+        self.api_url = URL + '/api'
 
     def test_get(self):
         resp = requests.get(self.home_url)
@@ -135,7 +159,6 @@ class AppTest(unittest.TestCase):
     def test_post(self):
         resp = requests.post(self.home_url)
         self.assertEqual(resp.status_code, 200)
-
 
     def test_get_api(self):
         resp = requests.get(self.api_url, headers={'X-Requested-With': 'XMLHttpRequest'})
