@@ -23,18 +23,7 @@ def main():
         suite = unittest.TestLoader().loadTestsFromName(module)
         testSuite.addTest(suite)
 
-    result = unittest.TestResult()
-    testSuite.run(result)
-    # print(len(result.errors))
-    # print(len(result.failures))
-
-    # for k, v in result.errors:
-    #     print(k)
-    #     print(v)
-
-    # for k, v in result.failures:
-    #     print(k)
-    #     print(v)
+    return testSuite
 
 if __name__ == '__main__':
-    main()
+    unittest.TextTestRunner().run(main())
