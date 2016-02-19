@@ -1,4 +1,5 @@
 from setuptools import setup, find_packages
+import sys
 
 
 version = __import__('turbo').version
@@ -8,7 +9,7 @@ install_requires = [
 
 ]
 
-for k in ['tornado','pymongo', 'requests', 'redis', 'docopt']:
+for k in ['pymongo', 'requests', 'redis', 'docopt']:
     try:
         __import__(k)
     except ImportError:
@@ -18,6 +19,11 @@ kwargs = {}
 with open('README.md') as f:
     kwargs['long_description'] = f.read()
 
+if sys.version_info < (2, 7):
+    install_requires.append('unittest2')
+    install_requires.append('tornado<=4.3.0')
+else:
+    install_requires.append('tornado')
 
 setup(
     name="turbo",
