@@ -1,5 +1,6 @@
 from setuptools import setup, find_packages
 import sys
+import os
 
 
 version = __import__('turbo').version
@@ -16,7 +17,9 @@ for k in ['pymongo', 'requests', 'redis', 'docopt']:
         install_requires.append(k)
 
 kwargs = {}
-with open('README.md') as f:
+
+readme_path = os.path.abspath(os.path.dirname(__file__))
+with open(os.path.join(readme_path, 'README.md')) as f:
     kwargs['long_description'] = f.read()
 
 if sys.version_info < (2, 7):
@@ -33,6 +36,7 @@ setup(
     url="http://github.com/wecatch/app-turbo",
     license="http://www.apache.org/licenses/LICENSE-2.0",
     description="turbo is a engine for fast web development based in tornado, mongodb, redis",
+    keywords='web framework tornado mongodb',
     packages=find_packages(),
     install_requires=install_requires,
     scripts=['turbo/bin/turbo-admin'],
