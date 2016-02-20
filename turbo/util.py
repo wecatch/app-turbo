@@ -15,7 +15,7 @@ from turbo.log import util_log
 
 
 def to_list_str(value):
-    """递归序列化list
+    """recursively format list
     """
     result = []
     for index, v in enumerate(value):
@@ -33,7 +33,7 @@ def to_list_str(value):
 
 
 def to_dict_str(value):
-    """递归序列化dict
+    """recursively format dict
     """
     for k, v in value.items():
         if isinstance(v, dict):
