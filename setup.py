@@ -35,7 +35,7 @@ setup(
     author_email="wecatch.me@gmail.com",
     url="http://github.com/wecatch/app-turbo",
     license="http://www.apache.org/licenses/LICENSE-2.0",
-    description="turbo is a engine for fast web development based in tornado, mongodb, redis",
+    description="turbo is a web framework for fast web development based in tornado, mongodb, redis",
     keywords='web framework tornado mongodb',
     packages=find_packages(),
     install_requires=install_requires,
