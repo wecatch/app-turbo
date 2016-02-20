@@ -19,7 +19,7 @@ for k in ['pymongo', 'requests', 'redis', 'docopt']:
 kwargs = {}
 
 readme_path = os.path.abspath(os.path.dirname(__file__))
-with open(os.path.join(readme_path, 'README.md')) as f:
+with open(os.path.join(readme_path, 'README.rst')) as f:
     kwargs['long_description'] = f.read()
 
 if sys.version_info < (2, 7):
