@@ -1,24 +1,56 @@
-# 介绍
+# Overview
 
-app-turbo 的诞生旨在为基于 [tornado](http://tornado.readthedocs.org/en/stable/) 和 [mongodb](https://www.mongodb.org/) 的应用开发提供**快速构建**，**便于扩展**，**易于维护**的最佳实践方案。app-turbo 包含以下特性
+Turbo is developed for web site that based on [tornado](http://tornado.readthedocs.org/en/stable/) and [mongodb](https://www.mongodb.org/) to build fast and easily to scale up and maintain.
 
-- 简易的 ORM (基于 mongodb ) 
-- 快速构建 RESTful api
-- 易于扩展和维护的 app 结构
-- 灵活的 log 
-- 简单可增强的 session
 
-# demo
+- Easily scale up and maintain
+- Rapid development for RESTFul api and web site
+- Django or flask application structure
+- Support for easily customizing
+- Simple ORM for mongodb
+- Logger
+- Session
+
+
+## Demo
 
 
 ```sh
-
 git clone https://github.com/wecatch/app-turbo.git
-
 cd app-turbo/demos/helloword/app-server
-
-python main.py  
-
+python main.py
 ```
 
-打开浏览器，访问[http://localhost:8888](http://localhost:8888)
+Open your brower and visit [http://localhost:8888](http://localhost:8888)
+
+
+## Install
+
+First be sure you have `MongoDB` and `redis` installed.
+
+
+```sh
+pip install turbo
+```
+
+Install the latest
+
+```sh
+git clone https://github.com/wecatch/app-turbo.git
+cd app-turbo
+python setup.py install
+```
+
+## Hello, world 
+
+
+```bash
+turbo-admin startproject my_turbo_app
+cd my_turbo_app
+cd app-server
+python main.py 
+```
+
+Open your broswer and visite [http://localhost:8888](http://localhost:8888)
+
+Server default start on port 8888, you can change this `python main.py --port=8890`

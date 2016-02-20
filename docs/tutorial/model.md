@@ -1,27 +1,28 @@
-#### 什么是model
+#### What is `model`
 
-model 是 mongodb collection 的简单反射，它包含了 collection 中每个 record 字段和类型的简单描述，方便在开发过程中对其进行查阅和更改。model 继承自turbo.model 的 BaseModel，BaseModel 封装了 pymongo 的基础操作和 api。
+Instances of model represent mongodb collection, model defines the collection schema.
 
 
-#### model的目录结构
+`models` directory skeleton
 
 ```
 models
 ├── __init__.py         
-├── settings.py            # model 的全局配置, 数据库连接等的配置
-├── base.py                # 各个db 所需要的数据库映射配置初始化, 继承model所需要的 collection 操作等
+├── settings.py            # global setting for all models
+├── base.py                # mongodb database instance mappings
 ├── user                   
 │   ├── __init__.py
-│   ├── base.py            # 每个 model 连接的 db 指定
-│   ├── model.py           # model 对应 db 的所有 colletion 结构
-│   └── setting.py         # 每个 model 具体的配置
+│   ├── base.py            
+│   ├── model.py           # all model class, each represents one mongodb collection
+│   └── setting.py         # setting for user model
 
 ```
 
 
-#### 建立 model
+#### Create model
 
-在 models 目录下面建立model对应的package, 包含以下模块
+In models package create package like bellow
+
 
 * __init__.py
 * base.py
@@ -29,7 +30,7 @@ models
 * model.py
 
 
-在 **base.py** 中 建立 model 对应的 db 配置
+Put code in `base.py`
 
 ```python
 
@@ -45,7 +46,7 @@ class Model(BaseModel):
 ```
 
 
-在 model.py 中声明相应的model 即可
+Create Class inherited `turbo.model.BaseModel`
 
 ```
 from base import *
@@ -63,10 +64,10 @@ class User2img(Model):
 
 ```
 
-#### 在 helper 中使用 model
+#### Use model in helper
 
 ```python
-
+#helpers/user/user.py
 from models.user import model
 
 class User2img(model.User2img):pass

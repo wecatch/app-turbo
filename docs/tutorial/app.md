@@ -1,9 +1,9 @@
-#### 什么是 app-server
+#### What is app-server
 
-app-server 是 web 应用程序，由一个或多个子 app 组成，每个 app 结构独立，可移植，可复用
+App-server is web application, be made fo one or more sub app, each sub app easily migrited and resue
 
 
-####  app-server 的目录结构示例
+`app-server` directory skeleton
 
 
 ``` sh
@@ -12,18 +12,18 @@ app-server 是 web 应用程序，由一个或多个子 app 组成，每个 app 
     ├── apps
     │   ├── base.py
     │   ├── __init__.py
-    │   ├── settings.py                # base.py 使用的配置
-    │   └── user                       # 子 app user
+    │   ├── settings.py                
+    │   └── user                       # sub app user
     │       ├── app.py
     │       ├── base.py
     │       ├── __init__.py
     │       ├── setting.py
-    ├── main.py                        # 入口
-    ├── setting.py                     # 应用配置
-    ├── templates                      # 模板
+    ├── main.py                        # entry port
+    ├── setting.py                     
+    ├── templates                      
     │   └── user
     │       └── index.html
-    ├── static                         # 静态文件
+    ├── static                         
     │   └── js
     │       └── jquery.js
 
@@ -31,23 +31,15 @@ app-server 是 web 应用程序，由一个或多个子 app 组成，每个 app 
 ```
 
 
-#### 建立 model
+#### Create app-server
 
-
-使用 turbo 的命令行工具建立 app-server
 
 ```sh
-
 turbo-admin startserver  app-server
-
-```
-
-
-#### 启动app-server
-
-```
-
+cd app-server
 python main.py
-
 ```
+
+
+
 

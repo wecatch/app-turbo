@@ -1,18 +1,21 @@
-app-turbo Tutorial
+Tutorial
 =================
 
-app-turbo 应用的主要结构分为
+Turbo application directory tree skeleton is below:
 
-- [models](model)
-- [helpers](helper)
-- [app-server](app-server)
-- [db](db)
+```
+├── app-server
+├── conf
+├── db
+├── helpers
+├── models
+└── test
+```
 
+[models](model) is made of datebase sechema. Each package in `models` represents one mongodb databse instance.  
 
-models 包含每个 db 实例对应的 collection，models 由一个到多个model 组成，每个model 对应一个db。
+[app-server](app-server) is a web app, not python package. Turbo application can have one or many app-server, each with different name.
 
-app-server 是独立的应用 server，非 package，根据需要可以有一个到多个 app-server。
+[helpers](helpers) is model sechema instance, responsible for business logic.
 
-helpers 由一个到多个 helper 组成，helper 是对 db 业务的实现，helper 中继承和实例化 model 层，执行对每个 collection 的具体操作，供 app-server 使用。
-
-db 是 mongodb 的连接配置
+`db` is support for mongodb connections

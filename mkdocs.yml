@@ -2,11 +2,12 @@ site_name: turbo
 pages:
 - [index.md, Home]
 - [intro.md, Introduction]
-- [quickstart.md, Quickstart]
 - [tutorial/index.md, Tutorial]
-- [tutorial/helper.md, 'Tutorial', 'helper']
-- [tutorial/model.md, 'Tutorial', 'model']
-- [tutorial/db.md, 'Tutorial', 'db']
-- [tutorial/app.md, 'Tutorial', 'app-server']
+- [tutorial/model.md, 'Tutorial', 'Model']
+- [tutorial/helper.md, 'Tutorial', 'Helper']
+- [tutorial/app.md, 'Tutorial', 'App-server']
+- [tutorial/turbo-admin.md, 'Tutorial', 'Turbo-admin']
+- [api/index.md, 'API Reference']
+
 
 theme: readthedocs
