@@ -1,0 +1,4 @@
+pymongo
+requests
+redis
+docopt
