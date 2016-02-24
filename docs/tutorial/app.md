@@ -1,6 +1,6 @@
 #### What is app-server
 
-App-server is web application, be made fo one or more sub app, each sub app easily migrited and resue
+App-server is web application, be made of one or more sub app, each sub app easily migrited and resue
 
 
 `app-server` directory skeleton
@@ -18,7 +18,7 @@ App-server is web application, be made fo one or more sub app, each sub app easi
     │       ├── base.py
     │       ├── __init__.py
     │       ├── setting.py
-    ├── main.py                        # entry port
+    ├── main.py                        # entry
     ├── setting.py                     
     ├── templates                      
     │   └── user

@@ -1,6 +1,6 @@
 #### What is `model`
 
-Instances of model represent mongodb collection, model defines the collection schema.
+Instance of model `Class` represents mongodb collection, model defines the collection schema.
 
 
 `models` directory skeleton
@@ -13,7 +13,7 @@ models
 ├── user                   
 │   ├── __init__.py
 │   ├── base.py            
-│   ├── model.py           # all model class, each represents one mongodb collection
+│   ├── model.py           # all model Class, each represents one mongodb collection
 │   └── setting.py         # setting for user model
 
 ```
@@ -21,13 +21,17 @@ models
 
 #### Create model
 
-In models package create package like bellow
+In models package create package `user` like bellow
 
 
-* __init__.py
-* base.py
-* setting.py
-* model.py
+```bash
+user
+├──__init__.py
+├── base.py            
+├── model.py           
+└── setting.py  
+
+```
 
 
 Put code in `base.py`
@@ -46,7 +50,7 @@ class Model(BaseModel):
 ```
 
 
-Create Class inherited `turbo.model.BaseModel`
+Create `Class` inherited from `turbo.model.BaseModel`
 
 ```
 from base import *

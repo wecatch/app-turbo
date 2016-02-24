@@ -8,7 +8,7 @@ Helper is business lagic layer.
 ```
 
 helpers/
-   ├── wallpaper             # mongodb databse instance mappig, one instance helper
+   ├── wallpaper             # each package in helpers represents one mongodb databse instance
    │   ├── album.py          
    │   ├── category.py
    │   ├── image.py
@@ -16,17 +16,22 @@ helpers/
    │   ├── __init__.py       
    │   └── tag.py
    ├── __init__.py           
-   ├── settings.py           
+   ├── settings.py           # here is package needed to be installed automatically
    
 ```
 
 #### Create helper
 
-In helpers package, create package that `__init__.py` with `__all__` list attribute explicitly.
+Add '__all__' list attribute explicitly into helper package `wallpaper`   `__init__.py` file.
+It's job is to include all modules needed to be used.
 
-Put `module` in `__all__` list
+```python
+__all__ = ['img2tag']
 
-Install helper in helpers/setting.py
+```
+
+
+Install helper in `helpers/setting.py`
 
 ```
 

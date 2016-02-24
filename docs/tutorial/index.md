@@ -16,6 +16,6 @@ Turbo application directory tree skeleton is below:
 
 [app-server](app-server) is a web app, not python package. Turbo application can have one or many app-server, each with different name.
 
-[helpers](helpers) is model sechema instance, responsible for business logic.
+[helpers](helpers) is model instance, responsible for business logic.
 
 `db` is support for mongodb connections

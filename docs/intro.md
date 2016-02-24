@@ -53,4 +53,4 @@ python main.py
 
 Open your broswer and visite [http://localhost:8888](http://localhost:8888)
 
-Server default start on port 8888, you can change this `python main.py --port=8890`
+Server start on port 8888 default, you can change this `python main.py --port=8890`
