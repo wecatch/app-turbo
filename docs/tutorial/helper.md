@@ -1,6 +1,6 @@
 #### What is `helper`
 
-Helper is business lagic layer.
+Helper is a layer of business logic. Each package, in helpers, is a helper.
 
 
 `helpers` directory skeleton
@@ -22,8 +22,7 @@ helpers/
 
 #### Create helper
 
-Add '__all__' list attribute explicitly into helper package `wallpaper`   `__init__.py` file.
-It's job is to include all modules needed to be used.
+To create a helper, first create a package in helpers, for example named with `wallpaper` , and define '__all__' list attribute explicitly in  `__init__.py` file. The attribute `__all__`, it's job is to include all modules needed to be used.
 
 ```python
 __all__ = ['img2tag']
@@ -75,7 +74,7 @@ MODEL_SLOTS = ['Album', 'FavorAlbum']
 
 ``` 
 
-Each `Class` like `Album`, both it's `Class` type and `instance` exist in helper `wallpaper` namespace.
+Each `Class`, for example like `Album`, both it's `Class` type and `instance` exist in helper `wallpaper` namespace.
 
 
 ```python

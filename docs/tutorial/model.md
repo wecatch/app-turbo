@@ -1,6 +1,9 @@
 #### What is `model`
 
-Instance of model `Class` represents mongodb collection, model defines the collection schema.
+
+Model has two meanings, one means `model Class`, the other means package which encapsulates `model.py`
+
+`model Class` represents mongodb collection and defines the collection schema.
 
 
 `models` directory skeleton
@@ -21,7 +24,8 @@ models
 
 #### Create model
 
-In models package create package `user` like bellow
+
+To create a model, first create a package below in models, for example named with `user`.
 
 
 ```bash
@@ -53,7 +57,7 @@ class Model(BaseModel):
 Create `Class` inherited from `turbo.model.BaseModel`
 
 ```
-from base import *
+from base import *         # import BaseModel from base
 
 class User2img(Model): 
 
