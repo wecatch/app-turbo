@@ -1,15 +1,19 @@
 # Overview
 
-Turbo is developed for web site that based on [tornado](http://tornado.readthedocs.org/en/stable/) and [mongodb](https://www.mongodb.org/) to build fast and easily to scale up and maintain.
+Turbo is developed for web site that based on [tornado](http://tornado.readthedocs.org/en/stable/) and [mongodb](https://www.mongodb.org/) to build rapidly and easily to scale up and maintain.
 
+
+Turbo has support for:
 
 - Easily scale up and maintain
 - Rapid development for RESTFul api and web site
-- Django or flask application structure
-- Support for easily customizing
+- Django or flask style application structure
+- Easily customizing
 - Simple ORM for mongodb
 - Logger
 - Session
+
+In addtion to the above, turbo has a command line utility `turbo-admin` for fast build application structure.
 
 
 ## Demo

@@ -1,7 +1,8 @@
 
 [![turbo](imgs/turbo.png)](http://wecatch.me/turbo.html)
 
-Turbo is a web framwork, based on tornado, developed for fast building web site and RESTFul api.
+Turbo is a web framwork, based on tornado, developed for rapidly building web site and RESTFul api.
+
 
 # Quickly start
 
