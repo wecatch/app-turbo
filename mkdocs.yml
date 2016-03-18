@@ -6,6 +6,7 @@ pages:
 - [tutorial/model.md, 'Tutorial', 'Model']
 - [tutorial/helper.md, 'Tutorial', 'Helper']
 - [tutorial/app.md, 'Tutorial', 'App-server']
+- [tutorial/session.md, 'Tutorial', 'Session']
 - [tutorial/turbo-admin.md, 'Tutorial', 'Turbo-admin']
 - [api/index.md, 'API Reference']
 
