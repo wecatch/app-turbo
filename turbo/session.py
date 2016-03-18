@@ -203,7 +203,7 @@ class HeaderObject(SessionObject):
         self.handler.set_header(self._session_name, sid)
 
     def clear_session_id(self):
-        self.headers.set_header(self._session_name, '')
+        self.handler.clear_header(self._session_name)
 
 
 class Store(object):
