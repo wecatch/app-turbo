@@ -290,7 +290,10 @@ class BaseBaseModel(MixinModel):
         """
         for opk in document.keys():
             if not opk.startswith('$') or opk not in self._operators:
-                raise Exception("invalid document update operator")
+                raise ValueError("invalid document update operator")
+
+        if not document:
+            raise ValueError("empty document update not allowed")           
 
         return self.__collect.update(spec, document, multi=multi, **kwargs)
 
@@ -302,10 +305,10 @@ class BaseBaseModel(MixinModel):
             you understand the result what you do
         """
         if isinstance(spec_or_id, dict) and spec_or_id == {}:
-            raise Exception("not allowed remove all documents")
+            raise ValueError("not allowed remove all documents")
 
         if spec_or_id is None:
-            raise Exception("not allowed remove all documents")
+            raise ValueError("not allowed remove all documents")
 
         return self.__collect.remove(spec_or_id, **kwargs)
 
