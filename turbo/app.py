@@ -258,7 +258,7 @@ class BaseBaseHandler(Mixin):
             raise e
         except Exception as e:
             app_log.error('Uncaught Exception in %s %s call'%(getattr(getattr(self, '__class__'), '__name__'), method), exc_info=True)
-            resp = self.init_resp(1)
+            resp = self.init_resp(1, 'Unknown Error')
         else:
             resp = self.init_resp()
 

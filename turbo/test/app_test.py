@@ -106,6 +106,9 @@ class ApiHandler(app.BaseHandler):
             }
         }
 
+    def DELETE(self):
+        raise Exception('value error')
+
     def wo_json(self, data):
         self.write(self.json_encode(data, indent=4))
 
@@ -164,6 +167,11 @@ class AppTest(unittest.TestCase):
         resp = requests.get(self.api_url, headers={'X-Requested-With': 'XMLHttpRequest'})
         self.assertEqual(resp.status_code, 200)
         self.assertEqual(resp.json()['res']['value'], 'python')
+
+    def test_delete_api(self):
+        resp = requests.delete(self.api_url, headers={'X-Requested-With': 'XMLHttpRequest'})
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(resp.json()['msg'], 'Unknown Error')
 
     def test_post_api(self):
         resp = requests.post(self.api_url, headers={'X-Requested-With': 'XMLHttpRequest'}, data={'limit': 10, 'who': 'ruby'})
