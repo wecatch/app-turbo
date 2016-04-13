@@ -22,6 +22,8 @@ def register_app(app_name, app_setting, web_application_setting, mainfile, packa
     app_config.app_setting = app_setting
     app_config.project_name = os.path.basename(get_base_dir(mainfile, 2))
     app_config.web_application_setting = web_application_setting
+    if app_setting.get('session_config'):
+        app_config.session_config.update(app_setting['session_config'])
     log.getLogger(**app_setting.log)
     _install_app(package_space)
 
