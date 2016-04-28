@@ -27,5 +27,5 @@ from .conf import app_config
 # is zero for an official release, positive for a development branch,
 # or negative for a release candidate or beta (after the base version
 # number has been incremented)
-version = "0.4.1"
-version_info = (0, 4, 1, 100)
+version = "0.4.2"
+version_info = (0, 4, 2, 100)
