@@ -26,7 +26,11 @@ TURBO_APP_SETTING = ObjectDict(
         log_path=os.path.join("/var/log/", SERVER_NAME+'.log'),
         log_size=500*1024*1024,
         log_count=3,
-    )
+    ),
+    session_config=ObjectDict({
+        'name': 'Session-Id',
+        'secret_key': 'o387xn4ma?adfasdfa83284&^%$2'
+    }),
 )
 
 # check if app start in debug
