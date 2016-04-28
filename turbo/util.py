@@ -149,7 +149,7 @@ class Escape(object):
         if name in self.__slots__:
             return self.__gl.get(name)
 
-        return getattr(self, name)
+        raise AttributeError('escape has no attribute %s' % name)
 
 
 escape = Escape(globals())

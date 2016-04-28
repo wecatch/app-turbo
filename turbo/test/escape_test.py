@@ -58,6 +58,10 @@ class EscapeTest(unittest.TestCase):
         self.check_value_type(es.to_str(objid))
         self.check_value_type(es.to_str(number))
     
+    def test_no_attribute(self):
+        with self.assertRaises(AttributeError):
+            es.create_objectid()
+
     def test_tobjectid(self):
         es.to_int('s')
 
