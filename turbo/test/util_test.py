@@ -34,6 +34,31 @@ class EscapeTest(unittest.TestCase):
         self.assertTrue(isinstance(json.dumps(escape.to_str([deepcopy(data) for i in range(10)])), basestring))
         self.assertTrue(isinstance(json.dumps(escape.to_str(deepcopy(data))), basestring))
 
+    def test_to_str_encode(self):
+        data = {
+            'v1': 10,
+            'v2': datetime.datetime.now(),
+            'v3': ObjectId(),
+            'v4': 'value',
+        }
+
+        v = escape.to_str(data)
+
+        self.assertTrue(isinstance(v['v1'], int))
+        self.assertTrue(isinstance(v['v2'], float))
+        self.assertTrue(isinstance(v['v3'], basestring))
+        self.assertTrue(isinstance(v['v4'], basestring))
+
+        def encode(v):
+            return str(v)
+
+        v = escape.to_str(data, encode)
+        self.assertTrue(isinstance(v['v1'], basestring))
+        self.assertTrue(isinstance(v['v2'], basestring))
+        self.assertTrue(isinstance(v['v3'], basestring))
+        self.assertTrue(isinstance(v['v4'], basestring))
+
+
 
 if __name__ == '__main__':
     unittest.main()

@@ -8,43 +8,51 @@ import time
 import logging 
 import json
 from collections import Iterable
+import copy
 
 from bson.objectid import ObjectId
 
 from turbo.log import util_log
 
 
-def to_list_str(value):
+def to_list_str(value, encode=None):
     """recursively format list
     """
     result = []
     for index, v in enumerate(value):
         if isinstance(v, dict):
-            result.append(to_dict_str(v))
+            result.append(to_dict_str(v, encode))
             continue
 
         if isinstance(v, list):
-            result.append(to_list_str(v))
+            result.append(to_list_str(v, encode))
             continue
 
-        result.append(default_encode(v))
+        if encode:
+            result.append(encode(v))
+        else:
+            result.append(default_encode(v))
 
     return result
 
 
-def to_dict_str(value):
+def to_dict_str(origin_value, encode=None):
     """recursively format dict
     """
+    value = copy.deepcopy(origin_value)
     for k, v in value.items():
         if isinstance(v, dict):
-            value[k] = to_dict_str(v)
+            value[k] = to_dict_str(v, encode)
             continue
 
         if isinstance(v, list):
-            value[k] = to_list_str(v)
+            value[k] = to_list_str(v, encode)
             continue
 
-        value[k] = default_encode(v)
+        if encode:
+            value[k] = encode(v)
+        else:
+            value[k] = default_encode(v)
 
     return value
 
@@ -64,14 +72,17 @@ def default_encode(v):
     return v
 
 
-def to_str(v):
+def to_str(v, encode=None):
     if isinstance(v, dict):
-        return to_dict_str(v)
+        return to_dict_str(v, encode)
 
     if isinstance(v, Iterable):
-        return to_list_str(v)
+        return to_list_str(v, encode)
 
-    return default_encode(v)
+    if encode:
+        return encode(v)
+    else:
+        return default_encode(v)
 
 
 def format_time(dt):
