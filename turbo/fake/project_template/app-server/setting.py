@@ -17,7 +17,7 @@ WEB_APPLICATION_SETTING = ObjectDict(
     static_path=os.path.join(SERVER_DIR, "static"),
     template_path=os.path.join(SERVER_DIR, "templates"),
     xsrf_cookies=True,
-    cookie_secret="xxx-xxx-xxx",
+    cookie_secret="3%$334ma?asdf2987^%23&^%$2",
 )
 
 # turbo app setting 
@@ -28,7 +28,7 @@ TURBO_APP_SETTING = ObjectDict(
         log_count=3,
     ),
     session_config=ObjectDict({
-        'name': 'Session-Id',
+        'name': 'session-id',
         'secret_key': 'o387xn4ma?adfasdfa83284&^%$2'
     }),
 )
