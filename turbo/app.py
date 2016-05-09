@@ -100,7 +100,7 @@ class BaseBaseHandler(Mixin):
     """
 
     # override in subclass
-    _required_params = [('skip', int, 0), ('limit', int, 0)]
+    _required_params = []
     # override in subclass to extract the most need arguments
     
     _types = [ObjectId, None, basestring, str, int, float, list, file, bool]
