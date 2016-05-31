@@ -7,21 +7,21 @@ from turbo.flux import Mutation, register, dispatch, register_dispatch
 mutation = Mutation('flux_test')
 
 @register(mutation)
-def inc_rank(rank):
+def increase_rank(rank):
     return rank+1
 
 
 @register(mutation)
-def dec_rank(rank):
+def decrease_rank(rank):
     return rank-1
 
 
-@register_dispatch('flux_test', 'inc_rank')
-def increment(rank):
+@register_dispatch('flux_test', 'increase_rank')
+def increase(rank):
     pass
 
 def decrease(rank):
-    return dispatch('flux_test', 'dec_rank', rank)
+    return dispatch('flux_test', 'decrease_rank', rank)
 
 
 class FluxTest(unittest.TestCase):
@@ -33,7 +33,7 @@ class FluxTest(unittest.TestCase):
         pass
 
     def test_increment(self):
-        self.assertEqual(increment(10), 11)
+        self.assertEqual(increase(10), 11)
 
     def test_decrease(self):
         self.assertEqual(decrease(10), 9)

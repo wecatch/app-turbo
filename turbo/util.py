@@ -14,6 +14,10 @@ from bson.objectid import ObjectId
 
 from turbo.log import util_log
 
+try:
+    basestring
+except Exception as e:
+    basestring = str
 
 def to_list_str(value, encode=None):
     """recursively format list
@@ -73,6 +77,9 @@ def default_encode(v):
 
 
 def to_str(v, encode=None):
+    if isinstance(v, basestring):
+        return v
+
     if isinstance(v, dict):
         return to_dict_str(v, encode)
 

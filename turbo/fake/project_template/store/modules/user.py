@@ -8,5 +8,5 @@ def increase_rank(rank):
 
 
 @register(mutation)
-def dec_rank(rank):
+def decrease_rank(rank):
     return rank-1
