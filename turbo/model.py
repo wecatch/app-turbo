@@ -153,23 +153,22 @@ class BaseBaseModel(MixinModel):
     column = None                          need to query field
     """
 
-    _operators = {
-        '$set': '',
-        '$unset': '',
-        '$rename': '',
-        '$currentDate': '',
-        '$inc': '',
-        '$max': '',
-        '$min': '',
-        '$mul': '',
-        '$setOnInsert': '',
+    _operators = frozenset([
+        '$set',
+        '$unset',
+        '$rename',
+        '$currentDate',
+        '$inc',
+        '$max',
+        '$min',
+        '$mul',
+        '$setOnInsert',
 
-        '$addToSet': '',
-        '$pop': '',
-        '$pushAll': '',
-        '$push': '',
-        '$pull': '',
-    }
+        '$addToSet',
+        '$pop',
+        '$pushAll',
+        '$push',
+        '$pull'])
 
     def __init__(self, db_name='test', _MONGO_DB_MAPPING=None):
         if _MONGO_DB_MAPPING is None:
