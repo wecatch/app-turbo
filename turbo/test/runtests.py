@@ -14,6 +14,7 @@ TEST_MODULES = [
     'app_test',
     'session_test',
     'util_test',
+    'flux_test',
 ]
 
 
