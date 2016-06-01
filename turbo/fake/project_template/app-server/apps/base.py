@@ -4,7 +4,8 @@ import tornado.web
 import turbo.app
 from turbo import app_config
 from turbo.core.exceptions import ResponseError, ResponseMsg
-from lib.session import SessionStore, SessionObject
+# start use session from here
+# from lib.session import SessionStore, SessionObject
 
 
 class MixinHandler(turbo.app.BaseHandler):
@@ -13,13 +14,13 @@ class MixinHandler(turbo.app.BaseHandler):
 
 class BaseHandler(MixinHandler):
 
-    session_initializer = {
-        'uid': None,
-        'avatar': None,
-        'nickname': None,
-    }
-    session_object = SessionObject
-    session_store = SessionStore()
+    # session_initializer = {
+    #     'uid': None,
+    #     'avatar': None,
+    #     'nickname': None,
+    # }
+    # session_object = SessionObject
+    # session_store = SessionStore()
     
     def initialize(self):
         super(BaseHandler, self).initialize()
