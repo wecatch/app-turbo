@@ -12,9 +12,16 @@ from turbo.util import import_object
 
 from bson.objectid import ObjectId
 from pymongo import ASCENDING, DESCENDING, collection
+import tornado.ioloop
 
 from turbo.log import model_log
 from turbo.util import escape as _es
+
+try:
+    from concurrent.futures import ThreadPoolExecutor
+    executor = ThreadPoolExecutor(max_workers=2)
+except Exception as e:
+    executor = None
 
 
 _record = lambda x: defaultdict(lambda: None, x)
@@ -145,6 +152,50 @@ class MixinModel(object):
         return defaultdict(lambda: '')
 
 
+def collect_method_call(collect_obj, name):
+    def outwrapper():
+        @functools.wraps(func)
+        def wrapper(self, *args, **kwargs):
+            if name in collect_obj._write_operators:
+                collect_obj._asyn_call(*args, **kwargs)
+
+            return func(*args, **kwargs)
+
+        return wrapper
+
+    return outwrapper
+
+
+class TurboCollect(object):
+
+    _write_operators = frozenset([
+        'insert'
+        ])
+
+    _read_operators = frozenset([
+
+        ])
+    
+    def __init__(self, db_collect=None):
+        self.__collect = db_collect
+
+    def __getattr__(self, name):
+        m = getattr(self.__collect, name)
+        if callable(m):
+            return collect_method_call(self, name)
+
+    def __getitem__(self, name):
+        return self.__collect[name]
+
+    def _asyn_call(self, *args, **kwargs):
+        if executor:
+            yield executor.submit()
+        try:
+            tornado.ioloop.IOLoop.current().add_callback(func, {'test': 'a'})
+        except Exception, e:
+            pass
+
+
 class BaseBaseModel(MixinModel):
     """mongodb 基础api 访问
 
@@ -192,9 +243,11 @@ class BaseBaseModel(MixinModel):
             raise Exception("%s is invalid collection field" % self.field)
 
         # collect as private variable
-        self.__collect = getattr(self.__db.get(db_name, object), self.name, None)
-        if self.__collect is None:
+        collect = getattr(self.__db.get(db_name, object), self.name, None)
+        if collect is None:
             raise Exception("%s is invalid collection" % self.name)
+
+        self.__collect = TurboCollect(collect)
 
         # gridfs as private variable
         self.__gridfs = self.__db_file.get(db_name, None)
