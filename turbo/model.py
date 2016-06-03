@@ -17,12 +17,6 @@ import tornado.ioloop
 from turbo.log import model_log
 from turbo.util import escape as _es
 
-try:
-    from concurrent.futures import ThreadPoolExecutor
-    executor = ThreadPoolExecutor(max_workers=2)
-except Exception as e:
-    executor = None
-
 
 _record = lambda x: defaultdict(lambda: None, x)
 
@@ -152,12 +146,12 @@ class MixinModel(object):
         return defaultdict(lambda: '')
 
 
-def collect_method_call(collect_obj, name):
-    def outwrapper():
+def collect_method_call(turbo_connect_ins, name):
+    def outwrapper(func):
         @functools.wraps(func)
-        def wrapper(self, *args, **kwargs):
-            if name in collect_obj._write_operators:
-                collect_obj._asyn_call(*args, **kwargs)
+        def wrapper(*args, **kwargs):
+            if name in turbo_connect_ins._write_operators:
+                turbo_connect_ins._model_ins.asyn_collect_call(name, *args, **kwargs)
 
             return func(*args, **kwargs)
 
@@ -166,34 +160,46 @@ def collect_method_call(collect_obj, name):
     return outwrapper
 
 
-class TurboCollect(object):
+class TurboConnect(object):
 
     _write_operators = frozenset([
-        'insert'
+        'insert',
+        'save',
+        'update',
+        'find_and_modify',
+        'bulk_write',
+        'insert_one',
+        'insert_many',
+        'replace_one',
+        'update_one',
+        'update_many',
+        'delete_one',
+        'delete_many',
+        'find_one_and_delete',
+        'find_one_and_replace',
+        'find_one_and_update',
+        'create_index',
+        'drop_index',
+        'create_indexes',
+        'drop_indexes',
+        'drop',
+        'remove',
+        'ensure_index'
         ])
 
-    _read_operators = frozenset([
-
-        ])
-    
-    def __init__(self, db_collect=None):
-        self.__collect = db_collect
+    def __init__(self, model_ins, db_collect=None):
+        self._model_ins = model_ins
+        self._collect = db_collect
 
     def __getattr__(self, name):
-        m = getattr(self.__collect, name)
-        if callable(m):
-            return collect_method_call(self, name)
+        collection_method = getattr(self._collect, name)
+        if callable(collection_method):
+            return collect_method_call(self, name)(collection_method)
+
+        return collection_method
 
     def __getitem__(self, name):
-        return self.__collect[name]
-
-    def _asyn_call(self, *args, **kwargs):
-        if executor:
-            yield executor.submit()
-        try:
-            tornado.ioloop.IOLoop.current().add_callback(func, {'test': 'a'})
-        except Exception, e:
-            pass
+        return self._collect[name]
 
 
 class BaseBaseModel(MixinModel):
@@ -221,6 +227,9 @@ class BaseBaseModel(MixinModel):
         '$push',
         '$pull'])
 
+    _executor = None
+    _backup_db = None
+
     def __init__(self, db_name='test', _MONGO_DB_MAPPING=None):
         if _MONGO_DB_MAPPING is None:
             raise Exception("db mapping is invalid")
@@ -247,7 +256,8 @@ class BaseBaseModel(MixinModel):
         if collect is None:
             raise Exception("%s is invalid collection" % self.name)
 
-        self.__collect = TurboCollect(collect)
+        # replace pymongo collect with custome connect
+        self.__collect = TurboConnect(self, collect)
 
         # gridfs as private variable
         self.__gridfs = self.__db_file.get(db_name, None)
@@ -489,6 +499,40 @@ class BaseBaseModel(MixinModel):
 
     def inc(self, spec_or_id, key, num=1):
         self.__collect.update(spec_or_id, {'$inc': {key: num}})
+
+    @property
+    def backup_db_instance(self):
+        """
+        for backup connect
+        """
+        return self._backup_db
+
+    @classmethod
+    def executor_instance(cls):
+        if cls._executor is None:
+            try:
+                from concurrent.futures import ThreadPoolExecutor
+                cls._executor = ThreadPoolExecutor(max_workers=2)
+            except Exception as e:
+                model_log.error(e, exc_info=True)
+
+        return cls._executor
+
+    def asyn_collect_call(self, name, *args, **kwargs):
+        #skip when backup connect is not supported
+        db = self.backup_db_instance
+        if not db:
+            return
+
+        executor = self.executor_instance()
+        func = getattr(getattr(db, self.name), name)
+        if executor:
+            executor.submit(func, *args, **kwargs)
+        else:
+            try:
+                tornado.ioloop.IOLoop.current().add_callback(func, *args, **kwargs)
+            except Exception as e:
+                model_log.error(e, exc_info=True)
 
 
 class BaseModel(BaseBaseModel):

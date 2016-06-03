@@ -25,6 +25,7 @@ with open(os.path.join(readme_path, 'README.rst')) as f:
 if sys.version_info < (2, 7):
     install_requires.append('unittest2')
     install_requires.append('tornado<=4.3.0')
+    install_requires.append('futures')
 else:
     install_requires.append('tornado')
 
