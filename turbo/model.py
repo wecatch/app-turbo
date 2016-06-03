@@ -504,35 +504,46 @@ class BaseBaseModel(MixinModel):
     def backup_db_instance(self):
         """
         for backup connect
+        ::code block
+            return self._backup_db
         """
-        return self._backup_db
+        raise NotImplementedError('executor_instance not implemented')
 
     @classmethod
     def executor_instance(cls):
-        if cls._executor is None:
-            try:
-                from concurrent.futures import ThreadPoolExecutor
-                cls._executor = ThreadPoolExecutor(max_workers=2)
-            except Exception as e:
-                model_log.error(e, exc_info=True)
+        """
+        ::code block
+            if cls._executor is None:
+                try:
+                    from concurrent.futures import ThreadPoolExecutor
+                    cls._executor = ThreadPoolExecutor(max_workers=2)
+                except Exception as e:
+                    model_log.error(e, exc_info=True)
 
-        return cls._executor
+            return cls._executor
+        """
+        raise NotImplementedError('executor_instance not implemented')
 
     def asyn_collect_call(self, name, *args, **kwargs):
         #skip when backup connect is not supported
-        db = self.backup_db_instance
-        if not db:
-            return
+        """
+        execu pymongo collection write method asynchronously
+        ::code block
+            db = self.backup_db_instance
+            if not db:
+                return
 
-        executor = self.executor_instance()
-        func = getattr(getattr(db, self.name), name)
-        if executor:
-            executor.submit(func, *args, **kwargs)
-        else:
-            try:
-                tornado.ioloop.IOLoop.current().add_callback(func, *args, **kwargs)
-            except Exception as e:
-                model_log.error(e, exc_info=True)
+            executor = self.executor_instance()
+            func = getattr(getattr(db, self.name), name)
+            if executor:
+                executor.submit(func, *args, **kwargs)
+            else:
+                try:
+                    tornado.ioloop.IOLoop.current().add_callback(func, *args, **kwargs)
+                except Exception as e:
+                    model_log.error(e, exc_info=True)
+        """
+        pass
 
 
 class BaseModel(BaseBaseModel):

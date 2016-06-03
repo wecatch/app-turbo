@@ -32,16 +32,12 @@ class CallFuncAsAttr(object):
         if os.path.isfile(filepath):
             name, ext = os.path.splitext(os.path.basename(filepath))
 
-        setattr(self, self.__name, {})
+        setattr(self, self._name, {})
         _mutation[name] = weakref.ref(self)
 
     @property
     def __get_func(self):
-        return getattr(self, self.__name)
-
-    @property
-    def __name(self):
-        return 'state_%s'%id(self)        
+        return getattr(self, self._name)      
 
     def register(self, func):
         if not inspect.isfunction(func):
@@ -60,12 +56,35 @@ class CallFuncAsAttr(object):
         return self.__get_func[name]
 
 
-class State(CallFuncAsAttr):
-    pass
+class State(object):
+    
+    _state = {}
+
+    def __init__(self):
+        self.__set_state()
+
+    def __set_state(self):
+        State._state[self._name] = {}
+
+    def __setattr__(self, name, value):
+        State._state[self._name][name] = value
+
+    def __getattr__(self, name):
+        if name not in State._state[self._name]:
+            raise AttributeError("%s object has no attribute '%s'"%(self.__class__.__name__, name))
+
+        return State._state[self._name][name]
+
+    @property
+    def _name(self):
+        return 'state_%s'%id(self)
 
 
 class Mutation(CallFuncAsAttr):
-    pass
+    
+    @property
+    def _name(self):
+        return 'mutation_%s'%id(self)
 
 
 def dispatch(name, type_name, *args, **kwargs):
