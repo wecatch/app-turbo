@@ -56,28 +56,49 @@ class CallFuncAsAttr(object):
         return self.__get_func[name]
 
 
-class State(object):
-    
-    _state = {}
-
-    def __init__(self):
-        self.__set_state()
-
-    def __set_state(self):
-        State._state[self._name] = {}
+class ObjectDict(dict):
+    """Makes a dictionary behave like an object, with attribute-style access.
+    """
+    def __getattr__(self, name):
+        try:
+            return self[name]
+        except KeyError:
+            raise AttributeError(name)
 
     def __setattr__(self, name, value):
-        State._state[self._name][name] = value
+        self[name] = value
+
+
+state = ObjectDict()
+
+
+class State(object):
+
+    __slots__ = ['_state']
+    
+    def __init__(self, file_attr):
+        name = file_attr
+        filepath = os.path.abspath(file_attr)
+        if os.path.isfile(filepath):
+            name, ext = os.path.splitext(os.path.basename(filepath))
+
+        if name in state:
+            raise KeyError('state %s has already existed'%name)
+
+        self._state = ObjectDict()
+        state[name] = self._state
+
+    def __setattr__(self, name, value):
+        if name in self.__slots__:
+            return super(State, self).__setattr__(name, value)
+            
+        self._state[name] = value
 
     def __getattr__(self, name):
-        if name not in State._state[self._name]:
+        if name not in self._state:
             raise AttributeError("%s object has no attribute '%s'"%(self.__class__.__name__, name))
 
-        return State._state[self._name][name]
-
-    @property
-    def _name(self):
-        return 'state_%s'%id(self)
+        return self._state[name]
 
 
 class Mutation(CallFuncAsAttr):

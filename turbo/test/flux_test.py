@@ -2,7 +2,7 @@ from __future__ import absolute_import, division, print_function, with_statement
 
 import unittest
 
-from turbo.flux import Mutation, register, dispatch, register_dispatch, State
+from turbo.flux import Mutation, register, dispatch, register_dispatch, State, state
 
 mutation = Mutation('flux_test')
 
@@ -23,8 +23,8 @@ def increase(rank):
 def decrease(rank):
     return dispatch('flux_test', 'decrease_rank', rank)
 
-state = State()
-state.count = 0
+tstate = State('test')
+tstate.count = 0
 
 class FluxTest(unittest.TestCase):
 
@@ -35,10 +35,15 @@ class FluxTest(unittest.TestCase):
         pass
 
     def test_state(self):
-        state.count += 1
-        self.assertEqual(state.count, 1)
-        state.count += 1
-        self.assertEqual(state.count, 2)
+        tstate.count += 1
+        self.assertEqual(tstate.count, 1)
+        self.assertEqual(state.test.count, 1)
+        tstate.count += 1
+        self.assertEqual(tstate.count, 2)
+        self.assertEqual(state.test.count, 2)
+        state.test.count += 1
+        self.assertEqual(tstate.count, 3)
+        self.assertEqual(state.test.count, 3)
 
     def test_increment(self):
         self.assertEqual(increase(10), 11)
