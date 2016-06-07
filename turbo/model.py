@@ -146,12 +146,15 @@ class MixinModel(object):
         return defaultdict(lambda: '')
 
 
-def collect_method_call(turbo_connect_ins, name):
+def collection_method_call(turbo_connect_ins, name):
     def outwrapper(func):
         @functools.wraps(func)
         def wrapper(*args, **kwargs):
             if name in turbo_connect_ins._write_operators:
-                turbo_connect_ins._model_ins.asyn_collect_call(name, *args, **kwargs)
+                turbo_connect_ins._model_ins.write_action_call(name, *args, **kwargs)
+
+            if name in turbo_connect_ins._read_operators:
+                turbo_connect_ins._model_ins.read_action_call(name, *args, **kwargs)
 
             return func(*args, **kwargs)
 
@@ -184,7 +187,15 @@ class TurboConnect(object):
         'drop_indexes',
         'drop',
         'remove',
-        'ensure_index'
+        'ensure_index',
+        'rename',
+        ])
+
+    _read_operators = frozenset([
+        'find',
+        'find_one',
+        'count',
+        'index_information',
         ])
 
     def __init__(self, model_ins, db_collect=None):
@@ -194,7 +205,7 @@ class TurboConnect(object):
     def __getattr__(self, name):
         collection_method = getattr(self._collect, name)
         if callable(collection_method):
-            return collect_method_call(self, name)(collection_method)
+            return collection_method_call(self, name)(collection_method)
 
         return collection_method
 
@@ -227,8 +238,6 @@ class BaseBaseModel(MixinModel):
         '$push',
         '$pull'])
 
-    _executor = None
-    _backup_db = None
 
     def __init__(self, db_name='test', _MONGO_DB_MAPPING=None):
         if _MONGO_DB_MAPPING is None:
@@ -500,48 +509,15 @@ class BaseBaseModel(MixinModel):
     def inc(self, spec_or_id, key, num=1):
         self.__collect.update(spec_or_id, {'$inc': {key: num}})
 
-    @property
-    def backup_db_instance(self):
+    def write_action_call(self, name, *args, **kwargs):
         """
-        for backup connect
-        ::code block
-            return self._backup_db
+        execute when write action occurs, note: in this method write action must be called asynchronously
         """
-        raise NotImplementedError('executor_instance not implemented')
+        pass
 
-    @classmethod
-    def executor_instance(cls):
+    def read_action_call(self, name, *args, **kwargs):
         """
-        ::code block
-            if cls._executor is None:
-                try:
-                    from concurrent.futures import ThreadPoolExecutor
-                    cls._executor = ThreadPoolExecutor(max_workers=2)
-                except Exception as e:
-                    model_log.error(e, exc_info=True)
-
-            return cls._executor
-        """
-        raise NotImplementedError('executor_instance not implemented')
-
-    def asyn_collect_call(self, name, *args, **kwargs):
-        #skip when backup connect is not supported
-        """
-        execu pymongo collection write method asynchronously
-        ::code block
-            db = self.backup_db_instance
-            if not db:
-                return
-
-            executor = self.executor_instance()
-            func = getattr(getattr(db, self.name), name)
-            if executor:
-                executor.submit(func, *args, **kwargs)
-            else:
-                try:
-                    tornado.ioloop.IOLoop.current().add_callback(func, *args, **kwargs)
-                except Exception as e:
-                    model_log.error(e, exc_info=True)
+        execute when read action occurs, note: in this method read action must be called asynchronously
         """
         pass
 

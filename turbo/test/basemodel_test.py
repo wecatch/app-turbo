@@ -28,6 +28,7 @@ class Tag(BaseModel):
         'imgid':    (ObjectId, None),
         'uid':      (ObjectId, None),
         'name':     (basestring, None),
+        'value':    (int, 0),
         'atime':    (datetime.datetime, None),
         'up':       (dict, {}),
     }
@@ -39,6 +40,9 @@ class Tag(BaseModel):
         }
         super(Tag, self).__init__('test', db)
 
+    def write_action_call(self, name, *args, **kwargs):
+        pass
+
 
 class BaseModelTest(unittest.TestCase):
 
@@ -49,16 +53,29 @@ class BaseModelTest(unittest.TestCase):
         del self.m 
 
     def test_insert(self):
-        pass
+        _id = self.m.insert({'value': 0})
+        self.assertIsNot(_id, None)
+
+    def test_write_action_call(self):
+        def func(se, name, *args, **kwargs):
+            self.assertEqual(name, 'save')
+
+        def func2(se, name, *args, **kwargs):
+            self.assertEqual(name, 'find')
+
+        self.m.save({'value': 0})
+        self.m.find()
 
     def test_save(self):
-        pass
+        _id = self.m.insert({'value': 0})
+        self.assertIsNot(_id, None)
 
     def test_find_one(self):
-        pass
+        _id = self.m.insert({'value': 0})
+        self.assertIsNot(self.m.find_one(), None)
 
     def test_find(self):
-        pass
+        self.assertGreater(list(self.m.find()), 0)
 
     def test_update(self):
         with self.assertRaises(ValueError):
@@ -70,7 +87,8 @@ class BaseModelTest(unittest.TestCase):
             self.m.update({},{})
 
     def test_remove(self):
-        pass
+        with self.assertRaises(Exception):
+            self.m.remove({})
 
     def test_find_one_wrapper(self):
         # test find_one wrapper=True
@@ -98,7 +116,6 @@ class BaseModelTest(unittest.TestCase):
 
         for one in self.m.find(limit=5, wrapper=True):
             self.assertEqual(one['keyerror'], None)
-
 
     def test_put(self):
         value = 'hello word'
@@ -165,7 +182,9 @@ class BaseModelTest(unittest.TestCase):
         self.assertTrue(isinstance(result, ObjectId))
 
     def test_inc(self):
-        pass
+        _id = self.m.create({'value': 1})
+        self.m.inc({'_id': _id}, 'value')
+        self.assertEqual(self.m.find_by_id(_id)['value'], 2)
 
     def test_to_str(self):
         one = self.m.to_str(self.m.find(limit=10))
@@ -179,7 +198,6 @@ class BaseModelTest(unittest.TestCase):
         self.assertTrue(isinstance(self.m.default_encode(ObjectId()), basestring))
         self.assertTrue(isinstance(self.m.default_encode(datetime.datetime.now()),float))
         self.assertEqual(self.m.default_encode('string'), 'string')
-    
     
     def test_get_as_dict(self):
         pass
