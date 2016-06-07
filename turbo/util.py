@@ -311,3 +311,16 @@ def remove_extension(path, extension):
             os.remove(child_path)
         except Exception as e:
             raise e
+
+
+def build_index(model_list):
+    from turbo.model import BaseModel
+    for m in model_list:
+        for attr_name in dir(m):
+            attr = getattr(m, attr_name)
+            if inspect.isclass(attr) and issubclass(attr, BaseModel) and hasattr(attr, 'name'):
+                if hasattr(attr, 'index'):
+                    for index in attr.index:
+                        attr().create_index(index, background=True)
+                else:
+                    print("model %s has no 'index' attribute"%attr.__name__)

@@ -105,6 +105,16 @@ def build_app(project_template_path, app, cur_path = '.'):
     change_app_name(app_path, app)
 
 
+def build_index(name):
+    import sys
+    import inspect
+    from turbo.util import import_object, build_index
+    model_path = os.path.abspath('.')
+    sys.path.insert(0, model_path)
+
+    model = import_object('models.%s.model'%name)
+    build_index([model])
+
 if __name__ == '__main__':
     project_template_path = os.path.dirname(fake.__file__)
     project_template_path = os.path.join(project_template_path, 'project_template')
@@ -114,6 +124,7 @@ if __name__ == '__main__':
       turbo-admin startproject  <project>
       turbo-admin startserver   <server>
       turbo-admin startapp      <app>
+      turbo-admin index         <model_name>
 
     Options:
       -h,  --help        Show help document
@@ -139,3 +150,9 @@ if __name__ == '__main__':
             build_app(project_template_path, app)
         else:
             print("turbo-admin startapp <app>")
+
+    if rgs.get('index'):
+        model_name = rgs.get('<model_name>')
+        if model_name:
+            build_index(model_name)
+

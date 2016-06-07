@@ -219,6 +219,9 @@ class BaseBaseModel(MixinModel):
     name = None                            mongodb collection name
     field = None                           collection key
     column = None                          need to query field
+    index = [
+        tuple([('uid', 1)])                
+    ]                                      query index
     """
 
     _operators = frozenset([
@@ -271,7 +274,7 @@ class BaseBaseModel(MixinModel):
         # gridfs as private variable
         self.__gridfs = self.__db_file.get(db_name, None)
         if self.__gridfs is None:
-            model_log.warning("%s is invalid gridfs" % self.__gridfs)
+            model_log.info("%s is invalid gridfs" % self.__gridfs)
 
     def __setitem__(self, k, v):
         setattr(self, k, v)

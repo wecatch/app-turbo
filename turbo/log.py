@@ -89,7 +89,7 @@ def getLogger(currfile=None, level=None, log_path=None, log_size=500*1024*1024, 
 
 # Logger objects for internal turbo use
 app_log = getLogger('turbo.app')
-model_log = getLogger('turbo.model')
+model_log = getLogger('turbo.model', level=logging.WARNING)
 util_log = getLogger('turbo.util')
 helper_log = getLogger('turbo.helper')
 session_log = getLogger('turbo.session')
