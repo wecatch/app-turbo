@@ -1,6 +1,7 @@
-from turbo.flux import Mutation, register
+from turbo.flux import Mutation, register, State
 
 mutation = Mutation(__file__)
+state = State(__file__)
 
 @register(mutation)
 def increase_rank(rank):
