@@ -108,12 +108,12 @@ def build_app(project_template_path, app, cur_path = '.'):
 def build_index(name):
     import sys
     import inspect
-    from turbo.util import import_object, build_index
+    from turbo.util import import_object, build_index as bi
     model_path = os.path.abspath('.')
     sys.path.insert(0, model_path)
 
     model = import_object('models.%s.model'%name)
-    build_index([model])
+    bi([model])
 
 if __name__ == '__main__':
     project_template_path = os.path.dirname(fake.__file__)
