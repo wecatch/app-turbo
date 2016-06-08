@@ -5,6 +5,7 @@ from settings import (
 
 import turbo.app 
 
+from store import actions
 
 class MixinHandler(turbo.app.BaseHandler):
     pass
@@ -22,6 +23,6 @@ class BaseHandler(MixinHandler):
 
     def prepare(self):
         super(BaseHandler, self).prepare()
-
         self._skip = abs(self._params['skip']) if self._params.get('skip', None) else 0
         self._limit = abs(self._params['limit']) if self._params.get('limit', None) else 20
+        actions.inc_qps()

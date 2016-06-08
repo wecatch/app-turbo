@@ -9,3 +9,7 @@ def increase(rank):
 
 def decrease(rank):
     return dispatch('user', mutation_types.DECREASE, rank)
+
+@register_dispatch('metric', 'inc_qps')
+def inc_qps():
+    pass
