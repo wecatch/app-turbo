@@ -13,8 +13,11 @@ install:
   - if [[ $TRAVIS_PYTHON_VERSION == '2.7' ]]; then travis_retry pip install tornado; fi
   - pip install redis
   - pip install docopt
+  - pip install codecov
 # command to run tests
 script: 
   - python setup.py install
   - cd turbo/test
   - python runtests.py
+after_success:
+  - codecov
