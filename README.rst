@@ -5,6 +5,12 @@ app-turbo
     :alt: Build Status
     :target: https://travis-ci.org/wecatch/app-turbo
 
+.. image:: https://img.shields.io/pypi/v/turbo.svg
+   :target: https://pypi.python.org/pypi/turbo
+
+.. image:: https://readthedocs.org/projects/app-turbo/badge/?version=latest
+   :target: https://app-turbo.readthedocs.io/en/latest/
+
 
 `Turbo <http://app-turbo.readthedocs.org>`_ is a web framework for fast building web site and RESTFul api, based on tornado, mongodb, redis.
 
