@@ -14,10 +14,10 @@ install:
   - pip install redis
   - pip install docopt
   - pip install codecov
+  - pip install coverage
 # command to run tests
 script: 
   - python setup.py install
   - cd turbo/test
   - python runtests.py
-after_success:
-  - bash <(curl -s https://codecov.io/bash)
+after_success: codecov

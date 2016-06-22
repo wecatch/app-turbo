@@ -7,14 +7,14 @@ from turbo.test.util import unittest
 from turbo.util import import_object
 
 TEST_MODULES = [
-    'escape_test',
-    'basemodel_test',
-    'log_test',
-    'httputil_test',
-    'app_test',
-    'session_test',
-    'util_test',
-    'flux_test',
+    'turbo.test.escape_test',
+    'turbo.test.basemodel_test',
+    'turbo.test.log_test',
+    'turbo.test.httputil_test',
+    'turbo.test.app_test',
+    'turbo.test.session_test',
+    'turbo.test.util_test',
+    'turbo.test.flux_test',
 ]
 
 

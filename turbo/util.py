@@ -20,7 +20,10 @@ except Exception as e:
     basestring = str
 
 def to_list_str(value, encode=None):
-    """recursively format list
+    """recursively convert list content into string
+
+    :arg list value: The list that need to be converted.
+    :arg function encode: Function used to encode object.
     """
     result = []
     for index, v in enumerate(value):
@@ -41,7 +44,7 @@ def to_list_str(value, encode=None):
 
 
 def to_dict_str(origin_value, encode=None):
-    """recursively format dict
+    """recursively convert dict content into string
     """
     value = copy.deepcopy(origin_value)
     for k, v in value.items():
@@ -62,7 +65,7 @@ def to_dict_str(origin_value, encode=None):
 
 
 def default_encode(v):
-    """数据类型转换
+    """convert ObjectId, datetime, date into string
     """
     if isinstance(v, ObjectId):
         return unicode(v)
@@ -77,6 +80,8 @@ def default_encode(v):
 
 
 def to_str(v, encode=None):
+    """convert any list, dict, iterable and primitives object to string
+    """
     if isinstance(v, basestring):
         return v
 

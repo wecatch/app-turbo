@@ -30,32 +30,43 @@ class Mixin(tornado.web.RequestHandler):
 
     @staticmethod
     def to_objectid(objid):
+        """Convert string into ObjectId
+        """
         return _es.to_objectid(objid)
 
     @staticmethod
     def to_int(value):
+        """Convert string into int
+        """
         return _es.to_int(value)
 
     @staticmethod
     def to_float(value):
+        """Convert string into float
+        """
         return _es.to_float(value)
 
     @staticmethod
     def to_bool(value):
+        """Convert value into bool
+        """
         return bool(value)
 
     @staticmethod
     def to_str(v):
+        """Convert value into string
+        """
         return _es.to_str(v)
 
     @staticmethod
     def utf8(v):
+        """Convert string into utf8 string
+        """
         return tornado.escape.utf8(v)
 
     @staticmethod
     def encode_http_params(**kw):
-        """
-        url parameter encode
+        """url parameter encode
         """
         return _ht.encode_http_params(**kw)
 
