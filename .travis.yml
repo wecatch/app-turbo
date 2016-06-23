@@ -21,4 +21,4 @@ script:
   - cd turbo/test
   - python runtests.py
 after_success: 
-  - bash <(curl -s https://codecov.io/bash) -t :dd6dbd11-3b2b-4930-9b81-34c313c74c8f
+  - codecov -t dd6dbd11-3b2b-4930-9b81-34c313c74c8f
