@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>hello turbo world</title>
+    <link rel="stylesheet" href="/static/css/pure-min.css">
+</head>
+<body>
+    <div id="body" class="pure-g" >
+      <div id="inbox">
+        {% for message in messages %}
+          {% module Template("message.html", message=message) %}
+        {% end %}
+      </div>
+      <div id="input">
+        <form action="/a/message/new" class="pure-form" method="post" id="messageform">
+            <fieldset class="pure-group">
+                <input type="hidden" name="next" value="{{ request.path }}">
+                <textarea class="pure-input-1-2" name="body" placeholder="Type in message">            
+                </textarea>
+              {% module xsrf_form_html() %}
+            </fieldset>
+            <input type="submit" class="pure-button pure-input-1-2 pure-button-primary" value="{{ _("Post") }}">
+        </form>
+      </div>
+    </div>
+<script type="text/javascript" src="/static/js/jquery-3.0.0.min.js" ></script>
+<script type="text/javascript" src="/static/js/chat.js" ></script>
+</body>
+</html>

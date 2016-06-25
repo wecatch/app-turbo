@@ -3,7 +3,7 @@ import sys
 from tornado.util import ObjectDict
 
 # server name
-SERVER_NAME = 'helloworld'
+SERVER_NAME = 'chat-server'
 
 # server dir
 SERVER_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -18,7 +18,6 @@ WEB_APPLICATION_SETTING = ObjectDict(
     template_path=os.path.join(SERVER_DIR, "templates"),
     xsrf_cookies=True,
     cookie_secret="3%$334ma?asdf2987^%23&^%$2",
-    debug=False
 )
 
 # turbo app setting 
@@ -34,8 +33,7 @@ TURBO_APP_SETTING = ObjectDict(
     }),
 )
 
-
+# check if app start in debug
 if os.path.exists(os.path.join(SERVER_DIR, '__test__')):
-    # check if app start in debug
     WEB_APPLICATION_SETTING['debug'] = True
     TURBO_APP_SETTING.log.log_path = os.path.join("", SERVER_NAME+'.log')

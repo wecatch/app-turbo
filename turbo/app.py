@@ -141,8 +141,14 @@ class BaseBaseHandler(Mixin):
 
         return self._session
 
-    def render(self, template_name, **kwargs):
-        super(BaseBaseHandler, self).render('%s%s' % (self.template_path, template_name), context=self.get_context(), **kwargs)
+    def get_template_namespace(self):
+        namespace = super(BaseBaseHandler, self).get_template_namespace()
+        context = self.get_context()
+        namespace.update({'context': context})
+        return namespace
+
+    def render_string(self, template_name, **kwargs):
+        return super(BaseBaseHandler, self).render_string('%s%s' % (self.template_path, template_name), **kwargs)
 
     def sort_by(self, sort):
         return {1: ASCENDING, -1: DESCENDING}.get(sort, ASCENDING)

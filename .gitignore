@@ -59,3 +59,4 @@ node_modules
 __test__
 site
 *~
+.DS_Store
