@@ -7,12 +7,12 @@
 </head>
 <body>
     <div id="body" class="pure-g" >
-      <div id="inbox">
+      <div id="inbox" class="pure-u-1" >
         {% for message in messages %}
           {% module Template("message.html", message=message) %}
         {% end %}
       </div>
-      <div id="input">
+      <div id="input" class="pure-u-1" >
         <form action="/a/message/new" class="pure-form" method="post" id="messageform">
             <fieldset class="pure-group">
                 <input type="hidden" name="next" value="{{ request.path }}">
