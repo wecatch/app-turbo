@@ -35,3 +35,7 @@ python main.py
 
 
 [http://app-turbo.readthedocs.org/](http://app-turbo.readthedocs.org/)
+
+## wiki
+
+- [我为什么创造了 turbo 这个后端的轮子](http://sanyuesha.com/2016/07/23/why-did-i-make-turbo/)
