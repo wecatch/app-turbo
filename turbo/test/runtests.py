@@ -15,6 +15,7 @@ TEST_MODULES = [
     'turbo.test.session_test',
     'turbo.test.util_test',
     'turbo.test.flux_test',
+    'turbo.test.jinja2_test',
 ]
 
 

@@ -31,6 +31,7 @@ TURBO_APP_SETTING = ObjectDict(
         'name': 'session-id',
         'secret_key': 'o387xn4ma?adfasdfa83284&^%$2'
     }),
+    template='{{template_name}}',
 )
 
 # check if app start in debug
