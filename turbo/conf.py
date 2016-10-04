@@ -36,7 +36,7 @@ class AppConfig(object):
         self.urls = []
         self.error_handler = None
         self.app_setting = {}
-        self.web_application_setting = {}
+        self.web_application_setting = {'debug': False}
         self.project_name = None
         self.session_config = self._cookie_session_config
         self.store_config = self._store_config

@@ -47,7 +47,7 @@ def build_project(project_template_path, project):
     build_server(project_template_path, SERVER_NAME, project_path)
 
 
-def build_server(project_template_path, server, cur_path = '.'):
+def build_server(project_template_path, server, cur_path = '.', template_name='default'):
     global SERVER_NAME, HTML_TEMPLATE
     server_path = os.path.abspath(os.path.join(cur_path, server))
 
@@ -68,15 +68,15 @@ def build_server(project_template_path, server, cur_path = '.'):
     with open(os.path.join(server_path, 'templates/%s/index.html' % APP_NAME), 'w') as index:
         index.write(HTML_TEMPLATE.strip())
 
-    change_server_name(server_path, server)
+    change_server_name(server_path, server, template_name)
     change_app_name(os.path.join(server_path, 'apps/%s' % APP_NAME), APP_NAME)
 
 
-def change_server_name(server_path, server):
+def change_server_name(server_path, server, template_name):
     pydata = None
     pypath = os.path.join(server_path, 'setting.py')
     with open(pypath, 'r') as setting_file:
-        pydata = setting_file.read().replace('{{server_name}}', server)
+        pydata = setting_file.read().replace('{{server_name}}', server).replace('{{template_name}}', template_name)
 
     with open(pypath, 'w') as setting_file:
         setting_file.write(pydata)
@@ -122,12 +122,13 @@ if __name__ == '__main__':
     Usage:
       turbo-admin (-h | --help)
       turbo-admin startproject  <project>
-      turbo-admin startserver   <server>
+      turbo-admin startserver   <server> [--template=<template_name>]
       turbo-admin startapp      <app>
       turbo-admin index         <model_name>
 
     Options:
       -h,  --help        Show help document
+      --template=<template_name>  Template engine in turbo app [default: ''].
     """
     rgs = docopt(helpdoc)
     if rgs.get('startproject'):
@@ -139,10 +140,11 @@ if __name__ == '__main__':
 
     if rgs.get('startserver'):
         server = rgs.get('<server>')
+        template_name = rgs.get('--template')
         if server:
-            build_server(project_template_path, server)
+            build_server(project_template_path, server, template_name = template_name or 'default')
         else:
-            print("turbo-admin startserver <server>")
+            print("turbo-admin startserver <server> ")
 
     if rgs.get('startapp'):
         app = rgs.get('<app>')
