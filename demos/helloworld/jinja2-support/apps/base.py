@@ -6,7 +6,7 @@ from turbo import app_config
 from turbo.core.exceptions import ResponseError, ResponseMsg
 # start use session from here
 # from lib.session import SessionStore, SessionObject
-# from turbo.template import turbo_jinja2
+from turbo.template import turbo_jinja2
 
 
 class MixinHandler(turbo.app.BaseHandler):
@@ -27,9 +27,9 @@ class BaseHandler(MixinHandler):
         super(BaseHandler, self).initialize()
         self._params = self.parameter
 
-    # @turbo_jinja2
-    # def render_string(self, template_name, **kwargs):
-    #     pass
+    @turbo_jinja2
+    def render_string(self, template_name, **kwargs):
+        pass
 
     def prepare(self):
         super(BaseHandler, self).prepare()
