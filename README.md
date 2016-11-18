@@ -19,6 +19,7 @@ Turbo is a web framework for fast building web site and RESTFul api, based on to
 - Logger
 - Session
 
+**Prerequisites**: Turbo now only runs on Python 2.x, Python 3 support will be added in future.
 
 ## Getting started
 
