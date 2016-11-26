@@ -1,4 +1,4 @@
-#-*- coding:utf-8 -*-
+# -*- coding:utf-8 -*-
 
 import turbo.log
 
@@ -11,4 +11,3 @@ class HomeHandler(BaseHandler):
 
     def GET(self):
         pass
-

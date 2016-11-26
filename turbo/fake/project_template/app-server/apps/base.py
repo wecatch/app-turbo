@@ -2,8 +2,10 @@
 
 import tornado.web
 import turbo.app
-from turbo import app_config
+from turbo.conf import app_config
 from turbo.core.exceptions import ResponseError, ResponseMsg
+
+
 # start use session from here
 # from lib.session import SessionStore, SessionObject
 # from turbo.template import turbo_jinja2
@@ -22,7 +24,7 @@ class BaseHandler(MixinHandler):
     # }
     # session_object = SessionObject
     # session_store = SessionStore()
-    
+
     def initialize(self):
         super(BaseHandler, self).initialize()
         self._params = self.parameter
@@ -55,7 +57,7 @@ class ErrorHandler(BaseHandler):
     def initialize(self, status_code):
         super(ErrorHandler, self).initialize()
         self.set_status(status_code)
- 
+
     def prepare(self):
         if not self.is_ajax():
             if self.get_status() == 404:
@@ -72,5 +74,4 @@ class ErrorHandler(BaseHandler):
         pass
 
 
-from turbo.conf import app_config
 app_config.error_handler = ErrorHandler

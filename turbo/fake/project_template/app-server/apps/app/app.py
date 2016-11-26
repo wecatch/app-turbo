@@ -1,10 +1,9 @@
-#-*- coding:utf-8 -*-
+# -*- coding:utf-8 -*-
 
 import turbo.log
 
-from store import actions
-
 from base import BaseHandler
+from store import actions
 
 logger = turbo.log.getLogger(__file__)
 
