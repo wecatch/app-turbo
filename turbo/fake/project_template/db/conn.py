@@ -2,12 +2,8 @@
 
 import os
 
-from pymongo import (
-    MongoReplicaSetClient,
-    MongoClient,
-    read_preferences
-)
 import gridfs
+from pymongo import MongoClient, MongoReplicaSetClient, read_preferences
 
 import setting
 
@@ -17,6 +13,6 @@ mc = MongoClient(host='localhost')
 test = mc['test']
 test_files = gridfs.GridFS(mc['test_files'])
 
-# user 
+# user
 user = mc['user']
 user_files = gridfs.GridFS(mc['user_files'])

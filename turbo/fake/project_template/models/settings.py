@@ -1,11 +1,11 @@
 # -*- coding:utf-8 -*-
 
 from db.conn import (
-    test as _test,    
-    user as _user,   
+    test as _test,
+    user as _user,
 
-    test_files as _test_files, 
-    user_files as _user_files, 
+    test_files as _test_files,
+    user_files as _user_files,
 )
 
 MONGO_DB_MAPPING = {

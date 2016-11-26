@@ -1,6 +1,7 @@
-#-*- coding:utf-8 -*-
+# -*- coding:utf-8 -*-
 
 from base import *
+
 
 class User(Model):
 
@@ -10,10 +11,9 @@ class User(Model):
     atime: added time
     """
     name = 'user'
-    
-    field = {
-        'email':            (basestring, '')  ,
-        'passwd':           (basestring, '')  ,
-        'atime':            (datetime, None)    ,
-    }
 
+    field = {
+        'email':            (basestring, ''),
+        'passwd':           (basestring, ''),
+        'atime':            (datetime, None),
+    }

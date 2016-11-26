@@ -1,8 +1,8 @@
-
+# -*- coding:utf-8 -*-
 from turbo import register
 
-import app, api
-
+import api
+import app
 
 register.register_group_urls('', [
     ('/', app.HomeHandler),
