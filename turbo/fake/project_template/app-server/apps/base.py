@@ -2,7 +2,7 @@
 
 import tornado.web
 import turbo.app
-from turbo.conf import app_config
+from turbo import app_config
 from turbo.core.exceptions import ResponseError, ResponseMsg
 
 
@@ -74,4 +74,5 @@ class ErrorHandler(BaseHandler):
         pass
 
 
+from turbo.conf import app_config
 app_config.error_handler = ErrorHandler
