@@ -74,5 +74,4 @@ class ErrorHandler(BaseHandler):
         pass
 
 
-from turbo.conf import app_config
 app_config.error_handler = ErrorHandler
