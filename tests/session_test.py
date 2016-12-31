@@ -23,7 +23,7 @@ app_config.web_application_setting = {
     'cookie_secret': 'asdf/asdfiw872*&^2/'
 }
 
-from turbo.test.util import unittest
+from util import unittest
 
 
 class HomeHandler(app.BaseHandler):

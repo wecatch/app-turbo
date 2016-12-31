@@ -9,7 +9,7 @@ import urllib
 from bson.objectid import ObjectId
 
 import turbo.httputil  as hu
-from turbo.test.util import unittest
+from util import unittest
 
 
 

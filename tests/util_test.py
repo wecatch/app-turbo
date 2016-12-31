@@ -1,6 +1,5 @@
-#-*- coding:utf-8 -*-
+# -*- coding:utf-8 -*-
 from __future__ import absolute_import, division, print_function, with_statement
-
 
 import os
 import sys
@@ -10,15 +9,13 @@ import StringIO
 import inspect
 from copy import deepcopy
 
-
 from turbo.model import BaseModel
-from turbo.test.util import unittest
 from turbo.util import escape
 from bson.objectid import ObjectId
 
+from util import unittest
 
 class EscapeTest(unittest.TestCase):
-
 
     def test_inc(self):
         pass

@@ -9,7 +9,7 @@ import threading
 import logging
 
 from turbo import log
-from turbo.test.util import unittest
+from util import unittest
 
 test_log = log.getLogger(__file__)
 

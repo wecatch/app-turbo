@@ -10,7 +10,7 @@ import logging
 from bson.objectid import ObjectId
 
 from turbo.util import escape as es, camel_to_underscore
-from turbo.test.util import unittest
+from util import unittest
 
 class EscapeTest(unittest.TestCase):
 

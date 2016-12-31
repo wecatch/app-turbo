@@ -11,11 +11,12 @@ import inspect
 
 
 from turbo.model import BaseModel
-from turbo.test.util import unittest
 from bson.objectid import ObjectId
 
 from pymongo import MongoClient
 import gridfs
+
+from util import unittest
 
 mc = MongoClient()
 

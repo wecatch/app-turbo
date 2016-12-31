@@ -12,7 +12,7 @@ import logging
 
 import requests
 
-from turbo.test.util import unittest
+from util import unittest
 from turbo import app
 from turbo.conf import app_config
 from turbo import register

@@ -13,7 +13,7 @@ import multiprocessing
 import time
 from bson.objectid import ObjectId
 
-from turbo.test.util import unittest
+from util import unittest
 
 from turbo import app
 from turbo.conf import app_config

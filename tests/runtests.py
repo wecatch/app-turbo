@@ -1,21 +1,24 @@
 #-*- coding:utf-8 -*-
 from __future__ import absolute_import, division, print_function, with_statement
+import sys
+import os
+sys.path.insert(0, os.path.abspath('..'))
+print(sys.path)
 
-
-from turbo.test.util import unittest
+from util import unittest
 
 from turbo.util import import_object
 
 TEST_MODULES = [
-    'turbo.test.escape_test',
-    'turbo.test.basemodel_test',
-    'turbo.test.log_test',
-    'turbo.test.httputil_test',
-    'turbo.test.app_test',
-    'turbo.test.session_test',
-    'turbo.test.util_test',
-    'turbo.test.flux_test',
-    'turbo.test.jinja2_test',
+    'escape_test',
+    'basemodel_test',
+    'log_test',
+    'httputil_test',
+    'app_test',
+    'session_test',
+    'util_test',
+    'flux_test',
+    'jinja2_test',
 ]
 
 
