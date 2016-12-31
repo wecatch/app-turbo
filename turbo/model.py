@@ -14,7 +14,7 @@ from turbo.log import model_log
 
 
 class BaseBaseModel(mongo_model.AbstractModel):
-    """Model implement almost all mongodb collection method
+    """class implement almost all mongodb collection method
     """
 
     def __init__(self, db_name='test', _MONGO_DB_MAPPING=None):
