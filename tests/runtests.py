@@ -2,11 +2,11 @@
 from __future__ import absolute_import, division, print_function, with_statement
 import sys
 import os
-sys.path.insert(0, os.path.abspath('..'))
-print(sys.path)
+
+sys.path.insert(
+    0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from util import unittest
-
 from turbo.util import import_object
 
 TEST_MODULES = [
@@ -24,9 +24,8 @@ TEST_MODULES = [
 
 def main():
     testSuite = unittest.TestSuite()
-    for module in TEST_MODULES:
-        suite = unittest.TestLoader().loadTestsFromName(module)
-        testSuite.addTest(suite)
+    suite = unittest.TestLoader().discover('tests', pattern='*_test.py')
+    testSuite.addTest(suite)
 
     return testSuite
 
