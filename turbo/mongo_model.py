@@ -211,6 +211,8 @@ class MongoTurboConnect(object):
         return collection_method
 
     def __getitem__(self, name):
+        """Sub-collection
+        """
         return self._collect[name]
 
 
