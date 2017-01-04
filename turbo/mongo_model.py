@@ -299,9 +299,6 @@ class AbstractModel(MixinModel):
     def find_one(self, spec_or_id=None, *args, **kwargs):
         raise NotImplementedError()
 
-    def find(self, *args, **kwargs):
-        raise NotImplementedError()
-
     def update(self, spec, document, multi=False, **kwargs):
         raise NotImplementedError()
 
@@ -337,9 +334,6 @@ class AbstractModel(MixinModel):
     def find_new_one(self, *args, **kwargs):
         """return latest one record sort by _id
         """
-        raise NotImplementedError()
-
-    def get_as_column(self, condition=None, column=None, skip=0, limit=0, sort=None):
         raise NotImplementedError()
 
     def get_as_dict(self, condition=None, column=None, skip=0, limit=0, sort=None):

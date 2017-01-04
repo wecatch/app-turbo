@@ -1,12 +1,17 @@
-#-*- coding:utf-8 -*-
-from __future__ import absolute_import, division, print_function, with_statement
+# -*- coding:utf-8 -*-
+from __future__ import (
+    absolute_import,
+    division,
+    print_function,
+    with_statement
+)
 import sys
 import os
 
 sys.path.insert(
     0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from util import unittest
+from tests.util import unittest
 from turbo.util import import_object
 
 TEST_MODULES = [
