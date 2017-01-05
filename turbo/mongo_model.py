@@ -301,11 +301,11 @@ class AbstractModel(MixinModel):
 
     def update_one(self, filter_, update, *args, **kwargs):
         raise NotImplementedError()
-    
+
     def delete_one(self, filter_):
         raise NotImplementedError()
-    
-    def delete_many(self,filter_):
+
+    def delete_many(self, filter_):
         raise NotImplementedError()
 
     def put(self, value, **kwargs):
