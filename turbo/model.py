@@ -84,7 +84,7 @@ class BaseBaseModel(mongo_model.AbstractModel):
         """
         return self.__collect.find(*args, **kwargs)
 
-    def update(self, spec, document, multi=False, **kwargs):
+    def update(self, filter_, document, multi=False, **kwargs):
         """update method
         """
         for opk in document.keys():
@@ -93,8 +93,35 @@ class BaseBaseModel(mongo_model.AbstractModel):
 
         if not document:
             raise ValueError("empty document update not allowed")
+        
+        if multi:
+            return self.__collect.update_many(filter_, document, **kwargs)
+        else:
+            return self.__collect.update_one(filter_, document, **kwargs)
+    
+    def update_one(self, filter_, document, **kwargs):
+        """update method
+        """
+        for opk in document.keys():
+            if not opk.startswith('$') or opk not in self._operators:
+                raise ValueError("invalid document update operator")
 
-        return self.__collect.update(spec, document, multi=multi, **kwargs)
+        if not document:
+            raise ValueError("empty document update not allowed")
+        
+        return self.__collect.update_one(filter_, document, **kwargs)
+    
+    def update_many(self, filter_, document, **kwargs):
+        """update method
+        """
+        for opk in document.keys():
+            if not opk.startswith('$') or opk not in self._operators:
+                raise ValueError("invalid document update operator")
+
+        if not document:
+            raise ValueError("empty document update not allowed")
+        
+        return self.__collect.update_one(filter_, document, **kwargs)
 
     def remove(self, spec_or_id=None, **kwargs):
         """collection remove method
@@ -109,7 +136,19 @@ class BaseBaseModel(mongo_model.AbstractModel):
         if spec_or_id is None:
             raise ValueError("not allowed remove all documents")
 
-        return self.__collect.remove(spec_or_id, **kwargs)
+        if kwargs.pop('multi') is True:
+            return self.__collect.delete_many(spec_or_id)
+        else:
+            return self.__collect.delete_one(spec_or_id)
+
+    def delete_many(self, filter_):
+        if isinstance(filter_, dict) and filter_== {}:
+            raise ValueError("not allowed remove all documents")
+
+        if filter_ is None:
+            raise ValueError("not allowed remove all documents")
+
+        return self.__collect.delete_many(spec_or_id)
 
     def put(self, value, **kwargs):
         if value:

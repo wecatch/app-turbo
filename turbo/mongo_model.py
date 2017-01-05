@@ -290,19 +290,22 @@ class AbstractModel(MixinModel):
             return str(self.field)
         return None
 
-    def insert(self, doc_or_docs, **kwargs):
+    def insert_one(self, document, **kwargs):
         raise NotImplementedError()
 
-    def save(self, to_save, **kwargs):
+    def find_one(self, filter_or_id=None, *args, **kwargs):
         raise NotImplementedError()
 
-    def find_one(self, spec_or_id=None, *args, **kwargs):
+    def update_many(self, filter_, update, *args, **kwargs):
         raise NotImplementedError()
 
-    def update(self, spec, document, multi=False, **kwargs):
+    def update_one(self, filter_, update, *args, **kwargs):
         raise NotImplementedError()
-
-    def remove(self, spec_or_id=None, **kwargs):
+    
+    def delete_one(self, filter_):
+        raise NotImplementedError()
+    
+    def delete_many(self,filter_):
         raise NotImplementedError()
 
     def put(self, value, **kwargs):

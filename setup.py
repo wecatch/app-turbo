@@ -10,7 +10,7 @@ install_requires = [
 
 ]
 
-for k in ['pymongo', 'requests', 'redis', 'docopt', 'jinja2']:
+for k in ['pymongo>=3.2', 'requests', 'redis', 'docopt', 'jinja2']:
     try:
         __import__(k)
     except ImportError:
