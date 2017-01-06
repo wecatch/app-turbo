@@ -37,7 +37,8 @@ class BaseBaseModel(mongo_model.AbstractModel):
         if check is True:
             return self.create(doc_or_docs, **kwargs)
 
-        return self.__collect.insert(doc_or_docs, **kwargs)
+        result = self.__collect.insert_one(doc_or_docs, **kwargs)
+        return result.inserted_id
 
     def save(self, to_save, **kwargs):
         """save method
@@ -81,17 +82,10 @@ class BaseBaseModel(mongo_model.AbstractModel):
     def update(self, filter_, document, multi=False, **kwargs):
         """update method
         """
-        for opk in document.keys():
-            if not opk.startswith('$') or opk not in self._operators:
-                raise ValueError("invalid document update operator")
-
-        if not document:
-            raise ValueError("empty document update not allowed")
-
         if multi:
-            return self.__collect.update_many(filter_, document, **kwargs)
+            return self.update_many(filter_, document, **kwargs)
         else:
-            return self.__collect.update_one(filter_, document, **kwargs)
+            return self.update_one(filter_, document, **kwargs)
 
     def update_one(self, filter_, document, **kwargs):
         """update method
@@ -115,7 +109,7 @@ class BaseBaseModel(mongo_model.AbstractModel):
         if not document:
             raise ValueError("empty document update not allowed")
 
-        return self.__collect.update_one(filter_, document, **kwargs)
+        return self.__collect.update_many(filter_, document, **kwargs)
 
     def remove(self, spec_or_id=None, **kwargs):
         """collection remove method

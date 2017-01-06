@@ -87,6 +87,8 @@ class BaseModelTest(unittest.TestCase):
         with self.assertRaises(ValueError):
             self.m.update({},{})
 
+        self.m.update({},{'$set':{'hellow': 1}}, multi=True)
+
     def test_remove(self):
         with self.assertRaises(Exception):
             self.m.remove({})
