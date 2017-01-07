@@ -91,6 +91,10 @@ class BaseModelTest(unittest.TestCase):
         with self.assertRaises(Exception):
             self.m.remove({})
 
+        for i in fake_ids:
+            self.m.remove({'_id': i})
+            self.assertIsNone(self.m.find_by_id(i))
+
     def test_insert_one(self):
         result = self.m.insert_one({'value': 0})
         self.assertIsNot(result.inserted_id, None)
@@ -103,6 +107,8 @@ class BaseModelTest(unittest.TestCase):
         self.assertIsNone(
             self.m.find_one({'_id': _id}, wrapper=True)['nokey'])
 
+        self.assertIsNone(self.m.find_one({'_id': ObjectId()}, wrapper=True))
+
     def test_find(self):
         self.assertGreater(list(self.m.find()), 0)
         for i in list(self.m.find()):
@@ -112,38 +118,32 @@ class BaseModelTest(unittest.TestCase):
         for i in list(self.m.find(wrapper=True)):
             self.assertIsNone(i['nokey'])
 
-    def test_find_one_wrapper(self):
-        # test find_one wrapper=True
-        self.assertTrue(self.m.find_one(wrapper=True)['rd'] is None)
+    def test_update_one(self):
+        with self.assertRaises(ValueError):
+            self.m.update_one({}, {'hello': 0})
 
-        # test find_one default wrapper=False
-        with self.assertRaises(KeyError):
-            self.m.find_one(wrapper=False)['rd']
+        self.m.update_one({}, {'$set': {'hellow': 0}})
 
-        # test find_one wrapper= True and return None
-        self.assertTrue(self.m.find_one({'_id': ObjectId()}, wrapper=True) is None)
+    def test_update_many(self):
+        with self.assertRaises(ValueError):
+            self.m.update_many({}, {'hello': 0})
 
-    def test_find_wrapper(self):
-        # test find wrapper=True return generator
-        one = self.m.find_one()
-        with self.assertRaises(KeyError):
-            one['keyerror']
+        self.m.update_many({}, {'$set': {'value': 1}})
+        for i in list(self.m.find()):
+            self.assertEqual(i['value'], 1)
 
-        one = self.m.find_one(wrapper=True)
-        self.assertEqual(one['keyerror'], None)
+    def test_delete_many(self):
+        with self.assertRaises(Exception):
+            self.m.delete_many({})
 
-        for one in self.m.find(limit=5):
-            with self.assertRaises(KeyError):
-                one['keyerror']
-
-        for one in self.m.find(limit=5, wrapper=True):
-            self.assertEqual(one['keyerror'], None)
+        for i in fake_ids:
+            self.m.delete_many({'_id': i})
+            self.assertIsNone(self.m.find_by_id(i))
 
     def test_put(self):
         value = 'hello word'
         s = StringIO.StringIO()
         s.write(value)
-
         # put
         file_id = self.m.put(s.getvalue())
         self.assertTrue(isinstance(file_id, ObjectId))
@@ -153,17 +153,18 @@ class BaseModelTest(unittest.TestCase):
         self.assertTrue(getattr(one, 'read', False), 'test get fail')
         self.assertEqual(one.read(), value)
 
-    def test_delete(self):
-        pass
-
     def test_find_by_id(self):
-        pass
-
-    def test_get_as_column(self):
-        pass
+        self.assertEqual(self.m.find_by_id(fake_ids[0])['_id'], fake_ids[0])
+        for index, i in enumerate(self.m.find_by_id(fake_ids[0:10])):
+            self.assertEqual(i['_id'], fake_ids[index])
 
     def test_get_as_dict(self):
-        pass
+        as_dict, as_list = self.m.get_as_dict({'_id': {'$in': fake_ids[0:10]}})
+        for index, i in enumerate(as_dict.keys()):
+            self.assertIn(i, fake_ids[0:10])
+
+        for i in as_list:
+            self.assertIn(i['_id'], fake_ids[0:10])
 
     def test_to_objectid(self):
         self.assertTrue(self.m.to_objectid(None) is None)
@@ -201,7 +202,7 @@ class BaseModelTest(unittest.TestCase):
         }
 
         result = self.m.create(record)
-        self.assertTrue(isinstance(result, ObjectId))
+        self.assertIsInstance(result, ObjectId)
 
     def test_inc(self):
         _id = self.m.create({'value': 1})
@@ -233,6 +234,7 @@ class BaseModelTest(unittest.TestCase):
 
     def log(self, one):
         print(one)
+
 
 if __name__ == '__main__':
     unittest.main()

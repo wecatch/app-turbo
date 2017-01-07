@@ -73,7 +73,7 @@ class BaseBaseModel(mongo_model.AbstractModel):
         if filter_ is None:
             raise ValueError("not allowed remove all documents")
 
-        if kwargs.pop('multi') is True:
+        if kwargs.pop('multi', False) is True:
             return self.__collect.delete_many(filter_)
         else:
             return self.__collect.delete_one(filter_)
@@ -137,18 +137,19 @@ class BaseBaseModel(mongo_model.AbstractModel):
 
         return self.__collect.delete_many(filter_)
 
-    def find_by_id(self, _id, column=None):
+    def find_by_id(self, _id, projection=None):
         """find record by _id
         """
         if isinstance(_id, list) or isinstance(_id, tuple):
-            return (self.find_by_id(i, column) for i in _id if i)
+            return (self.__collect.find_one(
+                {'_id': self._to_primary_key(i)}, projection) for i in _id if i)
 
         document_id = self._to_primary_key(_id)
 
         if document_id is None:
             return None
 
-        return self.__collect.find_one({'_id': document_id}, column)
+        return self.__collect.find_one({'_id': document_id}, projection)
 
     def remove_by_id(self, _id):
         if isinstance(_id, list) or isinstance(_id, tuple):
@@ -163,15 +164,12 @@ class BaseBaseModel(mongo_model.AbstractModel):
 
         return None
 
-    def get_as_dict(self, condition=None, column=None, skip=0, limit=0, sort=None):
-        if column is None:
-            column = self.column
-
-        as_list = self.__collect.find(condition, column, skip=skip, limit=limit, sort=sort)
+    def get_as_dict(self, condition=None, projection=None, skip=0, limit=0, sort=None):
+        as_list = self.__collect.find(condition, projection, skip=skip, limit=limit, sort=sort)
 
         as_dict, as_list = {}, []
         for i in as_list:
-            as_dict[str(i['_id'])] = i
+            as_dict[i['_id']] = i
             as_list.append(i)
 
         return as_dict, as_list
