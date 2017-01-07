@@ -243,6 +243,8 @@ class AbstractModel(MixinModel):
         '$push',
         '$pull'])
 
+    PRIMARY_KEY_TYPE = ObjectId
+
     def _init(self, db_name, _MONGO_DB_MAPPING):
         if _MONGO_DB_MAPPING is None:
             raise Exception("db mapping is invalid")
@@ -279,6 +281,12 @@ class AbstractModel(MixinModel):
 
         return _collect, _gridfs
 
+    def _to_primary_key(self, _id):
+        if self.PRIMARY_KEY_TYPE is ObjectId:
+            return self.to_objectid(_id)
+
+        return _id
+
     def __setitem__(self, k, v):
         setattr(self, k, v)
 
@@ -290,42 +298,7 @@ class AbstractModel(MixinModel):
             return str(self.field)
         return None
 
-    def insert_one(self, document, **kwargs):
-        raise NotImplementedError()
-
-    def find_one(self, filter_or_id=None, *args, **kwargs):
-        raise NotImplementedError()
-
-    def update_many(self, filter_, update, *args, **kwargs):
-        raise NotImplementedError()
-
-    def update_one(self, filter_, update, *args, **kwargs):
-        raise NotImplementedError()
-
-    def delete_one(self, filter_):
-        raise NotImplementedError()
-
-    def delete_many(self, filter_):
-        raise NotImplementedError()
-
-    def put(self, value, **kwargs):
-        """gridfs put method
-        """
-        raise NotImplementedError()
-
-    def delete(self, _id):
-        """gridfs delete method
-        """
-        raise NotImplementedError()
-
-    def get(self, _id):
-        """gridfs get method
-        """
-        raise NotImplementedError()
-
-    def read(self, _id):
-        """gridfs read method
-        """
+    def sub_collection(self, name):
         raise NotImplementedError()
 
     def find_by_id(self, _id, column=None):
@@ -341,6 +314,14 @@ class AbstractModel(MixinModel):
 
     def get_as_dict(self, condition=None, column=None, skip=0, limit=0, sort=None):
         raise NotImplementedError()
+
+    def _valide_update_document(self, document):
+        for opk in document.keys():
+            if not opk.startswith('$') or opk not in self._operators:
+                raise ValueError("invalid document update operator")
+
+        if not document:
+            raise ValueError("empty document update not allowed")
 
     def create(self, record=None, **args):
         raise NotImplementedError()
@@ -371,6 +352,26 @@ class AbstractModel(MixinModel):
         return record
 
     def inc(self, spec_or_id, key, num=1):
+        raise NotImplementedError()
+
+    def put(self, value, **kwargs):
+        """gridfs put method
+        """
+        raise NotImplementedError()
+
+    def delete(self, _id):
+        """gridfs delete method
+        """
+        raise NotImplementedError()
+
+    def get(self, _id):
+        """gridfs get method
+        """
+        raise NotImplementedError()
+
+    def read(self, _id):
+        """gridfs read method
+        """
         raise NotImplementedError()
 
     def write_action_call(self, name, *args, **kwargs):

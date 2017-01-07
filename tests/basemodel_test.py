@@ -16,7 +16,7 @@ from bson.objectid import ObjectId
 from pymongo import MongoClient
 import gridfs
 
-from util import unittest
+from util import unittest, fake_ids, fake_ids_2
 
 mc = MongoClient()
 
@@ -25,13 +25,13 @@ class Tag(BaseModel):
 
     name = 'tag'
     field = {
-        'list':     (list, []),
-        'imgid':    (ObjectId, None),
-        'uid':      (ObjectId, None),
-        'name':     (basestring, None),
-        'value':    (int, 0),
-        'atime':    (datetime.datetime, None),
-        'up':       (dict, {}),
+        'list': (list, []),
+        'imgid': (ObjectId, None),
+        'uid': (ObjectId, None),
+        'name': (basestring, None),
+        'value': (int, 0),
+        'atime': (datetime.datetime, None),
+        'up': (dict, {}),
     }
 
     def __init__(self):
@@ -49,70 +49,89 @@ class BaseModelTest(unittest.TestCase):
 
     def setUp(self):
         self.m = Tag()
+        self._make_data()
 
     def tearDown(self):
-        del self.m 
+        self._clear_data()
+        del self.m
+
+    def _make_data(self):
+        for index, i in enumerate(fake_ids):
+            self.m.insert_one({'_id': i, 'value': index})
+
+    def _clear_data(self):
+        for index, i in enumerate(fake_ids):
+            self.m.remove_by_id(i)
 
     def test_insert(self):
         _id = self.m.insert({'value': 0})
         self.assertIsNot(_id, None)
 
-    def test_write_action_call(self):
-        def func(se, name, *args, **kwargs):
-            self.assertEqual(name, 'save')
-
-        def func2(se, name, *args, **kwargs):
-            self.assertEqual(name, 'find')
-
-        self.m.save({'value': 0})
-        self.m.find()
-
     def test_save(self):
-        _id = self.m.insert({'value': 0})
+        _id = self.m.save({'value': 0})
         self.assertIsNot(_id, None)
-
-    def test_find_one(self):
-        _id = self.m.insert({'value': 0})
-        self.assertIsNot(self.m.find_one(), None)
-
-    def test_find(self):
-        self.assertGreater(list(self.m.find()), 0)
+        _id = self.m.save({'_id': _id, 'value': 10})
+        result = self.m.find_by_id(_id)
+        self.assertEqual(result['value'], 10)
 
     def test_update(self):
         with self.assertRaises(ValueError):
-            self.m.update({},{'hello': 0}) 
-        
-        self.m.update({},{'$set':{'hellow': 0}})
+            self.m.update({}, {'hello': 0})
+
+        self.m.update({}, {'$set': {'hellow': 0}})
 
         with self.assertRaises(ValueError):
-            self.m.update({},{})
+            self.m.update({}, {})
 
-        self.m.update({},{'$set':{'hellow': 1}}, multi=True)
+        self.m.update({}, {'$set': {'value': 1}}, multi=True)
+        for i in list(self.m.find()):
+            self.assertEqual(i['value'], 1)
 
     def test_remove(self):
         with self.assertRaises(Exception):
             self.m.remove({})
 
+    def test_insert_one(self):
+        result = self.m.insert_one({'value': 0})
+        self.assertIsNot(result.inserted_id, None)
+
+    def test_find_one(self):
+        _id = self.m.insert({'value': 100})
+        self.assertEqual(self.m.find_one({'_id': _id})['value'], 100)
+        with self.assertRaises(KeyError):
+            self.m.find_one({'_id': _id})['nokey']
+        self.assertIsNone(
+            self.m.find_one({'_id': _id}, wrapper=True)['nokey'])
+
+    def test_find(self):
+        self.assertGreater(list(self.m.find()), 0)
+        for i in list(self.m.find()):
+            with self.assertRaises(KeyError):
+                i['nokey']
+
+        for i in list(self.m.find(wrapper=True)):
+            self.assertIsNone(i['nokey'])
+
     def test_find_one_wrapper(self):
         # test find_one wrapper=True
         self.assertTrue(self.m.find_one(wrapper=True)['rd'] is None)
-        
+
         # test find_one default wrapper=False
         with self.assertRaises(KeyError):
             self.m.find_one(wrapper=False)['rd']
-        
+
         # test find_one wrapper= True and return None
-        self.assertTrue(self.m.find_one({'_id':ObjectId()}, wrapper=True) is None)
+        self.assertTrue(self.m.find_one({'_id': ObjectId()}, wrapper=True) is None)
 
     def test_find_wrapper(self):
-        # test find wrapper=True return generator 
+        # test find wrapper=True return generator
         one = self.m.find_one()
         with self.assertRaises(KeyError):
             one['keyerror']
-        
+
         one = self.m.find_one(wrapper=True)
         self.assertEqual(one['keyerror'], None)
-        
+
         for one in self.m.find(limit=5):
             with self.assertRaises(KeyError):
                 one['keyerror']
@@ -128,11 +147,11 @@ class BaseModelTest(unittest.TestCase):
         # put
         file_id = self.m.put(s.getvalue())
         self.assertTrue(isinstance(file_id, ObjectId))
-        
+
         # get
         one = self.m.get(file_id)
-        self.assertTrue(getattr(one,'read',False),'test get fail')
-        self.assertEqual(one.read(),value)
+        self.assertTrue(getattr(one, 'read', False), 'test get fail')
+        self.assertEqual(one.read(), value)
 
     def test_delete(self):
         pass
@@ -148,39 +167,39 @@ class BaseModelTest(unittest.TestCase):
 
     def test_to_objectid(self):
         self.assertTrue(self.m.to_objectid(None) is None)
-        self.assertEqual(self.m.to_objectid('52c8fb6f1d41c820f1124350'), 
-            ObjectId('52c8fb6f1d41c820f1124350'),'to_objectid is fail')
+        self.assertEqual(self.m.to_objectid('52c8fb6f1d41c820f1124350'),
+                         ObjectId('52c8fb6f1d41c820f1124350'), 'to_objectid is fail')
 
     def test_create_model(self):
         self.assertEqual(self.m.create_model('tag').find_one() is not None, True)
 
         with self.assertRaises(NotImplementedError):
             self.m.create_model('tag').create()
-    
+
     def test_pymongo_collection_method(self):
         self.assertEqual(self.m.full_name, 'test.tag')
-    
+
     def test_sub_collection(self):
         self.assertEqual(self.m.sub_collection('test').full_name, 'test.tag.test')
 
     def test_create(self):
         record = {
             'list': [
-                {'key': ObjectId(),'key2': 'test','key3': ObjectId()},
+                {'key': ObjectId(), 'key2': 'test', 'key3': ObjectId()},
                 10,
                 12,
                 13,
                 ['name', 'name', 'name', ObjectId(), ObjectId()],
                 datetime.datetime.now(),
             ],
-            'imgid':ObjectId(),
-            'up':{
+            'imgid': ObjectId(),
+            'up': {
                 'key1': ObjectId(),
                 'key2': ObjectId(),
                 'key3': ObjectId(),
             }
         }
-        
+
         result = self.m.create(record)
         self.assertTrue(isinstance(result, ObjectId))
 
@@ -197,13 +216,20 @@ class BaseModelTest(unittest.TestCase):
         one = self.m.to_one_str(self.m.find_one())
         self.assertTrue(isinstance(json.dumps(one), basestring))
 
+    def test_write_action_call(self):
+        def func(se, name, *args, **kwargs):
+            self.assertEqual(name, 'save')
+
+        def func2(se, name, *args, **kwargs):
+            self.assertEqual(name, 'find')
+
+        self.m.save({'value': 0})
+        self.m.find()
+
     def test_default_encode(self):
         self.assertTrue(isinstance(self.m.default_encode(ObjectId()), basestring))
-        self.assertTrue(isinstance(self.m.default_encode(datetime.datetime.now()),float))
+        self.assertTrue(isinstance(self.m.default_encode(datetime.datetime.now()), float))
         self.assertEqual(self.m.default_encode('string'), 'string')
-    
-    def test_get_as_dict(self):
-        pass
 
     def log(self, one):
         print(one)

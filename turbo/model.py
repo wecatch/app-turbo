@@ -33,9 +33,9 @@ class BaseBaseModel(mongo_model.AbstractModel):
     def insert(self, doc_or_docs, **kwargs):
         """Insert method
         """
-        check = kwargs.pop('check', False)
+        check = kwargs.pop('check', True)
         if check is True:
-            return self.create(doc_or_docs, **kwargs)
+            self._valid_record(doc_or_docs)
 
         result = self.__collect.insert_one(doc_or_docs, **kwargs)
         return result.inserted_id
@@ -43,19 +43,58 @@ class BaseBaseModel(mongo_model.AbstractModel):
     def save(self, to_save, **kwargs):
         """save method
         """
+        self._valid_record(to_save)
         if '_id' in to_save:
-            return self.__collect.replace_one({'_id': to_save['_id']}, to_save, **kwargs)
+            self.__collect.replace_one({'_id': to_save['_id']}, to_save, **kwargs)
+            return to_save['_id']
         else:
-            return self.insert(to_save, **kwargs)
+            result = self.__collect.insert_one(to_save, **kwargs)
+            return result.inserted_id
 
-    def find_one(self, spec_or_id=None, *args, **kwargs):
+    def update(self, filter_, document, multi=False, **kwargs):
+        """update method
+        """
+        self._valide_update_document(document)
+        if multi:
+            return self.__collect.update_many(filter_, document, **kwargs)
+        else:
+            return self.__collect.update_one(filter_, document, **kwargs)
+
+    def remove(self, filter_=None, **kwargs):
+        """collection remove method
+        warning:
+            if you want to remove all documents,
+            you must override _remove_all method to make sure
+            you understand the result what you do
+        """
+        if isinstance(filter_, dict) and filter_ == {}:
+            raise ValueError("not allowed remove all documents")
+
+        if filter_ is None:
+            raise ValueError("not allowed remove all documents")
+
+        if kwargs.pop('multi') is True:
+            return self.__collect.delete_many(filter_)
+        else:
+            return self.__collect.delete_one(filter_)
+
+    def insert_one(self, doc_or_docs, **kwargs):
+        """Insert method
+        """
+        check = kwargs.pop('check', True)
+        if check is True:
+            self._valid_record(doc_or_docs)
+
+        return self.__collect.insert_one(doc_or_docs, **kwargs)
+
+    def find_one(self, filter_=None, *args, **kwargs):
         """find_one method
         """
         wrapper = kwargs.pop('wrapper', False)
         if wrapper is True:
-            return self._wrapper_find_one(spec_or_id, *args, **kwargs)
+            return self._wrapper_find_one(filter_, *args, **kwargs)
 
-        return self.__collect.find_one(spec_or_id, *args, **kwargs)
+        return self.__collect.find_one(filter_, *args, **kwargs)
 
     def find(self, *args, **kwargs):
         """collection find method
@@ -68,10 +107,10 @@ class BaseBaseModel(mongo_model.AbstractModel):
         return self.__collect.find(*args, **kwargs)
 
     @mongo_model.convert_to_record
-    def _wrapper_find_one(self, spec_or_id=None, *args, **kwargs):
+    def _wrapper_find_one(self, filter_=None, *args, **kwargs):
         """Convert record to a dict that has no key error
         """
-        return self.__collect.find_one(spec_or_id, *args, **kwargs)
+        return self.__collect.find_one(filter_, *args, **kwargs)
 
     @mongo_model.convert_to_record
     def _wrapper_find(self, *args, **kwargs):
@@ -79,55 +118,15 @@ class BaseBaseModel(mongo_model.AbstractModel):
         """
         return self.__collect.find(*args, **kwargs)
 
-    def update(self, filter_, document, multi=False, **kwargs):
-        """update method
-        """
-        if multi:
-            return self.update_many(filter_, document, **kwargs)
-        else:
-            return self.update_one(filter_, document, **kwargs)
-
     def update_one(self, filter_, document, **kwargs):
         """update method
         """
-        for opk in document.keys():
-            if not opk.startswith('$') or opk not in self._operators:
-                raise ValueError("invalid document update operator")
-
-        if not document:
-            raise ValueError("empty document update not allowed")
-
+        self._valide_update_document(document)
         return self.__collect.update_one(filter_, document, **kwargs)
 
     def update_many(self, filter_, document, **kwargs):
-        """update method
-        """
-        for opk in document.keys():
-            if not opk.startswith('$') or opk not in self._operators:
-                raise ValueError("invalid document update operator")
-
-        if not document:
-            raise ValueError("empty document update not allowed")
-
+        self._valide_update_document(document)
         return self.__collect.update_many(filter_, document, **kwargs)
-
-    def remove(self, spec_or_id=None, **kwargs):
-        """collection remove method
-        warning:
-            if you want to remove all documents,
-            you must override _remove_all method to make sure
-            you understand the result what you do
-        """
-        if isinstance(spec_or_id, dict) and spec_or_id == {}:
-            raise ValueError("not allowed remove all documents")
-
-        if spec_or_id is None:
-            raise ValueError("not allowed remove all documents")
-
-        if kwargs.pop('multi') is True:
-            return self.__collect.delete_many(spec_or_id)
-        else:
-            return self.__collect.delete_one(spec_or_id)
 
     def delete_many(self, filter_):
         if isinstance(filter_, dict) and filter_ == {}:
@@ -138,27 +137,13 @@ class BaseBaseModel(mongo_model.AbstractModel):
 
         return self.__collect.delete_many(filter_)
 
-    def put(self, value, **kwargs):
-        if value:
-            return self.__gridfs.put(value, **kwargs)
-        return None
-
-    def delete(self, _id):
-        return self.__gridfs.delete(self.to_objectid(_id))
-
-    def get(self, _id):
-        return self.__gridfs.get(self.to_objectid(_id))
-
-    def read(self, _id):
-        return self.__gridfs.get(self.to_objectid(_id)).read()
-
     def find_by_id(self, _id, column=None):
         """find record by _id
         """
         if isinstance(_id, list) or isinstance(_id, tuple):
             return (self.find_by_id(i, column) for i in _id if i)
 
-        document_id = self.to_objectid(_id)
+        document_id = self._to_primary_key(_id)
 
         if document_id is None:
             return None
@@ -169,7 +154,7 @@ class BaseBaseModel(mongo_model.AbstractModel):
         if isinstance(_id, list) or isinstance(_id, tuple):
             return (self.remove_by_id(i) for i in _id)
 
-        return self.__collect.remove({'_id': self.to_objectid(_id)})
+        return self.__collect.remove({'_id': self._to_primary_key(_id)})
 
     def find_new_one(self, *args, **kwargs):
         cur = list(self.__collect.find(*args, **kwargs).limit(1).sort('_id', DESCENDING))
@@ -203,8 +188,22 @@ class BaseBaseModel(mongo_model.AbstractModel):
 
         return self.__collect.insert(record, **args)
 
-    def inc(self, spec_or_id, key, num=1):
-        self.__collect.update(spec_or_id, {'$inc': {key: num}})
+    def inc(self, filter_, key, num=1):
+        self.__collect.update(filter_, {'$inc': {key: num}})
+
+    def put(self, value, **kwargs):
+        if value:
+            return self.__gridfs.put(value, **kwargs)
+        return None
+
+    def delete(self, _id):
+        return self.__gridfs.delete(self.to_objectid(_id))
+
+    def get(self, _id):
+        return self.__gridfs.get(self.to_objectid(_id))
+
+    def read(self, _id):
+        return self.__gridfs.get(self.to_objectid(_id)).read()
 
 
 class BaseModel(BaseBaseModel):
