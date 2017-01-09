@@ -66,6 +66,25 @@ class BaseModelTest(unittest.TestCase):
     def test_insert(self):
         _id = self.m.insert({'value': 0})
         self.assertIsNot(_id, None)
+        record = {
+            'list': [
+                {'key': ObjectId(), 'key2': 'test', 'key3': ObjectId()},
+                10,
+                12,
+                13,
+                ['name', 'name', 'name', ObjectId(), ObjectId()],
+                datetime.datetime.now(),
+            ],
+            'imgid': ObjectId(),
+            'up': {
+                'key1': ObjectId(),
+                'key2': ObjectId(),
+                'key3': ObjectId(),
+            }
+        }
+
+        result = self.m.insert(record)
+        self.assertIsInstance(result, ObjectId)
 
     def test_save(self):
         _id = self.m.save({'value': 0})
@@ -139,19 +158,15 @@ class BaseModelTest(unittest.TestCase):
         for i in fake_ids:
             self.m.delete_many({'_id': i})
             self.assertIsNone(self.m.find_by_id(i))
-
-    def test_put(self):
-        value = 'hello word'
-        s = StringIO.StringIO()
-        s.write(value)
-        # put
-        file_id = self.m.put(s.getvalue())
-        self.assertTrue(isinstance(file_id, ObjectId))
-
-        # get
-        one = self.m.get(file_id)
-        self.assertTrue(getattr(one, 'read', False), 'test get fail')
-        self.assertEqual(one.read(), value)
+    
+    def test_remove_by_id(self):
+        for i in fake_ids[0:10]:
+            self.m.remove_by_id(i)
+            self.assertIsNone(self.m.find_by_id(i))
+        
+        self.m.remove_by_id(fake_ids[10:20])
+        for i in fake_ids[10:20]:
+            self.assertIsNone(self.m.find_by_id(i))
 
     def test_find_by_id(self):
         self.assertEqual(self.m.find_by_id(fake_ids[0])['_id'], fake_ids[0])
@@ -183,29 +198,8 @@ class BaseModelTest(unittest.TestCase):
     def test_sub_collection(self):
         self.assertEqual(self.m.sub_collection('test').full_name, 'test.tag.test')
 
-    def test_create(self):
-        record = {
-            'list': [
-                {'key': ObjectId(), 'key2': 'test', 'key3': ObjectId()},
-                10,
-                12,
-                13,
-                ['name', 'name', 'name', ObjectId(), ObjectId()],
-                datetime.datetime.now(),
-            ],
-            'imgid': ObjectId(),
-            'up': {
-                'key1': ObjectId(),
-                'key2': ObjectId(),
-                'key3': ObjectId(),
-            }
-        }
-
-        result = self.m.create(record)
-        self.assertIsInstance(result, ObjectId)
-
     def test_inc(self):
-        _id = self.m.create({'value': 1})
+        _id = self.m.insert({'value': 1})
         self.m.inc({'_id': _id}, 'value')
         self.assertEqual(self.m.find_by_id(_id)['value'], 2)
 
@@ -231,6 +225,19 @@ class BaseModelTest(unittest.TestCase):
         self.assertTrue(isinstance(self.m.default_encode(ObjectId()), basestring))
         self.assertTrue(isinstance(self.m.default_encode(datetime.datetime.now()), float))
         self.assertEqual(self.m.default_encode('string'), 'string')
+
+    def test_put(self):
+        value = 'hello word'
+        s = StringIO.StringIO()
+        s.write(value)
+        # put
+        file_id = self.m.put(s.getvalue())
+        self.assertTrue(isinstance(file_id, ObjectId))
+
+        # get
+        one = self.m.get(file_id)
+        self.assertTrue(getattr(one, 'read', False), 'test get fail')
+        self.assertEqual(one.read(), value)
 
     def log(self, one):
         print(one)

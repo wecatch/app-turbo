@@ -34,11 +34,18 @@ class BaseBaseModel(mongo_model.AbstractModel):
         """Insert method
         """
         check = kwargs.pop('check', True)
-        if check is True:
-            self._valid_record(doc_or_docs)
 
-        result = self.__collect.insert_one(doc_or_docs, **kwargs)
-        return result.inserted_id
+        if isinstance(doc_or_docs, dict):
+            if check is True:
+                doc_or_docs = self._valid_record(doc_or_docs)
+            result = self.__collect.insert_one(doc_or_docs, **kwargs)
+            return self._to_primary_key(result.inserted_id)
+        else:
+            if check is True:
+                for i in record:
+                    i = self._valid_record(i)
+            result = self.__collect.insert_many(doc_or_docs, **kwargs)
+            return result.inserted_ids
 
     def save(self, to_save, **kwargs):
         """save method
@@ -86,6 +93,16 @@ class BaseBaseModel(mongo_model.AbstractModel):
             self._valid_record(doc_or_docs)
 
         return self.__collect.insert_one(doc_or_docs, **kwargs)
+
+    def insert_many(self, doc_or_docs, **kwargs):
+        """Insert method
+        """
+        check = kwargs.pop('check', True)
+        if check is True:
+            for i in doc_or_docs:
+                i = self._valid_record(i)
+
+        return self.__collect.insert_many(doc_or_docs, **kwargs)
 
     def find_one(self, filter_=None, *args, **kwargs):
         """find_one method
@@ -153,7 +170,7 @@ class BaseBaseModel(mongo_model.AbstractModel):
 
     def remove_by_id(self, _id):
         if isinstance(_id, list) or isinstance(_id, tuple):
-            return (self.remove_by_id(i) for i in _id)
+            return self.__collect.delete_many({'_id': {'$in': [self._to_primary_key(i) for i in _id]}})
 
         return self.__collect.remove({'_id': self._to_primary_key(_id)})
 
@@ -173,18 +190,6 @@ class BaseBaseModel(mongo_model.AbstractModel):
             as_list.append(i)
 
         return as_dict, as_list
-
-    def create(self, record=None, **args):
-        """Init the new record with field dict
-        """
-        if isinstance(record, list) or isinstance(record, tuple):
-            for i in record:
-                i = self._valid_record(i)
-
-        if isinstance(record, dict):
-            record = self._valid_record(record)
-
-        return self.__collect.insert(record, **args)
 
     def inc(self, filter_, key, num=1):
         self.__collect.update(filter_, {'$inc': {key: num}})

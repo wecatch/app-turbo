@@ -323,9 +323,6 @@ class AbstractModel(MixinModel):
         if not document:
             raise ValueError("empty document update not allowed")
 
-    def create(self, record=None, **args):
-        raise NotImplementedError()
-
     def _valid_record(self, record):
         if not isinstance(record, dict):
             raise Exception("%s record is not dict" % record)
