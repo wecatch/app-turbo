@@ -6,10 +6,11 @@ import tornado.options
 import setting
 import turbo.register
 import turbo.app
-#uncomment this to init state manager: store 
+# uncomment this to init state manager: store
 #import store
 
-turbo.register.register_app(setting.SERVER_NAME, setting.TURBO_APP_SETTING, setting.WEB_APPLICATION_SETTING, __file__, globals())
+turbo.register.register_app(setting.SERVER_NAME, setting.TURBO_APP_SETTING,
+                            setting.WEB_APPLICATION_SETTING, __file__, globals())
 
 define("port", default=8888, type=int)
 

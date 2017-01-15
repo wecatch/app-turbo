@@ -1,21 +1,18 @@
-#-*- coding:utf-8 -*-
+# -*- coding:utf-8 -*-
 from __future__ import absolute_import, division, print_function, with_statement
 
-import sys
 import signal
-import random
 import time
-import logging
 import requests
 import multiprocessing
-import time
 import os
-
 
 from turbo import app
 from turbo.conf import app_config
 from turbo import register
 from turbo.session import RedisStore
+
+from util import unittest, port_is_used
 
 app_config.app_name = 'app_test'
 app_config.web_application_setting = {
@@ -23,7 +20,8 @@ app_config.web_application_setting = {
     'cookie_secret': 'asdf/asdfiw872*&^2/'
 }
 
-from turbo.test.util import unittest
+
+PORT = None
 
 
 class HomeHandler(app.BaseHandler):
@@ -70,27 +68,40 @@ class RedisStoreHandler(app.BaseHandler):
         self.write('put')
 
 
+def setUpModule():
+    global PORT
+    PORT = 8888
+    while True:
+        if not port_is_used(PORT):
+            break
+        PORT += 1
+
+
 def run_server():
+    global PORT
     register.register_url('/', HomeHandler)
     register.register_url('/redis', RedisStoreHandler)
-    app.start()
+    app.start(PORT)
 
 
 class SessionTest(unittest.TestCase):
 
     def setUp(self):
+        global PORT
         server = multiprocessing.Process(target=run_server)
         server.start()
-        self.home_url = 'http://localhost:8888'
-        self.redis_url = 'http://localhost:8888/redis'
+        self.home_url = 'http://localhost:%s' % PORT
+        self.redis_url = 'http://localhost:%s/redis' % PORT
         self.pid = server.pid
         time.sleep(1)
 
     def tearDown(self):
         os.kill(self.pid, signal.SIGKILL)
-        
+
     def test_session(self):
-        resp = requests.get(self.home_url, headers={'refer':'http://127.0.0.1:8888'})
+        global PORT
+        resp = requests.get(
+            self.home_url, headers={'refer': 'http://127.0.0.1:%s' % PORT})
         self.assertEqual(resp.status_code, 200)
         cookies = resp.cookies
         resp = requests.post(self.home_url, cookies=cookies)
@@ -100,7 +111,9 @@ class SessionTest(unittest.TestCase):
         self.assertEqual(resp.status_code, 200)
 
     def test_redis_store_session(self):
-        resp = requests.get(self.redis_url, headers={'refer':'http://127.0.0.1:8888'})
+        global PORT
+        resp = requests.get(
+            self.redis_url, headers={'refer': 'http://127.0.0.1:%s' % PORT})
         self.assertEqual(resp.status_code, 200)
         cookies = resp.cookies
         resp = requests.post(self.redis_url, cookies=cookies)
@@ -108,6 +121,7 @@ class SessionTest(unittest.TestCase):
 
         resp = requests.put(self.redis_url, cookies=cookies)
         self.assertEqual(resp.status_code, 200)
+
 
 if __name__ == '__main__':
     unittest.main()

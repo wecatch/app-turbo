@@ -1,9 +1,9 @@
 # -*- coding:utf-8 -*-
 
-# installed app list 
+# installed app list
 INSTALLED_APPS = (
- 	'app', 
+    'app',
 )
 
-#language
+# language
 LANG = 'zh_CN'

@@ -1,22 +1,20 @@
 from __future__ import absolute_import, division, print_function, with_statement
 
-import time
-import os
-import socket
 import multiprocessing
-import signal
+import os
 import shutil
+import signal
+import socket
 import tempfile
-import logging
-
+import time
 
 import requests
-
-from turbo.test.util import unittest
 from turbo import app
-from turbo.conf import app_config
 from turbo import register
+from turbo.conf import app_config
 from turbo.template import turbo_jinja2
+from util import unittest
+
 
 sess = requests.session()
 sess.keep_alive = False
@@ -24,15 +22,13 @@ sess.keep_alive = False
 app_config.app_name = 'app_test'
 app_config.app_setting['template'] = 'jinja2'
 tmp_source = tempfile.mkdtemp()
-TEMPLATE_PATH  = os.path.join(tmp_source, "templates")
+TEMPLATE_PATH = os.path.join(tmp_source, "templates")
 app_config.web_application_setting = {
     'xsrf_cookies': False,
     'cookie_secret': 'adasfd',
     'template_path': TEMPLATE_PATH,
     'debug': True,
 }
-
-#logger = logging.getLogger()
 
 
 class HomeHandler(app.BaseHandler):
@@ -69,11 +65,11 @@ def setUpModule():
         if not is_used(port):
             break
         port += 1
-            
+
     server = multiprocessing.Process(target=run_server, args=(port,))
     server.start()
     global PID, URL
-    URL = 'http://localhost:%s'%port
+    URL = 'http://localhost:%s' % port
     PID = server.pid
 
 
@@ -83,14 +79,15 @@ def tearDownModule():
 
 HTML = """{{'abcdefg' | upper}}"""
 
+
 class AppTest(unittest.TestCase):
 
     def setUp(self):
-        global URL 
+        global URL
         self.home_url = URL
         try:
             shutil.rmtree(TEMPLATE_PATH)
-        except Exception, e:
+        except:
             pass
         os.makedirs(TEMPLATE_PATH)
         with open(os.path.join(TEMPLATE_PATH, 'index.html'), 'w') as f:
@@ -104,7 +101,7 @@ class AppTest(unittest.TestCase):
     def tearDown(self):
         try:
             shutil.rmtree(TEMPLATE_PATH)
-        except Exception, e:
+        except:
             pass
         finally:
             os.removedirs(tmp_source)

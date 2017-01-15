@@ -1,12 +1,10 @@
 from __future__ import absolute_import, division, print_function, with_statement
 
 
-import inspect
 import sys
 
-from turbo.util import import_object, camel_to_underscore
 from turbo.log import helper_log
-from turbo import model
+from turbo.util import import_object, camel_to_underscore
 
 
 class _HelperObjectDict(dict):
@@ -30,9 +28,11 @@ def install_helper(installing_helper_list, package_space):
         all_modules = getattr(package, '__all__', [])
         for m in all_modules:
             try:
-                module =  import_object('.'.join(['helpers',item, m]), package_space)
-            except Exception as e:
-                helper_log.error('module helpers.%s.%s Import Error'%(item, m), exc_info=True)
+                module = import_object(
+                    '.'.join(['helpers', item, m]), package_space)
+            except:
+                helper_log.error('module helpers.%s.%s Import Error' %
+                                 (item, m), exc_info=True)
                 sys.exit(0)
 
             for model_name in getattr(module, 'MODEL_SLOTS', []):

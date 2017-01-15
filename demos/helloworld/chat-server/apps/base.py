@@ -21,7 +21,7 @@ class BaseHandler(MixinHandler):
     # }
     # session_object = SessionObject
     # session_store = SessionStore()
-    
+
     def initialize(self):
         super(BaseHandler, self).initialize()
         self._params = self.parameter
@@ -50,7 +50,7 @@ class ErrorHandler(BaseHandler):
     def initialize(self, status_code):
         super(ErrorHandler, self).initialize()
         self.set_status(status_code)
- 
+
     def prepare(self):
         if not self.is_ajax():
             if self.get_status() == 404:

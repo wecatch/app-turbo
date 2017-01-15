@@ -6,13 +6,14 @@ import time
 from bson.objectid import ObjectId
 from pymongo import ASCENDING, DESCENDING
 
-#todo change name
+# todo change name
 import turbo.model
 import turbo.util
 
 from settings import MONGO_DB_MAPPING as _MONGO_DB_MAPPING
 
 _PACKAGE_SPACE = globals()
+
 
 class MixinModel(turbo.model.MixinModel):
 

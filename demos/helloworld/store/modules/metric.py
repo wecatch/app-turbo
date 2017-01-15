@@ -5,6 +5,7 @@ state = State(__file__)
 
 state.qps = 0
 
+
 @register(mutation)
 def inc_qps():
     state.qps += 1

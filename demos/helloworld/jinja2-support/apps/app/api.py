@@ -11,4 +11,3 @@ class HomeHandler(BaseHandler):
 
     def GET(self):
         pass
-

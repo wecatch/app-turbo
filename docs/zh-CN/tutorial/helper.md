@@ -14,11 +14,11 @@ helpers/
    │   ├── category.py
    │   ├── image.py
    │   ├── img2tag.py
-   │   ├── __init__.py       # 模块的内建属性__all__ 中配置需要导入的module 
+   │   ├── __init__.py       # 模块的内建属性__all__ 中配置需要导入的module
    │   └── tag.py
    ├── __init__.py           # 自动导入helper 目录下面的 helper
    ├── settings.py           # helper 中用到的全局公有变量和helper安装列表
-   
+
 ```
 
 #### helper 使用说明
@@ -39,7 +39,7 @@ from helpers import wallpaper as wallpaper_helper
 
 # __init__.py
 
-__all__ = ['album', 'img2tag']  # 导出 album.py 和 img2tag.py 
+__all__ = ['album', 'img2tag']  # 导出 album.py 和 img2tag.py
 
 ```
 
@@ -52,10 +52,10 @@ __all__ = ['album', 'img2tag']  # 导出 album.py 和 img2tag.py
 
 MODEL_SLOTS = ['Album', 'FavorAlbum']  # 导出 album.py 中的 Album 和 FavorAlbum 类
 
-``` 
+```
 
 
-每个导出的类都将以**实例**和**类**变量两种形式存在于所在的 helper 的命名空间中，实例变量的的名称被自动转换为 underscore 模式，例如 
+每个导出的类都将以**实例**和**类**变量两种形式存在于所在的 helper 的命名空间中，实例变量的的名称被自动转换为 underscore 模式，例如
 
 
 ```python

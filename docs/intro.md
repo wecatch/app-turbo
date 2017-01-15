@@ -45,14 +45,14 @@ cd app-turbo
 python setup.py install
 ```
 
-## Hello, world 
+## Hello, world
 
 
 ```bash
 turbo-admin startproject my_turbo_app
 cd my_turbo_app
 cd app-server
-python main.py 
+python main.py
 ```
 
 Open your broswer and visite [http://localhost:8888](http://localhost:8888)

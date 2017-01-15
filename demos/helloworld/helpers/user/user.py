@@ -13,6 +13,6 @@ MODEL_SLOTS = ['User']
 
 
 class User(user_model.User):
-    
+
     def hello_user(self):
         self.instance('user.User').find_one()

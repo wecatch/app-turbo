@@ -1,10 +1,10 @@
 from __future__ import absolute_import, division, print_function, with_statement
 
-from copy import deepcopy
 
 class ObjectDict(dict):
     """Makes a dictionary behave like an object, with attribute-style access.
     """
+
     def __getattr__(self, name):
         try:
             return self[name]
@@ -16,15 +16,15 @@ class ObjectDict(dict):
 
 
 class AppConfig(object):
-    
+
     _cookie_session_config = ObjectDict(
         name='session_id',
         cookie_domain=None,
         cookie_path='/',
         cookie_expires=86400,  # cookie expired  24 hours in seconds
-        secure = True,
-        secret_key='fLjUfxqXtfNoIldA0A0J', # generate session id,
-        timeout=86400, # session timeout 24 hours in seconds
+        secure=True,
+        secret_key='fLjUfxqXtfNoIldA0A0J',  # generate session id,
+        timeout=86400,  # session timeout 24 hours in seconds
     )
 
     _store_config = ObjectDict(

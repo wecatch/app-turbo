@@ -1,6 +1,8 @@
 from __future__ import absolute_import, division, print_function, with_statement
 
-import os, time, base64
+import os
+import time
+import base64
 from copy import deepcopy
 try:
     import cPickle as pickle
@@ -22,7 +24,7 @@ from turbo.log import session_log
 class Session(object):
 
     __slots__ = ['store', 'handler', 'app', '_data', '_dirty', '_config',
-        '_initializer', 'session_id', '_session_object', '_session_name']
+                 '_initializer', 'session_id', '_session_object', '_session_name']
 
     def __init__(self, app, handler, store, initializer, session_config=None, session_object=None):
         self.handler = handler
@@ -35,8 +37,9 @@ class Session(object):
 
         self._session_name = self._config.name
 
-        self._session_object = (session_object or CookieObject)(app, handler, self.store, self._config)
-        
+        self._session_object = (session_object or CookieObject)(
+            app, handler, self.store, self._config)
+
         self._data = ObjectDict()
         self._initializer = initializer
 
@@ -47,7 +50,8 @@ class Session(object):
 
     def __getitem__(self, name):
         if name not in self._data:
-            session_log.error('%s key not exist in %s session' % (name, self.session_id))
+            session_log.error('%s key not exist in %s session' %
+                              (name, self.session_id))
 
         return self._data.get(name, None)
 
@@ -67,14 +71,14 @@ class Session(object):
 
     def __getattr__(self, name):
         return getattr(self._data, name)
-    
+
     def __setattr__(self, name, value):
         if name in self.__slots__:
             super(Session, self).__setattr__(name, value)
         else:
             self._dirty = True
             setattr(self._data, name, value)
-        
+
     def __delattr__(self, name):
         delattr(self._data, name)
         self._dirty = True
@@ -131,7 +135,6 @@ class Session(object):
 
 class SessionObject(object):
 
-
     def __init__(self, app, handler, store, session_config):
         self.app = app
         self.handler = handler
@@ -158,7 +161,8 @@ class SessionObject(object):
         while True:
             rand = os.urandom(16)
             now = time.time()
-            session_id = sha1("%s%s%s%s" %(rand, now, self.handler.request.remote_ip, secret_key))
+            session_id = sha1("%s%s%s%s" % (
+                rand, now, self.handler.request.remote_ip, secret_key))
             session_id = session_id.hexdigest()
             if session_id not in self.store:
                 break
@@ -182,11 +186,11 @@ class CookieObject(SessionObject):
         cookie_path = self._config.cookie_path
         cookie_expires = self._config.cookie_expires
         if self._config.secure:
-            return self.handler.set_secure_cookie(name, value,
-                expires_days=cookie_expires/(3600*24), domain=cookie_domain, path=cookie_path)
+            return self.handler.set_secure_cookie(
+                name, value, expires_days=cookie_expires / (3600 * 24), domain=cookie_domain, path=cookie_path)
         else:
             return self.handler.set_cookie(name, value, expires=cookie_expires, domain=cookie_domain, path=cookie_path)
-    
+
     def _get_cookie(self, name):
         if self._config.secure:
             return self.handler.get_secure_cookie(name)
@@ -251,26 +255,27 @@ class DiskStore(Store):
             ...
         KeyError: 'a'
     """
+
     def __init__(self, root):
         # if the storage root doesn't exists, create it.
         if not os.path.exists(root):
             os.makedirs(
-                    os.path.abspath(root)
-                    )
+                os.path.abspath(root)
+            )
         self.root = root
 
     def _get_path(self, key):
-        if os.path.sep in key: 
-            raise ValueError, "Bad key: %s" % repr(key)
+        if os.path.sep in key:
+            raise ValueError('Bad key: %s' % repr(key))
         return os.path.join(self.root, key)
-    
+
     def __contains__(self, key):
         path = self._get_path(key)
         return os.path.exists(path)
 
     def __getitem__(self, key):
         path = self._get_path(key)
-        if os.path.exists(path): 
+        if os.path.exists(path):
             pickled = open(path).read()
             return self.decode(pickled)
         else:
@@ -278,12 +283,12 @@ class DiskStore(Store):
 
     def __setitem__(self, key, value):
         path = self._get_path(key)
-        pickled = self.encode(value)    
+        pickled = self.encode(value)
         try:
             f = open(path, 'w')
             try:
                 f.write(pickled)
-            finally: 
+            finally:
                 f.close()
         except IOError:
             pass
@@ -292,20 +297,21 @@ class DiskStore(Store):
         path = self._get_path(key)
         if os.path.exists(path):
             os.remove(path)
-    
+
     def cleanup(self, timeout):
         now = time.time()
         for f in os.listdir(self.root):
             path = self._get_path(f)
             atime = os.stat(path).st_atime
-            if now - atime > timeout :
+            if now - atime > timeout:
                 os.remove(path)
 
 
 class RedisStore(Store):
 
     def __init__(self, **kwargs):
-        self.timeout = kwargs.get('timeout') or app_config.session_config.timeout
+        self.timeout = kwargs.get(
+            'timeout') or app_config.session_config.timeout
 
     def __contains__(self, key):
         return self.get_connection(key).exists(key)

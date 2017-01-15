@@ -10,12 +10,12 @@ Model has two meanings, one means `model Class`, the other means package which e
 
 ```
 models
-├── __init__.py         
+├── __init__.py  
 ├── settings.py            # global setting for all models
 ├── base.py                # mongodb database instance mappings
-├── user                   
+├── user  
 │   ├── __init__.py
-│   ├── base.py            
+│   ├── base.py  
 │   ├── model.py           # all model Class, each represents one mongodb collection
 │   └── setting.py         # setting for user model
 
@@ -31,8 +31,8 @@ To create a model, first create a package below in models, for example named wit
 ```bash
 user
 ├──__init__.py
-├── base.py            
-├── model.py           
+├── base.py  
+├── model.py  
 └── setting.py  
 
 ```
@@ -42,9 +42,9 @@ Put code in `base.py`
 
 ```python
 
-# base.py 
+# base.py
 
-from models.base import * 
+from models.base import *
 
 class Model(BaseModel):
 
@@ -59,7 +59,7 @@ Create `Class` inherited from `turbo.model.BaseModel`
 ```
 from base import *         # import BaseModel from base
 
-class User2img(Model): 
+class User2img(Model):
 
     name = 'user2img'      # collection 的名字
 

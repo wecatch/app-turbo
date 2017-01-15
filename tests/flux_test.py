@@ -1,30 +1,33 @@
 from __future__ import absolute_import, division, print_function, with_statement
 
-import unittest
+from util import unittest
 
 from turbo.flux import Mutation, register, dispatch, register_dispatch, State, state
 
 mutation = Mutation('flux_test')
 
+
 @register(mutation)
 def increase_rank(rank):
-    return rank+1
+    return rank + 1
 
 
 @register(mutation)
 def decrease_rank(rank):
-    return rank-1
+    return rank - 1
 
 
 @register_dispatch('flux_test', 'increase_rank')
 def increase(rank):
     pass
 
+
 def decrease(rank):
     return dispatch('flux_test', 'decrease_rank', rank)
 
 tstate = State('test')
 tstate.count = 0
+
 
 class FluxTest(unittest.TestCase):
 
@@ -53,4 +56,3 @@ class FluxTest(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
-

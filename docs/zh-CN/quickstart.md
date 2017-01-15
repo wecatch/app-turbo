@@ -14,7 +14,7 @@ pip install turbo
 
 ```sh
 
-git clone https://github.com/wecatch/app-turbo.git 
+git clone https://github.com/wecatch/app-turbo.git
 cd app-turbo
 python setup.py install
 
@@ -30,7 +30,7 @@ python setup.py install
 turbo-admin startproject project_name
 cd project_name
 cd app_name
-python main.py 
+python main.py
 
 ```
 

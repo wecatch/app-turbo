@@ -10,6 +10,7 @@ state = State(__file__)
 
 
 class MessageBuffer(object):
+
     def __init__(self):
         self.waiters = set()
         self.cache = []

@@ -12,18 +12,18 @@ App-server is a web application, be made of one or more sub app, each sub app ea
     ├── apps
     │   ├── base.py
     │   ├── __init__.py
-    │   ├── settings.py                
+    │   ├── settings.py  
     │   └── user                       # sub app user
     │       ├── app.py
     │       ├── base.py
     │       ├── __init__.py
     │       ├── setting.py
     ├── main.py                        # entry
-    ├── setting.py                     
-    ├── templates                      
+    ├── setting.py  
+    ├── templates  
     │   └── user
     │       └── index.html
-    ├── static                         
+    ├── static  
     │   └── js
     │       └── jquery.js
 

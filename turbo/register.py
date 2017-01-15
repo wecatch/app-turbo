@@ -1,17 +1,14 @@
 from __future__ import absolute_import, division, print_function, with_statement
 
 import os
-import logging
 
 from turbo.conf import app_config
-from turbo.util import join_sys_path, get_base_dir, import_object
-import turbo.helper
-from turbo.helper import install_helper
+from turbo.util import get_base_dir, import_object
 
 
 def _install_app(package_space):
     for app in getattr(import_object('apps.settings', package_space), 'INSTALLED_APPS'):
-       _ = import_object('.'.join(['apps', app]), package_space)        
+        import_object('.'.join(['apps', app]), package_space)
 
 
 def register_app(app_name, app_setting, web_application_setting, mainfile, package_space):
@@ -30,9 +27,9 @@ def register_app(app_name, app_setting, web_application_setting, mainfile, packa
 
 def register_url(url, handler, name=None, kwargs=None):
     """insert url into tornado application handlers group
-    
-    :arg str url: url 
-    :handler object handler: url mapping handler 
+
+    :arg str url: url
+    :handler object handler: url mapping handler
     :name reverse url name
     :kwargs dict tornado handler initlize args
     """
@@ -45,9 +42,9 @@ def register_url(url, handler, name=None, kwargs=None):
         return
 
     app_config.urls.append((url, handler, kwargs, name))
-    
+
 
 def register_group_urls(prefix, urls):
     for item in urls:
         url, handler = item[0:2]
-        register_url(prefix+url, handler, *item[2:])
+        register_url(prefix + url, handler, *item[2:])

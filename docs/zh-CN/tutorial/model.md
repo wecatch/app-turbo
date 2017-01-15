@@ -7,10 +7,10 @@ model 是 mongodb collection 的简单反射，它包含了 collection 中每个
 
 ```
 models
-├── __init__.py         
+├── __init__.py  
 ├── settings.py            # model 的全局配置, 数据库连接等的配置
 ├── base.py                # 各个db 所需要的数据库映射配置初始化, 继承model所需要的 collection 操作等
-├── user                   
+├── user  
 │   ├── __init__.py
 │   ├── base.py            # 每个 model 连接的 db 指定
 │   ├── model.py           # model 对应 db 的所有 colletion 结构
@@ -33,9 +33,9 @@ models
 
 ```python
 
-# base.py 
+# base.py
 
-from models.base import * 
+from models.base import *
 
 class Model(BaseModel):
 
@@ -50,7 +50,7 @@ class Model(BaseModel):
 ```
 from base import *
 
-class User2img(Model): 
+class User2img(Model):
 
     name = 'user2img'      # collection 的名字
 

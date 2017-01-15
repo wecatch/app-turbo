@@ -1,6 +1,6 @@
 #-*- coding:utf-8 -*-
 
-# installed helper list 
+# installed helper list
 INSTALLED_HELPERS = (
     'user',
 )
