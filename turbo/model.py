@@ -10,21 +10,21 @@ from bson.objectid import ObjectId
 from pymongo import DESCENDING, collection
 
 from turbo import mongo_model
-from turbo.log import model_log
 
 
 class BaseBaseModel(mongo_model.AbstractModel):
     """class implement almost all mongodb collection method
     """
 
-    def __init__(self, db_name='test', _MONGO_DB_MAPPING=None):
+    def __init__(self, db_name='test', _mongo_db_mapping=None):
         self.__collect, self.__gridfs = super(
-            BaseBaseModel, self)._init(db_name, _MONGO_DB_MAPPING)
+            BaseBaseModel, self)._init(db_name, _mongo_db_mapping)
 
     def __getattr__(self, k):
         attr = getattr(self.__collect, k)
         if isinstance(attr, collection.Collection):
-            raise AttributeError("model object '%s' has not attribute '%s'" % (self.name, k))
+            raise AttributeError(
+                "model object '%s' has not attribute '%s'" % (self.name, k))
         return attr
 
     def sub_collection(self, name):
@@ -34,16 +34,15 @@ class BaseBaseModel(mongo_model.AbstractModel):
         """Insert method
         """
         check = kwargs.pop('check', True)
-
         if isinstance(doc_or_docs, dict):
             if check is True:
                 doc_or_docs = self._valid_record(doc_or_docs)
             result = self.__collect.insert_one(doc_or_docs, **kwargs)
-            return self._to_primary_key(result.inserted_id)
+            return result.inserted_id
         else:
             if check is True:
-                for i in record:
-                    i = self._valid_record(i)
+                for d in doc_or_docs:
+                    d = self._valid_record(d)
             result = self.__collect.insert_many(doc_or_docs, **kwargs)
             return result.inserted_ids
 
@@ -52,7 +51,8 @@ class BaseBaseModel(mongo_model.AbstractModel):
         """
         self._valid_record(to_save)
         if '_id' in to_save:
-            self.__collect.replace_one({'_id': to_save['_id']}, to_save, **kwargs)
+            self.__collect.replace_one(
+                {'_id': to_save['_id']}, to_save, **kwargs)
             return to_save['_id']
         else:
             result = self.__collect.insert_one(to_save, **kwargs)
@@ -75,15 +75,15 @@ class BaseBaseModel(mongo_model.AbstractModel):
             you understand the result what you do
         """
         if isinstance(filter_, dict) and filter_ == {}:
-            raise ValueError("not allowed remove all documents")
+            raise ValueError('not allowed remove all documents')
 
         if filter_ is None:
-            raise ValueError("not allowed remove all documents")
+            raise ValueError('not allowed remove all documents')
 
         if kwargs.pop('multi', False) is True:
-            return self.__collect.delete_many(filter_)
+            return self.__collect.delete_many(filter_, **kwargs)
         else:
-            return self.__collect.delete_one(filter_)
+            return self.__collect.delete_one(filter_, **kwargs)
 
     def insert_one(self, doc_or_docs, **kwargs):
         """Insert method
@@ -147,10 +147,10 @@ class BaseBaseModel(mongo_model.AbstractModel):
 
     def delete_many(self, filter_):
         if isinstance(filter_, dict) and filter_ == {}:
-            raise ValueError("not allowed remove all documents")
+            raise ValueError('not allowed remove all documents')
 
         if filter_ is None:
-            raise ValueError("not allowed remove all documents")
+            raise ValueError('not allowed remove all documents')
 
         return self.__collect.delete_many(filter_)
 
@@ -158,8 +158,8 @@ class BaseBaseModel(mongo_model.AbstractModel):
         """find record by _id
         """
         if isinstance(_id, list) or isinstance(_id, tuple):
-            return (self.__collect.find_one(
-                {'_id': self._to_primary_key(i)}, projection) for i in _id if i)
+            return list(self.__collect.find(
+                {'_id': {'$in': [self._to_primary_key(i) for i in _id]}}, projection))
 
         document_id = self._to_primary_key(_id)
 
@@ -170,19 +170,22 @@ class BaseBaseModel(mongo_model.AbstractModel):
 
     def remove_by_id(self, _id):
         if isinstance(_id, list) or isinstance(_id, tuple):
-            return self.__collect.delete_many({'_id': {'$in': [self._to_primary_key(i) for i in _id]}})
+            return self.__collect.delete_many(
+                {'_id': {'$in': [self._to_primary_key(i) for i in _id]}})
 
         return self.__collect.remove({'_id': self._to_primary_key(_id)})
 
     def find_new_one(self, *args, **kwargs):
-        cur = list(self.__collect.find(*args, **kwargs).limit(1).sort('_id', DESCENDING))
+        cur = list(self.__collect.find(
+            *args, **kwargs).limit(1).sort('_id', DESCENDING))
         if cur:
             return cur[0]
 
         return None
 
     def get_as_dict(self, condition=None, projection=None, skip=0, limit=0, sort=None):
-        as_list = self.__collect.find(condition, projection, skip=skip, limit=limit, sort=sort)
+        as_list = self.__collect.find(
+            condition, projection, skip=skip, limit=limit, sort=sort)
 
         as_dict, as_list = {}, []
         for i in as_list:
@@ -221,8 +224,6 @@ class BaseModel(BaseBaseModel):
         if field:
             attrs = {'name': name, 'field': field}
         else:
-            def create(self, *args, **kwargs):
-                raise NotImplementedError()
-            attrs = {'name': name, 'field': {'_id': ObjectId()}, 'create': create}
+            attrs = {'name': name, 'field': {'_id': ObjectId()}}
 
         return type(str(name), (cls, ), attrs)()

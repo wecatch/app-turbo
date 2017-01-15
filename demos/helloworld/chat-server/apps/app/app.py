@@ -19,11 +19,13 @@ global_message_buffer = turbo_state.chat.message_buffer
 
 
 class MainHandler(BaseHandler):
+
     def get(self):
         self.render("index.html", messages=global_message_buffer.cache)
 
 
 class MessageNewHandler(BaseHandler):
+
     def post(self):
         message = {
             "id": str(uuid.uuid4()),
@@ -41,6 +43,7 @@ class MessageNewHandler(BaseHandler):
 
 
 class MessageUpdatesHandler(BaseHandler):
+
     @gen.coroutine
     def post(self):
         cursor = self.get_argument("cursor", None)
@@ -54,4 +57,3 @@ class MessageUpdatesHandler(BaseHandler):
 
     def on_connection_close(self):
         global_message_buffer.cancel_wait(self.future)
-

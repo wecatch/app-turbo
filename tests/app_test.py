@@ -1,23 +1,16 @@
 from __future__ import absolute_import, division, print_function, with_statement
 
-import socket
+import multiprocessing
 import os
 import signal
-import sys
-import random
-import time
-import threading
-import logging
-import requests
-import multiprocessing
-import time
+
 from bson.objectid import ObjectId
+import requests
+from turbo import app
+from turbo import register
+from turbo.conf import app_config
 
 from util import unittest, port_is_used
-
-from turbo import app
-from turbo.conf import app_config
-from turbo import register
 
 app_config.app_name = 'app_test'
 app_config.web_application_setting = {
@@ -177,7 +170,8 @@ class AppTest(unittest.TestCase):
         self.assertTrue(resp.content.find('404') != -1)
 
     def test_context(self):
-        """TODO"""
+        """TODO test context
+        """
         pass
 
 

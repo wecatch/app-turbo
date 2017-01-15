@@ -6,16 +6,14 @@ from __future__ import (
     with_statement,
 )
 
-from datetime import datetime
-import time
-import functools
 from collections import defaultdict
+from datetime import datetime
+import functools
+import time
 
 from bson.objectid import ObjectId
-from pymongo import collection
-
-from turbo.util import escape as _es, import_object
 from turbo.log import model_log
+from turbo.util import escape as _es, import_object
 
 
 def _record(x):
@@ -124,7 +122,8 @@ class MixinModel(object):
         """
         if not cls._instance.get(name):
             model_name = name.split('.')
-            ins_name = '.'.join(['models', model_name[0], 'model', model_name[1]])
+            ins_name = '.'.join(
+                ['models', model_name[0], 'model', model_name[1]])
             cls._instance[name] = cls.import_model(ins_name)()
 
         return cls._instance[name]
@@ -152,10 +151,12 @@ def collection_method_call(turbo_connect_ins, name):
         @functools.wraps(func)
         def wrapper(*args, **kwargs):
             if name in turbo_connect_ins._write_operators:
-                turbo_connect_ins._model_ins.write_action_call(name, *args, **kwargs)
+                turbo_connect_ins._model_ins.write_action_call(
+                    name, *args, **kwargs)
 
             if name in turbo_connect_ins._read_operators:
-                turbo_connect_ins._model_ins.read_action_call(name, *args, **kwargs)
+                turbo_connect_ins._model_ins.read_action_call(
+                    name, *args, **kwargs)
 
             return func(*args, **kwargs)
 
@@ -245,31 +246,30 @@ class AbstractModel(MixinModel):
 
     PRIMARY_KEY_TYPE = ObjectId
 
-    def _init(self, db_name, _MONGO_DB_MAPPING):
-        if _MONGO_DB_MAPPING is None:
+    def _init(self, db_name, _mongo_db_mapping):
+        if _mongo_db_mapping is None:
             raise Exception("db mapping is invalid")
-
         # databases
-        db = _MONGO_DB_MAPPING['db']
+        db = _mongo_db_mapping['db']
         # databases file
-        db_file = _MONGO_DB_MAPPING['db_file']
+        db_file = _mongo_db_mapping['db_file']
 
         # databse name
         if db_name not in db or db.get(db_name, None) is None:
-            raise Exception("%s is invalid databse" % db_name)
+            raise Exception('%s is invalid databse' % db_name)
 
         # collection name
         if not self.name:
-            raise Exception("%s is invalid collection name" % self.name)
+            raise Exception('%s is invalid collection name' % self.name)
 
         # collection field
         if not self.field or not isinstance(self.field, dict):
-            raise Exception("%s is invalid collection field" % self.field)
+            raise Exception('%s is invalid collection field' % self.field)
 
         # collect as private variable
         collect = getattr(db.get(db_name, object), self.name, None)
         if collect is None:
-            raise Exception("%s is invalid collection" % self.name)
+            raise Exception('%s is invalid collection' % self.name)
 
         # replace pymongo collect with custome connect
         _collect = MongoTurboConnect(self, collect)
@@ -277,7 +277,7 @@ class AbstractModel(MixinModel):
         # gridfs as private variable
         _gridfs = db_file.get(db_name, None)
         if _gridfs is None:
-            model_log.info("%s is invalid gridfs" % _gridfs)
+            model_log.info('%s is invalid gridfs' % _gridfs)
 
         return _collect, _gridfs
 
@@ -318,21 +318,22 @@ class AbstractModel(MixinModel):
     def _valide_update_document(self, document):
         for opk in document.keys():
             if not opk.startswith('$') or opk not in self._operators:
-                raise ValueError("invalid document update operator")
+                raise ValueError('invalid document update operator')
 
         if not document:
-            raise ValueError("empty document update not allowed")
+            raise ValueError('empty document update not allowed')
 
     def _valid_record(self, record):
         if not isinstance(record, dict):
-            raise Exception("%s record is not dict" % record)
+            raise Exception('%s record is not dict' % record)
 
         rset = set(record.keys())
         fset = set(self.field.keys())
         rset.discard('_id')
         fset.discard('_id')
         if not (fset ^ rset) <= fset:
-            raise Exception("record keys is not equal to fields keys %s" % (list((fset ^ rset) - fset)))
+            raise Exception('record keys is not equal to fields keys %s' % (
+                list((fset ^ rset) - fset)))
 
         for k, v in self.field.items():
             if k not in record:

@@ -19,10 +19,11 @@ class AdeskModelTest(unittest.TestCase):
         self.m = model.User()
 
     def tearDown(self):
-        del self.m 
-    
+        del self.m
+
     def test_create(self):
-        self.assertTrue(isinstance(self.m.create({'email':'test@test.com'}), ObjectId))
+        self.assertTrue(isinstance(self.m.create(
+            {'email': 'test@test.com'}), ObjectId))
 
     def test_insert(self):
         pass

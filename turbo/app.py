@@ -1,29 +1,26 @@
 # -*- coding:utf-8 -*-
 from __future__ import absolute_import, print_function
 
-import os
-
 try:
     basestring
 except Exception as e:
     basestring = str
 
-import tornado.web
-import tornado.httpserver
+from bson.objectid import ObjectId
+from pymongo import ASCENDING, DESCENDING
+
 import tornado.escape
+import tornado.httpserver
 import tornado.ioloop
-from tornado.options import define, options
+import tornado.web
 from tornado.util import ObjectDict
 
-from pymongo import ASCENDING, DESCENDING
-from bson.objectid import ObjectId
-
-from turbo.core.exceptions import ResponseMsg, ResponseError
+from turbo.core.exceptions import ResponseMsg
+import turbo.httputil as _ht
 from turbo.util import escape as _es
-import turbo.httputil as _ht 
-from turbo.log import app_log
 from turbo.conf import app_config
-from turbo.session import Session, DiskStore
+from turbo.log import app_log
+from turbo.session import Session
 
 
 class Mixin(tornado.web.RequestHandler):
@@ -98,30 +95,30 @@ class BaseBaseHandler(Mixin):
                                 ]
                             }
         _post_params: the same to _get_params for post method
-
-        _required_params: required arguments for all sub handler that element is three tuple like  [('skip', int, 0), ('limit', int, 0)]
+        _required_params:
+            required arguments for all sub handler that element is three tuple like [('skip', int, 0), ('limit', int, 0)]
         _get_required_params: the same to _required_params for get method
         _post_required_params: the same to _required_params for post method
-        _put_required_params: the same to _required_params for put method 
+        _put_required_params: the same to _required_params for put method
         _delete_required_params: the same to _required_params for delete method
-        _head_required_params: the same to _required_params for head method 
-        _patch_required_params: the same to _required_params for patch method 
-        _options_required_params: the same to _required_params for options method 
-    
+        _head_required_params: the same to _required_params for head method
+        _patch_required_params: the same to _required_params for patch method
+        _options_required_params: the same to _required_params for options method
+
     """
 
     # override in subclass
     _required_params = []
     # override in subclass to extract the most need arguments
-    
+
     _types = [ObjectId, None, basestring, str, int, float, list, file, bool]
     _data = None
     _session = None
 
-    session_initializer = None 
+    session_initializer = None
     session_config = None
     session_object = None
-    session_store = None # store for session
+    session_store = None  # store for session
 
     def initialize(self):
         # app template path if exist must end with slash like user/
@@ -131,13 +128,13 @@ class BaseBaseHandler(Mixin):
     @property
     def session(self):
         if not self._session:
-            self._session = Session(self.application, 
-                self,
-                self.session_store, 
-                self.session_initializer, 
-                self.session_config,
-                self.session_object
-            )
+            self._session = Session(self.application,
+                                    self,
+                                    self.session_store,
+                                    self.session_initializer,
+                                    self.session_config,
+                                    self.session_object
+                                    )
 
         return self._session
 
@@ -163,7 +160,7 @@ class BaseBaseHandler(Mixin):
         if callback:
             return self.write('%s(%s)' % (callback, self.json_encode(data)))
 
-        self.write(self.json_encode(data))       
+        self.write(self.json_encode(data))
 
     # read in json
     def ri_json(self, data):
@@ -183,7 +180,8 @@ class BaseBaseHandler(Mixin):
 
         def filter_parameter(key, tp, default=None):
             if tp not in self._types:
-                raise ValueError("%s parameter expected types %s" % (key, self._types))
+                raise ValueError(
+                    '%s parameter expected types %s' % (key, self._types))
 
             if tp != file:
                 if key not in arguments:
@@ -191,7 +189,8 @@ class BaseBaseHandler(Mixin):
                     return
 
                 if tp in [ObjectId, int, float, bool]:
-                    rpd[key] = getattr(self, 'to_%s' % getattr(tp, '__name__').lower())(self.get_argument(key))
+                    rpd[key] = getattr(self, 'to_%s' % getattr(
+                        tp, '__name__').lower())(self.get_argument(key))
                     return
 
                 if tp == basestring or tp == str:
@@ -207,24 +206,25 @@ class BaseBaseHandler(Mixin):
                     rpd[key] = []
                     return
 
-                rpd[key] = self.request.files[key]                
-        
+                rpd[key] = self.request.files[key]
+
         required_params = getattr(self, '_required_params', None)
         if isinstance(required_params, list):
             for key, tp, default in required_params:
                 filter_parameter(key, tp, default)
 
-        #extract method required params
-        method_required_params = getattr(self, '_%s_required_params' % method, None)
+        # extract method required params
+        method_required_params = getattr(
+            self, '_%s_required_params' % method, None)
         if isinstance(method_required_params, list):
             for key, tp, default in method_required_params:
                 filter_parameter(key, tp, default)
-        
+
         params = getattr(self, '_%s_params' % method, None)
         if params is None:
             return rpd
 
-        #need arguments
+        # need arguments
         try:
             for key, tp in params.get('need', []):
                 if tp == list:
@@ -232,13 +232,15 @@ class BaseBaseHandler(Mixin):
                 else:
                     filter_parameter(key, tp)
         except ValueError as e:
-            app_log.error('%s request need arguments parse error: %s' % (method, e))
+            app_log.error(
+                '%s request need arguments parse error: %s' % (method, e))
             raise ValueError(e)
         except Exception as e:
-            app_log.error('%s request need arguments parse error: %s' % (method, e))
+            app_log.error(
+                '%s request need arguments parse error: %s' % (method, e))
             raise e
 
-        #option arguments
+        # option arguments
         for key, tp, default in params.get('option', []):
             filter_parameter(key, tp, default)
 
@@ -274,7 +276,8 @@ class BaseBaseHandler(Mixin):
         except tornado.web.HTTPError as e:
             raise e
         except Exception as e:
-            app_log.error('Uncaught Exception in %s %s call'%(getattr(getattr(self, '__class__'), '__name__'), method), exc_info=True)
+            app_log.error('Uncaught Exception in %s %s call' % (
+                getattr(getattr(self, '__class__'), '__name__'), method), exc_info=True)
             resp = self.init_resp(1, 'Unknown Error')
         else:
             resp = self.init_resp()
@@ -285,9 +288,9 @@ class BaseBaseHandler(Mixin):
     def init_resp(code=0, msg=None):
         """
         responsibility for rest api code msg
-        can override for other style 
+        can override for other style
 
-        :args code 0, rest api code 
+        :args code 0, rest api code
         :args msg None, rest api msg
 
         """
@@ -329,7 +332,8 @@ class BaseBaseHandler(Mixin):
         raise tornado.web.HTTPError(405)
 
     def route(self, route, *args, **kwargs):
-        getattr(self,  "do_%s"%route, lambda *args, **kwargs: None)(*args, **kwargs)
+        getattr(self, 'do_%s' % route, lambda *args,
+                **kwargs: None)(*args, **kwargs)
 
     def on_finish(self):
         self._processor()
@@ -360,10 +364,11 @@ class ErrorHandler(tornado.web.RequestHandler):
 
 
 def start(port=8888):
-    app_log.info(app_config.app_name+' app start')
+    app_log.info(app_config.app_name + ' app start')
     app_config.error_handler = app_config.error_handler if app_config.error_handler else ErrorHandler
     tornado.web.ErrorHandler = app_config.error_handler
-    application = tornado.web.Application(app_config.urls, **app_config.web_application_setting)
+    application = tornado.web.Application(
+        app_config.urls, **app_config.web_application_setting)
     http_server = tornado.httpserver.HTTPServer(application, xheaders=True)
     http_server.listen(port)
     ioloop = tornado.ioloop.IOLoop.instance()

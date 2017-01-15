@@ -1,14 +1,10 @@
-#-*- coding:utf-8 -*-
+# -*- coding:utf-8 -*-
 from __future__ import absolute_import, division, print_function, with_statement
 
-import sys
 import signal
-import random
 import time
-import logging
 import requests
 import multiprocessing
-import time
 import os
 
 from turbo import app
@@ -101,7 +97,7 @@ class SessionTest(unittest.TestCase):
 
     def tearDown(self):
         os.kill(self.pid, signal.SIGKILL)
-        
+
     def test_session(self):
         global PORT
         resp = requests.get(
@@ -125,6 +121,7 @@ class SessionTest(unittest.TestCase):
 
         resp = requests.put(self.redis_url, cookies=cookies)
         self.assertEqual(resp.status_code, 200)
+
 
 if __name__ == '__main__':
     unittest.main()

@@ -1,0 +1,8 @@
+-   repo: git@github.com:pre-commit/pre-commit-hooks
+    sha: 97b88d9610bcc03982ddac33caba98bb2b751f5f
+    hooks:
+    -   id: trailing-whitespace
+    -   id: autopep8-wrapper
+    -   id: flake8
+        args: [--config=setup.cfg,]
+

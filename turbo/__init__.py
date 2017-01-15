@@ -18,7 +18,7 @@
 
 from __future__ import absolute_import, division, print_function, with_statement
 
-from .conf import app_config
+from .conf import app_config  # nq
 
 # version is a human-readable version number.
 
@@ -27,5 +27,5 @@ from .conf import app_config
 # is zero for an official release, positive for a development branch,
 # or negative for a release candidate or beta (after the base version
 # number has been incremented)
-version = "0.4.5"
+version = '0.4.5'
 version_info = (0, 4, 5, 100)

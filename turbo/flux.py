@@ -1,13 +1,15 @@
+import os
 import functools
 import inspect
 import weakref
-import os
 
 _mutation = {}
+
 
 def register(state):
     def outwrapper(func):
         state.register(func)
+
         @functools.wraps(func)
         def wrapper(*args, **kwargs):
             return func(*args, **kwargs)
@@ -37,21 +39,22 @@ class CallFuncAsAttr(object):
 
     @property
     def __get_func(self):
-        return getattr(self, self._name)      
+        return getattr(self, self._name)
 
     def register(self, func):
         if not inspect.isfunction(func):
-            raise TypeError("argument expect function, now is '%s'"%func)
+            raise TypeError("argument expect function, now is '%s'" % func)
 
         name = func.func_name
-        if name == (lambda x:x).func_name:
+        if name == (lambda x: x).func_name:
             raise TypeError('lambda is not allowed')
 
         self.__get_func[name] = self.__CallObject(func)
 
     def __getattr__(self, name):
         if name not in self.__get_func:
-            raise AttributeError("%s object has no attribute '%s'"%(self.__class__.__name__, name))
+            raise AttributeError("%s object has no attribute '%s'" %
+                                 (self.__class__.__name__, name))
 
         return self.__get_func[name]
 
@@ -59,6 +62,7 @@ class CallFuncAsAttr(object):
 class ObjectDict(dict):
     """Makes a dictionary behave like an object, with attribute-style access.
     """
+
     def __getattr__(self, name):
         try:
             return self[name]
@@ -75,7 +79,7 @@ state = ObjectDict()
 class State(object):
 
     __slots__ = ['_state']
-    
+
     def __init__(self, file_attr):
         name = file_attr
         filepath = os.path.abspath(file_attr)
@@ -83,7 +87,7 @@ class State(object):
             name, ext = os.path.splitext(os.path.basename(filepath))
 
         if name in state:
-            raise KeyError('state %s has already existed'%name)
+            raise KeyError('state %s has already existed' % name)
 
         self._state = ObjectDict()
         state[name] = self._state
@@ -91,26 +95,27 @@ class State(object):
     def __setattr__(self, name, value):
         if name in self.__slots__:
             return super(State, self).__setattr__(name, value)
-            
+
         self._state[name] = value
 
     def __getattr__(self, name):
         if name not in self._state:
-            raise AttributeError("%s object has no attribute '%s'"%(self.__class__.__name__, name))
+            raise AttributeError("%s object has no attribute '%s'" %
+                                 (self.__class__.__name__, name))
 
         return self._state[name]
 
 
 class Mutation(CallFuncAsAttr):
-    
+
     @property
     def _name(self):
-        return 'mutation_%s'%id(self)
+        return 'mutation_%s' % id(self)
 
 
 def dispatch(name, type_name, *args, **kwargs):
     if name not in _mutation:
-        raise ValueError('%s mutation module not found'%name)
+        raise ValueError('%s mutation module not found' % name)
 
     return getattr(_mutation[name](), type_name)(*args, **kwargs)
 

@@ -16,7 +16,7 @@
         <form action="/a/message/new" class="pure-form" method="post" id="messageform">
             <fieldset class="pure-group">
                 <input type="hidden" name="next" value="{{ request.path }}">
-                <textarea class="pure-input-1-2" name="body" placeholder="Type in message">            
+                <textarea class="pure-input-1-2" name="body" placeholder="Type in message">
                 </textarea>
               {% module xsrf_form_html() %}
             </fieldset>

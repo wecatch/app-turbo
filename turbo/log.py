@@ -8,12 +8,13 @@ import logging.handlers
 from turbo.conf import app_config
 
 
-_formatter = logging.Formatter('%(levelname)s:%(asctime)s %(name)s:%(lineno)d:%(funcName)s %(message)s')
+_formatter = logging.Formatter(
+    '%(levelname)s:%(asctime)s %(name)s:%(lineno)d:%(funcName)s %(message)s')
 
 
 def _init_file_logger(logger, level, log_path, log_size, log_count):
     """
-    one logger only have one level RotatingFileHandler 
+    one logger only have one level RotatingFileHandler
     """
     if level not in [logging.NOTSET, logging.DEBUG, logging.INFO, logging.WARNING, logging.ERROR, logging.CRITICAL]:
         level = logging.DEBUG
@@ -23,11 +24,12 @@ def _init_file_logger(logger, level, log_path, log_size, log_count):
             if h.level == level:
                 return
 
-    fh = logging.handlers.RotatingFileHandler(log_path, maxBytes=log_size, backupCount=log_count)
+    fh = logging.handlers.RotatingFileHandler(
+        log_path, maxBytes=log_size, backupCount=log_count)
     fh.setLevel(level)
     fh.setFormatter(_formatter)
     logger.addHandler(fh)
-    
+
 
 def _init_stream_logger(logger, level=None):
     ch = logging.StreamHandler()
@@ -59,7 +61,7 @@ def _module_logger(path):
     return logging.getLogger('.'.join(logger_name_list))
 
 
-def getLogger(currfile=None, level=None, log_path=None, log_size=500*1024*1024, log_count=3):
+def getLogger(currfile=None, level=None, log_path=None, log_size=500 * 1024 * 1024, log_count=3):
     # init logger first
     logger = None
 
@@ -69,7 +71,7 @@ def getLogger(currfile=None, level=None, log_path=None, log_size=500*1024*1024, 
         if os.path.isfile(path):
             logger = _module_logger(path)
         elif isinstance(currfile, basestring) and currfile.strip():
-            #normal logger
+            # normal logger
             logger = logging.getLogger(currfile)
 
         logger.setLevel(level or app_config.log_level)

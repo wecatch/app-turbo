@@ -22,7 +22,7 @@ pip install turbo
 
 ```sh
 
-git clone https://github.com/wecatch/app-turbo.git 
+git clone https://github.com/wecatch/app-turbo.git
 cd app-turbo
 python setup.py install
 
@@ -34,4 +34,4 @@ python setup.py install
 
 Licensed under the Apache License, Version 2.0
 
- 
+

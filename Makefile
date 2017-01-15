@@ -49,9 +49,10 @@ clean-test: ## remove test and coverage artifacts
 
 clean-log:
 	rm -f tests/*.log
+	rm -f *.log
 
 lint: ## check style with flake8
-	flake8 turbo_motor tests
+	flake8 turbo tests --config=setup.cfg
 
 test: ## run tests quickly with the default Python
 	
@@ -62,7 +63,7 @@ test-all: ## run tests on every Python version with tox
 
 coverage: ## check code coverage quickly with the default Python
 	
-		coverage run --source turbo_motor setup.py test
+		coverage run --source turbo setup.py test
 	
 		coverage report -m
 		coverage html
@@ -79,3 +80,9 @@ dist: clean ## builds source and wheel package
 
 install: clean ## install the package to the active Python's site-packages
 	python setup.py install
+
+hooks-install:
+	pre-commit install
+
+hooks-run:
+	pre-commit run --all-files
