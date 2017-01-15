@@ -15,6 +15,11 @@ app-turbo changes log
 
 4.5 为了支持异步 mongo 驱动 `motor` pymongo 必须 >=3.2，请谨慎升级安装。
 
+为兼容低版本的中的 `create` 方法可以在 `models/base.py:BaseModel` 中添加 
+```python
+def create(self, *args, **kwargs):
+    return self.insert(*args, **kwargs)
+```
 
 ## 0.4.4
 
