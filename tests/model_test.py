@@ -254,9 +254,15 @@ class BaseModelTest(unittest.TestCase):
             'test').full_name, 'test.tag.test')
 
     def test_inc(self):
-        _id = self.tb_tag.insert({'value': 1})
-        self.tb_tag.inc({'_id': _id}, 'value')
-        self.assertEqual(self.tb_tag.find_by_id(_id)['value'], 2)
+        for index, i in enumerate(self.tb_tag.find_by_id(fake_ids[0:3])):
+            self.assertEqual(i['value'], index)
+
+        self.tb_tag.inc({'_id': {'$in': fake_ids[0:3]}}, 'value', 1, multi=True)
+        for index, i in enumerate(self.tb_tag.find_by_id(fake_ids[0:3])):
+            self.assertEqual(i['value'], index + 1)
+
+        self.tb_tag.inc({'_id': fake_ids[4]}, 'value', 1)
+        self.assertEqual(self.tb_tag.find_by_id(fake_ids[4])['value'], 5)
 
     def test_to_str(self):
         one = self.tb_tag.to_str(self.tb_tag.find(limit=10))

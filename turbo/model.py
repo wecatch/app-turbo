@@ -194,8 +194,11 @@ class BaseBaseModel(mongo_model.AbstractModel):
 
         return as_dict, as_list
 
-    def inc(self, filter_, key, num=1):
-        self.__collect.update(filter_, {'$inc': {key: num}})
+    def inc(self, filter_, key, num=1, multi=False):
+        if multi:
+            self.__collect.update_many(filter_, {'$inc': {key: num}})
+        else:
+            self.__collect.update_one(filter_, {'$inc': {key: num}})
 
     def put(self, value, **kwargs):
         if value:

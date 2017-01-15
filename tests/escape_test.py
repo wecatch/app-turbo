@@ -103,5 +103,6 @@ class EscapeTest(unittest.TestCase):
     def check_base_value_type(self, v):
         return isinstance(v, int) or isinstance(v, float) or isinstance(v, basestring) or v is None
 
+
 if __name__ == '__main__':
     unittest.main()
