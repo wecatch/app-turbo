@@ -57,6 +57,7 @@ lint: ## check style with flake8
 test: ## run tests quickly with the default Python
 	
 		python -m tests.runtests
+		make clean-log
 
 test-all: ## run tests on every Python version with tox
 	tox

@@ -49,7 +49,9 @@ class BaseBaseModel(mongo_model.AbstractModel):
     def save(self, to_save, **kwargs):
         """save method
         """
-        self._valid_record(to_save)
+        check = kwargs.pop('check', True)
+        if check:
+            self._valid_record(to_save)
         if '_id' in to_save:
             self.__collect.replace_one(
                 {'_id': to_save['_id']}, to_save, **kwargs)

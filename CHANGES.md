@@ -3,24 +3,18 @@ app-turbo changes log
 
 ## 0.4.5
 
-**remove  methods**
+- Methods `get_as_column`,`create`, attribute `column` are removed from `BaseModel` class
+- Move tests outside turbo package
+- Rewrite insert,update,remove with the latest pymongo collection methods like `insert_one`,`insert_many` and so on.
+- `BaseModel` method `inc` add multi docs support
+- add `mongo_model` module for support [motor](http://motor.readthedocs.io/en/stable/)
 
-model methods
+**warning**
 
-```python
-def get_as_column(self):
-    pass
+4.5 从 `BaseModel` 中移除了 `create` 方法，请使用 `insert` 代替，默认所有插入操`insert`,`insert_one`,`insert_many`,`save` 都会进行 `field` 属性中键的校验，可以使用关键字参数 `check=False` 跳过校验。
 
-def find_and_modify(self):
-    pass
+4.5 为了支持异步 mongo 驱动 `motor` pymongo 必须 >=3.2，请谨慎升级安装。
 
-def ensure_index(self):
-    pass
-```
-
-**rewrite insert,update,remove**
-
-`Insert` is replaced by `insert_one`, `update` is replaced by `update_one` and `update_many`. `Remove` is replaced with `delete_one` and `delete_many`
 
 ## 0.4.4
 
