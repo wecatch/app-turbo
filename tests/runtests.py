@@ -11,20 +11,7 @@ import os
 sys.path.insert(
     0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from tests.util import unittest
-from turbo.util import import_object
-
-TEST_MODULES = [
-    'escape_test',
-    'basemodel_test',
-    'log_test',
-    'httputil_test',
-    'app_test',
-    'session_test',
-    'util_test',
-    'flux_test',
-    'jinja2_test',
-]
+from tests.util import unittest  # noqa E402
 
 
 def main():

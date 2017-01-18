@@ -22,7 +22,7 @@ app_config.web_application_setting = {
 class HomeHandler(app.BaseHandler):
 
     def get(self):
-        assert self.is_ajax() == False
+        assert not self.is_ajax()
         self.write('get')
 
     def post(self):
@@ -72,7 +72,7 @@ class ApiHandler(app.BaseHandler):
         assert self._params['who'] == 'python'
         assert self._params['action'] is None
         assert self._params['list'] == []
-        assert self.is_ajax() == True
+        assert self.is_ajax()
 
         self._data = {
             'value': self._params['who']

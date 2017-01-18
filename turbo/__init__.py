@@ -18,7 +18,7 @@
 
 from __future__ import absolute_import, division, print_function, with_statement
 
-from .conf import app_config  # nq
+from .conf import app_config  # noqa E401
 
 # version is a human-readable version number.
 

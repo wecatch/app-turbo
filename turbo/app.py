@@ -96,7 +96,7 @@ class BaseBaseHandler(Mixin):
                             }
         _post_params: the same to _get_params for post method
         _required_params:
-            required arguments for all sub handler that element is three tuple like [('skip', int, 0), ('limit', int, 0)]
+            required arguments for all sub handler that element like [('skip', int, 0), ('limit', int, 0)]
         _get_required_params: the same to _required_params for get method
         _post_required_params: the same to _required_params for post method
         _put_required_params: the same to _required_params for put method

@@ -7,9 +7,9 @@ import socket
 from bson.objectid import ObjectId
 
 if sys.version_info < (2, 7):
-    import unittest2 as unittest
+    import unittest2 as unittest  # noqa E401
 else:
-    import unittest
+    import unittest  # noqa E401
 
 
 def port_is_used(port):
