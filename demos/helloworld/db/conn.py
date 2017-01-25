@@ -2,6 +2,9 @@
 
 import os
 
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+
 from pymongo import (
     MongoReplicaSetClient,
     MongoClient,
@@ -24,3 +27,7 @@ food_files = gridfs.GridFS(mc['food_files'])
 # user
 user = mc['user']
 user_files = gridfs.GridFS(mc['user_files'])
+
+
+engine = create_engine('mysql+pymysql://root:@localhost/blog?charset=utf8', encoding='utf8', echo=True)
+DBSession = sessionmaker(bind=engine)
