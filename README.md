@@ -1,6 +1,7 @@
-app-turbo
+turbo
 =========
 
+[中文文档](https://github.com/wecatch/app-turbo/blob/master/zh-CN_README.md)
 
 [![pypi](https://img.shields.io/pypi/v/turbo.svg)](https://pypi.python.org/pypi/turbo)
 [![Build Status](https://travis-ci.org/wecatch/app-turbo.svg?branch=master)](https://travis-ci.org/wecatch/app-turbo)
@@ -8,7 +9,7 @@ app-turbo
 [![readthedocs](https://readthedocs.org/projects/app-turbo/badge/?version=latest)](https://app-turbo.readthedocs.io/en/latest/)
 
 
-Turbo is a web framework for fast building web site and RESTFul api, based on tornado, mongodb, redis.
+Turbo is a framework for fast building web site and RESTFul api, based on tornado.
 
 
 - Easily scale up and maintain
@@ -17,7 +18,8 @@ Turbo is a web framework for fast building web site and RESTFul api, based on to
 - Easily customizable
 - Simple ORM for mongodb
 - Logger
-- Session
+- Session(storage support for redis, disk and so on)
+- support MongoDb, MySQL, PostgreSQL and so on
 
 **Prerequisites**: Turbo now only runs on Python 2.x, Python 3 support will be added in future.
 
@@ -27,6 +29,7 @@ Turbo is a web framework for fast building web site and RESTFul api, based on to
 pip install turbo
 turbo-admin startproject <project_name>
 cd <project_name>/app-server
+touch __test__
 python main.py
 ```
 

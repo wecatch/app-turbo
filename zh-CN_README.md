@@ -1,14 +1,10 @@
-app-turbo
+turbo
 =========
 
 [![Build Status](https://travis-ci.org/wecatch/app-turbo.svg?branch=master)](https://travis-ci.org/wecatch/app-turbo)
 
 
-turbo 是一个用以加速建立普通 web 站点和 RESTFul api 的 web framework，基于
-
-- tornado
-- mongodb
-- redis
+turbo 是一个用以加速建立普通 web 站点和 RESTFul api 的 framework，基于 tornado。
 
 
 ## 特性
@@ -19,7 +15,7 @@ turbo 是一个用以加速建立普通 web 站点和 RESTFul api 的 web framew
 - 支持轻松定制特性
 - 简单的 ORM，易于维护和扩展
 - 灵活的 Logger
-- Session 支持
+- Session (提供了对应的钩子函数，可以使用任何 storage, 自带 redis store 实现)
 
 
 ## 快速开始
@@ -28,6 +24,7 @@ turbo 是一个用以加速建立普通 web 站点和 RESTFul api 的 web framew
 pip install turbo
 turbo-admin startproject <project_name>
 cd <project_name>/app-server
+touch __test__
 python main.py
 ```
 
