@@ -5,7 +5,7 @@ import turbo.app
 from turbo import app_config
 from turbo.core.exceptions import ResponseError, ResponseMsg
 
-from db.conn import DBSession
+from db.mysql_conn import DBSession
 
 # start use session from here
 # from lib.session import SessionStore, SessionObject

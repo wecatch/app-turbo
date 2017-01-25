@@ -1,6 +1,6 @@
-#-*- coding:utf-8 -*-
+# -*- coding:utf-8 -*-
 
-from base import *
+from .base import *
 
 
 class User(Model):
@@ -13,7 +13,7 @@ class User(Model):
     name = 'user'
 
     field = {
-        'email':            (basestring, ''),
-        'passwd':           (basestring, ''),
-        'atime':            (datetime, None),
+        'email': (basestring, ''),
+        'passwd': (basestring, ''),
+        'atime': (datetime, None),
     }

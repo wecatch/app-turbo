@@ -1,9 +1,7 @@
 from datetime import datetime
 
+from .base import Base
 from sqlalchemy import Column, Integer, Text, VARCHAR, BLOB, DateTime
-from sqlalchemy.ext.declarative import declarative_base
-
-Base = declarative_base()
 
 
 class Blog(Base):

@@ -10,6 +10,7 @@ from bson.objectid import ObjectId
 from pymongo import DESCENDING, collection
 
 from turbo import mongo_model
+from turbo.mongo_model import MixinModel  # noqa E401  compatibility for turbo below 0.4.5
 
 
 class BaseBaseModel(mongo_model.AbstractModel):
