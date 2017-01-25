@@ -2,8 +2,11 @@
 
 import turbo.log
 
+from models.blog.model import Blog
+
 from base import BaseHandler
 from store import actions
+
 
 logger = turbo.log.getLogger(__file__)
 
@@ -11,7 +14,9 @@ logger = turbo.log.getLogger(__file__)
 class HomeHandler(BaseHandler):
 
     def get(self):
-        self.render('index.html')
+        result = self.db.query(Blog).add_columns(
+            Blog.id, Blog.text).all()
+        self.render('index.html', result=result)
 
 
 class IncHandler(BaseHandler):
