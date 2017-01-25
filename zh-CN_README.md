@@ -16,7 +16,8 @@ turbo 是一个用以加速建立普通 web 站点和 RESTFul api 的 framework�
 - 简单的 ORM，易于维护和扩展
 - 灵活的 Logger
 - Session (提供了对应的钩子函数，可以使用任何 storage, 自带 redis store 实现)
-
+- 支持 MongoDB，MySQL，PostgreSQL
+- 支持 MongoDB 异步驱动 Motor
 
 ## 快速开始
 
