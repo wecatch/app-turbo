@@ -115,6 +115,7 @@ def build_index(name):
     model = import_object('models.%s.model' % name)
     bi([model])
 
+
 if __name__ == '__main__':
     project_template_path = os.path.dirname(fake.__file__)
     project_template_path = os.path.join(project_template_path, 'project_template')
@@ -128,7 +129,7 @@ if __name__ == '__main__':
 
     Options:
       -h,  --help        Show help document
-      --template=<template_name>  Template engine in turbo app [default: ''].
+      --template=<template_name>  Template engine in turbo app: default or jinja2 [default: default].
     """
     rgs = docopt(helpdoc)
     if rgs.get('startproject'):
