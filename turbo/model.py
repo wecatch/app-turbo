@@ -5,6 +5,7 @@ from __future__ import (
     print_function,
     with_statement,
 )
+import warnings
 
 from bson.objectid import ObjectId
 from pymongo import DESCENDING, collection
@@ -216,6 +217,11 @@ class BaseBaseModel(mongo_model.AbstractModel):
 
     def read(self, _id):
         return self.__gridfs.get(self.to_objectid(_id)).read()
+
+    def create(self, *args, **kwargs):
+        warnings.warn("create is deprecated. Use insert or insert_one "
+                      "instead", DeprecationWarning, stacklevel=2)
+        return self.insert(*args, **kwargs)
 
 
 class BaseModel(BaseBaseModel):

@@ -14,4 +14,3 @@ DB_SETTING = {
 }
 
 DRIVERNAME = 'mysql+pymysql'
-

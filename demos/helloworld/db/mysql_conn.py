@@ -8,5 +8,6 @@ from .setting import DB_SETTING, DRIVERNAME
 
 
 # mysql blog
-blog_engine = create_engine(URL(DRIVERNAME, **DB_SETTING), encoding='utf8', echo=True)
+blog_engine = create_engine(
+    URL(DRIVERNAME, **DB_SETTING), encoding='utf8', echo=True)
 DBSession = sessionmaker(bind=blog_engine)
