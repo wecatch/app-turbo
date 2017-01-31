@@ -137,7 +137,8 @@ class BaseModelTest(unittest.TestCase):
         result = self.tb_tag.update({'_id': {'$in': fake_ids[1:11]}}, {
                                     '$set': {'value': 11}})
         self.assertEqual(result.matched_count, 1)
-        self.assertEqual(result.modified_count, 1)
+        if result.modified_count is not None:
+            self.assertEqual(result.modified_count, 1)
 
         # update many
         result = self.tb_tag.update({'_id': {'$in': fake_ids[2:12]}}, {
@@ -145,7 +146,8 @@ class BaseModelTest(unittest.TestCase):
         print(result)
         self.assertEqual(result.matched_count, 10)
         # modified_count 反应的是实际修改的文档数目，如果要修改键的值和修改值是相同的，文档不会被修改
-        self.assertEqual(result.modified_count, 10)
+        if result.modified_count is not None:
+            self.assertEqual(result.modified_count, 10)
 
     def test_remove(self):
         # not allow remove all
