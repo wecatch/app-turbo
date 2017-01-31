@@ -64,7 +64,7 @@ test-all: ## run tests on every Python version with tox
 
 coverage: ## check code coverage quickly with the default Python
 	
-		coverage run --source turbo setup.py test
+		coverage run -m tests.runtests
 	
 		coverage report -m
 		coverage html
