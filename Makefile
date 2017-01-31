@@ -63,7 +63,7 @@ test-all: ## run tests on every Python version with tox
 	tox
 
 coverage: ## check code coverage quickly with the default Python
-	
+		coverage erase
 		coverage run -m tests.runtests
 	
 		coverage report -m

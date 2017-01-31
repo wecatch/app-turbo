@@ -1,5 +1,8 @@
 flake8==2.6.0
 tox==2.3.1
+codecov
+redis
+docopt
 coverage==4.1
 pymongo>=3.2
 pre-commit==0.9.4
