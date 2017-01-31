@@ -27,7 +27,9 @@ app-turbo
 - Easily customizable
 - Simple ORM for mongodb
 - Logger
-- Session
+- Session(storage support for redis, disk and so on)
+- support MongoDB, MySQL, PostgreSQL and so on
+- support MongoDB asynchronous driver `Motor <http://motor.readthedocs.io/en/stable/>`_ 
 
 
 Getting started
@@ -38,6 +40,7 @@ Getting started
     pip install turbo
     turbo-admin startproject <project_name>
     cd <project_name>/app-server
+    touch __test__
     python main.py
 
 
