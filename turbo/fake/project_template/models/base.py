@@ -14,6 +14,7 @@ _PACKAGE_SPACE = globals()
 
 class BaseModel(turbo.model.BaseModel):
 
+    # for import_model work
     package_space = _PACKAGE_SPACE
 
     def __init__(self, db_name='test'):

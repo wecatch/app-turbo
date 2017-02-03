@@ -5,7 +5,11 @@
     <title>hello turbo world</title>
 </head>
 <body>
-    <h1>hello turbo world</h1>
-    <p>{{metric.qps}}</p>
+    <h1>hello motor world</h1>
+    <ul>
+        {% for i in result %}
+            <li>{{i['name']}}</li>
+        {% end %}
+    </ul>
 </body>
 </html>

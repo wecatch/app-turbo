@@ -17,3 +17,17 @@ class User(Model):
         'passwd': (basestring, ''),
         'atime': (datetime, None),
     }
+
+
+class Tag(MotorModel):
+
+    """
+    name: tag name
+    atime: added time
+    """
+    name = 'tag'
+
+    field = {
+        'name': (str, ''),
+        'atime': (datetime, None),
+    }

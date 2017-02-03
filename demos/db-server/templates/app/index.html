@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>hello turbo world</title>
+</head>
+<body>
+    <h1>hello turbo world</h1>
+    <ul>
+        {% for d in result %}
+        <li>
+            <h4>{{d.id}}</h4>
+            <p style="line-height: 18px;letter-spacing: 1px;" >
+                {{d.text}}    
+            </p>
+        </li>
+        {% end %}
+    </ul>
+</body>
+</html>

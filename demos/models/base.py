@@ -11,6 +11,7 @@ from sqlalchemy.orm import sessionmaker
 # todo change name
 import turbo.model
 import turbo.util
+import turbo_motor.model
 
 from .settings import (
     MONGO_DB_MAPPING as _MONGO_DB_MAPPING,
@@ -20,7 +21,7 @@ from .settings import (
 
 class BaseModel(turbo.model.BaseModel):
 
-    _PACKAGE_SPACE = globals()
+    package_space = globals()
 
     def __init__(self, db_name='test'):
         super(BaseModel, self).__init__(db_name, _MONGO_DB_MAPPING)
@@ -38,3 +39,11 @@ class SqlBaseModel(object):
 
     def create_session(self, engine):
         return sessionmaker(bind=engine)
+
+
+class MotorBaseModel(turbo_motor.model.BaseModel):
+
+    package_space = globals()
+
+    def __init__(self, db_name='test'):
+        super(MotorBaseModel, self).__init__(db_name, _MONGO_DB_MAPPING)
