@@ -1,14 +1,15 @@
-#-*- coding:utf-8 -*-
+# -*- coding:utf-8 -*-
 
 
 import turbo.log
 from turbo.flux import state as turbo_state
 import tornado.gen
 
-from base import BaseHandler
+from . import base
 from helpers import user as user_helper
 from models.user import model as user_model
 
+BaseHandler = base.BaseHandler
 logger = turbo.log.getLogger(__file__)
 
 

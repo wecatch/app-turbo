@@ -2,7 +2,7 @@
 
 from apps import base
 
-import setting
+from . import setting
 
 
 class BaseHandler(base.BaseHandler):

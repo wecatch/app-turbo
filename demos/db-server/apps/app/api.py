@@ -2,9 +2,10 @@
 
 import turbo.log
 
-from base import BaseHandler
+from . import base
 from models.blog.model import Blog
 
+BaseHandler = base.BaseHandler
 logger = turbo.log.getLogger(__file__)
 
 

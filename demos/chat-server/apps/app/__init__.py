@@ -1,7 +1,7 @@
 
 from turbo import register
 
-import app
+from . import app
 
 
 register.register_group_urls('', [

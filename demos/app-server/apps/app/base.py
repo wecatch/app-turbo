@@ -1,8 +1,8 @@
-#-*- coding:utf-8 -*-
+# -*- coding:utf-8 -*-
 
 from apps import base
 
-import setting
+from . import setting
 
 
 class BaseHandler(base.BaseHandler):

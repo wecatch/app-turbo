@@ -1,4 +1,4 @@
-#-*- coding:utf-8 -*-
+# -*- coding:utf-8 -*-
 
 import os.path
 import uuid
@@ -10,8 +10,9 @@ from tornado import gen
 import turbo.log
 from turbo.flux import state as turbo_state
 
-from base import BaseHandler
+from . import base
 
+BaseHandler = base.BaseHandler
 logger = turbo.log.getLogger(__file__)
 
 

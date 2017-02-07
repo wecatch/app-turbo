@@ -1,9 +1,10 @@
-#-*- coding:utf-8 -*-
+# -*- coding:utf-8 -*-
 
 import turbo.log
 
-from base import BaseHandler
+from . import base
 
+BaseHandler = base.BaseHandler
 logger = turbo.log.getLogger(__file__)
 
 
