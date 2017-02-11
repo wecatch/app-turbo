@@ -1,6 +1,6 @@
 # -*- coding:utf-8 -*-
 
-from db.conn import (
+from db.mongo_conn import (
     test as _test,
     user as _user,
 

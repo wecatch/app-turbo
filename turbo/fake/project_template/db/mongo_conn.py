@@ -5,7 +5,7 @@ import os
 import gridfs
 from pymongo import MongoClient, MongoReplicaSetClient, read_preferences
 
-import setting
+from . import setting
 
 mc = MongoClient(host='localhost')
 

@@ -2,7 +2,7 @@
 
 import turbo.log
 
-from base import BaseHandler
+from .base import BaseHandler
 from store import actions
 
 logger = turbo.log.getLogger(__file__)

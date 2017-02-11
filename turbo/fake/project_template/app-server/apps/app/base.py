@@ -1,6 +1,6 @@
 # -*- coding:utf-8 -*-
 
-import setting
+from . import setting
 from apps import base
 
 
