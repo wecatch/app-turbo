@@ -10,10 +10,13 @@ class User(Model):
     passwd: user account passwd
     atime: added time
     """
+    index = [
+        tuple([('email', 1)])
+    ]
     name = 'user'
 
     field = {
-        'email': (basestring, ''),
-        'passwd': (basestring, ''),
+        'email': (str, ''),
+        'passwd': (str, ''),
         'atime': (datetime, None),
     }
