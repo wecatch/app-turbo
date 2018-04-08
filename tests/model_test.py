@@ -8,14 +8,13 @@ from bson.objectid import ObjectId
 import gridfs
 from pymongo import MongoClient
 from turbo.model import BaseModel
-from turbo.util import PY3, basestring, utf8
+from turbo.util import PY3, basestring_type as basestring, utf8
 from util import unittest, fake_ids, fake_ids_2
 
 if PY3:
     from io import StringIO
 else:
-    from cStringIO.StringIO import StringIO
-
+    from cStringIO import StringIO
 
 mc = MongoClient()
 

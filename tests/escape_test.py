@@ -7,7 +7,7 @@ import logging
 import time
 
 from bson.objectid import ObjectId
-from turbo.util import escape as es, camel_to_underscore, basestring, unicode_type
+from turbo.util import escape as es, camel_to_underscore, basestring_type as basestring, unicode_type
 from util import unittest
 
 

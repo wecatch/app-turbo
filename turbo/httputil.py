@@ -1,6 +1,6 @@
 from __future__ import absolute_import, division, print_function, with_statement
 
-from turbo.util import basestring, unicode_type, PY3, to_basestring
+from turbo.util import basestring_type, unicode_type, PY3, to_basestring
 
 if PY3:
     from urllib.parse import quote
@@ -9,7 +9,7 @@ else:
 
 
 def is_empty(v):
-    if isinstance(v, basestring):
+    if isinstance(v, basestring_type):
         if not v:
             return True
     if v is None:

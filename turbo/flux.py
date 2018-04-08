@@ -3,6 +3,8 @@ import functools
 import inspect
 import weakref
 
+from turbo.util import get_func_name
+
 _mutation = {}
 
 
@@ -45,12 +47,8 @@ class CallFuncAsAttr(object):
         if not inspect.isfunction(func):
             raise TypeError("argument expect function, now is '%s'" % func)
 
-        name = getattr(func, 'func_name', None)
-        if not name:
-            name = getattr(func, '__name__', None)
-        lambda_name = getattr((lambda x: x), 'func_name', None)
-        if not lambda_name:
-            lambda_name = getattr((lambda x: x), '__name__', None)
+        name = get_func_name(func)
+        lambda_name = get_func_name(lambda x: x)
         if name == lambda_name:
             raise TypeError('lambda is not allowed')
 

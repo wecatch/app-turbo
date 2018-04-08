@@ -8,6 +8,7 @@ import time
 import json
 from collections import Iterable
 import copy
+import base64
 
 from bson.objectid import ObjectId
 
@@ -16,14 +17,14 @@ from turbo.log import util_log
 PY3 = sys.version_info >= (3,)
 
 if PY3:
-    basestring = str
     unicode_type = str
     basestring_type = str
+    from base64 import decodebytes, encodebytes
 else:
     # The names unicode and basestring don't exist in py3 so silence flake8.
     unicode_type = unicode  # noqa
     basestring_type = basestring  # noqa
-
+    from base64 import encodestring as encodebytes, decodestring as decodebytes
 
 def to_list_str(value, encode=None):
     """recursively convert list content into string
@@ -88,7 +89,7 @@ def default_encode(v):
 def to_str(v, encode=None):
     """convert any list, dict, iterable and primitives object to string
     """
-    if isinstance(v, basestring):
+    if isinstance(v, basestring_type):
         return v
 
     if isinstance(v, dict):
@@ -378,3 +379,11 @@ def to_basestring(value):
             "Expected bytes, unicode, or None; got %r" % type(value)
         )
     return value.decode("utf-8")
+
+
+def get_func_name(func):
+    name = getattr(func, 'func_name', None)
+    if not name:
+        name = getattr(func, '__name__', None)
+    return name
+

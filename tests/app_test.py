@@ -9,7 +9,7 @@ import requests
 from turbo import app
 from turbo import register
 from turbo.conf import app_config
-from turbo.util import basestring
+from turbo.util import  basestring_type as basestring
 
 from util import unittest, port_is_used
 

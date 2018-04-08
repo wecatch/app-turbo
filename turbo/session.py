@@ -19,7 +19,7 @@ from tornado.util import ObjectDict
 
 from turbo.conf import app_config
 from turbo.log import session_log
-from turbo.util import utf8, to_basestring
+from turbo.util import utf8, to_basestring, encodebytes, decodebytes
 
 
 class Session(object):
@@ -231,11 +231,11 @@ class Store(object):
     def encode(self, session_data):
         """encodes session dict as a string"""
         pickled = pickle.dumps(session_data)
-        return base64.encodestring(pickled)
+        return encodebytes(pickled)
 
     def decode(self, session_data):
         """decodes the data to get back the session dict """
-        pickled = base64.decodestring(session_data)
+        pickled = decodebytes(utf8(session_data))
         return pickle.loads(pickled)
 
 
