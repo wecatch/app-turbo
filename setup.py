@@ -28,8 +28,11 @@ if sys.version_info < (2, 7):
     install_requires.append('unittest2')
     install_requires.append('tornado<=4.3.0')
     install_requires.append('futures')
+elif sys.version_info > (2, 7) and sys.version_info < (2, 7, 9):
+    install_requires.append('tornado<5.0.0')
 else:
     install_requires.append('tornado')
+
 
 setup(
     name="turbo",
