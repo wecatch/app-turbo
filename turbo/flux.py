@@ -45,8 +45,13 @@ class CallFuncAsAttr(object):
         if not inspect.isfunction(func):
             raise TypeError("argument expect function, now is '%s'" % func)
 
-        name = func.func_name
-        if name == (lambda x: x).func_name:
+        name = getattr(func, 'func_name', None)
+        if not name:
+            name = getattr(func, '__name__', None)
+        lambda_name = getattr((lambda x: x), 'func_name', None)
+        if not lambda_name:
+            lambda_name = getattr((lambda x: x), '__name__', None)
+        if name == lambda_name:
             raise TypeError('lambda is not allowed')
 
         self.__get_func[name] = self.__CallObject(func)

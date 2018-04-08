@@ -9,6 +9,7 @@ import requests
 from turbo import app
 from turbo import register
 from turbo.conf import app_config
+from turbo.util import basestring
 
 from util import unittest, port_is_used
 
@@ -167,7 +168,7 @@ class AppTest(unittest.TestCase):
 
     def test_404(self):
         resp = requests.get(self.home_url + '/hello')
-        self.assertTrue(resp.content.find('404') != -1)
+        self.assertTrue(resp.content.find(b'404') != -1)
 
     def test_context(self):
         """TODO test context

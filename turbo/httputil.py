@@ -1,6 +1,6 @@
 from __future__ import absolute_import, division, print_function, with_statement
 
-from turbo.util import basestring, unicode_type, PY3
+from turbo.util import basestring, unicode_type, PY3, to_basestring
 
 if PY3:
     from urllib.parse import quote
@@ -28,10 +28,10 @@ def encode_http_params(**kw):
     '''
     try:
         _fo = lambda k, v: '{name}={value}'.format(
-            name=k, value=quote(v),)
+            name=k, value=to_basestring(quote(v)))
     except:
-        _fo = lambda k, v: '%s=%s' % (k, quote(v))
+        _fo = lambda k, v: '%s=%s' % (k, to_basestring(quote(v)))
 
     _en = utf8
 
-    return '&'.join([_fo(_en(k), _en(v)) for k, v in kw.items() if not is_empty(v)])
+    return '&'.join([_fo(k, _en(v)) for k, v in kw.items() if not is_empty(v)])

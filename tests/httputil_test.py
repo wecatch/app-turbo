@@ -15,10 +15,10 @@ class HttpUtilTest(unittest.TestCase):
 
     def test_encode_http_params(self):
         keyword = '美女'
-        paras = hu.encode_http_params(
-            k=10, h=2, key='ass', keyword=keyword, empty='')
+        paras = hu.encode_http_params(k=10, h=2, key='ass', keyword=keyword, empty='')
+        print(paras)
         self.assertEqual(sorted(paras.split('&')), [
-                         'h=2', 'k=10', 'key=ass', 'keyword=%s' % hu.quote(keyword)])
+                        'h=2', 'k=10', 'key=ass', 'keyword=%s' % hu.quote(keyword)])
 
 
 if __name__ == '__main__':
