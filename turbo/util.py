@@ -13,10 +13,16 @@ from bson.objectid import ObjectId
 
 from turbo.log import util_log
 
-try:
-    basestring
-except Exception as e:
+PY3 = sys.version_info >= (3,)
+
+if PY3:
     basestring = str
+    unicode_type = str
+    basestring_type = str
+else:
+    # The names unicode and basestring don't exist in py3 so silence flake8.
+    unicode_type = unicode  # noqa
+    basestring_type = basestring  # noqa
 
 
 def to_list_str(value, encode=None):
@@ -68,7 +74,7 @@ def default_encode(v):
     """convert ObjectId, datetime, date into string
     """
     if isinstance(v, ObjectId):
-        return unicode(v)
+        return unicode_type(v)
 
     if isinstance(v, datetime):
         return format_time(v)

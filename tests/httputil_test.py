@@ -1,8 +1,6 @@
 # -*- coding:utf-8 -*-
 from __future__ import absolute_import, division, print_function, with_statement
 
-import urllib
-
 import turbo.httputil as hu
 from util import unittest
 
@@ -20,7 +18,7 @@ class HttpUtilTest(unittest.TestCase):
         paras = hu.encode_http_params(
             k=10, h=2, key='ass', keyword=keyword, empty='')
         self.assertEqual(sorted(paras.split('&')), [
-                         'h=2', 'k=10', 'key=ass', 'keyword=%s' % urllib.quote(keyword)])
+                         'h=2', 'k=10', 'key=ass', 'keyword=%s' % hu.quote(keyword)])
 
 
 if __name__ == '__main__':

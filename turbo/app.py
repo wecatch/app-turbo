@@ -1,10 +1,7 @@
 # -*- coding:utf-8 -*-
 from __future__ import absolute_import, print_function
 
-try:
-    basestring
-except Exception as e:
-    basestring = str
+import io
 
 from bson.objectid import ObjectId
 from pymongo import ASCENDING, DESCENDING
@@ -17,10 +14,16 @@ from tornado.util import ObjectDict
 
 from turbo.core.exceptions import ResponseMsg
 import turbo.httputil as _ht
-from turbo.util import escape as _es
+from turbo.util import escape as _es, PY3, basestring
 from turbo.conf import app_config
 from turbo.log import app_log
 from turbo.session import Session
+
+
+if PY3:
+    file_types = (io.IOBase,)
+else:
+    file_types = file, io.IOBase
 
 
 class Mixin(tornado.web.RequestHandler):
@@ -111,7 +114,7 @@ class BaseBaseHandler(Mixin):
     _required_params = []
     # override in subclass to extract the most need arguments
 
-    _types = [ObjectId, None, basestring, str, int, float, list, file, bool]
+    _types = [ObjectId, None, basestring, str, int, float, list, file_types, bool]
     _data = None
     _session = None
 

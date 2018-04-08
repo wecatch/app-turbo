@@ -2,15 +2,19 @@ from __future__ import absolute_import, division, print_function, with_statement
 
 
 import os
+import sys
 import logging
 import logging.handlers
 
 from turbo.conf import app_config
 
+PY3 = sys.version_info >= (3,)
 
 _formatter = logging.Formatter(
     '%(levelname)s:%(asctime)s %(name)s:%(lineno)d:%(funcName)s %(message)s')
 
+if PY3:
+    basestring = str
 
 def _init_file_logger(logger, level, log_path, log_size, log_count):
     """

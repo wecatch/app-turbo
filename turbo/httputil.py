@@ -1,11 +1,11 @@
 from __future__ import absolute_import, division, print_function, with_statement
 
-try:
-    basestring
-except Exception as e:
-    basestring = str
+from turbo.util import basestring, unicode_type, PY3
 
-import urllib
+if PY3:
+    from urllib.parse import quote
+else:
+    from urllib import quote
 
 
 def is_empty(v):
@@ -19,7 +19,7 @@ def is_empty(v):
 
 
 def utf8(v):
-    return v.encode('utf-8') if isinstance(v, unicode) else str(v)
+    return v.encode('utf-8') if isinstance(v, unicode_type) else str(v)
 
 
 def encode_http_params(**kw):
@@ -28,9 +28,9 @@ def encode_http_params(**kw):
     '''
     try:
         _fo = lambda k, v: '{name}={value}'.format(
-            name=k, value=urllib.quote(v),)
+            name=k, value=quote(v),)
     except:
-        _fo = lambda k, v: '%s=%s' % (k, urllib.quote(v))
+        _fo = lambda k, v: '%s=%s' % (k, quote(v))
 
     _en = utf8
 

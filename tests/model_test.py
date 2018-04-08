@@ -1,7 +1,6 @@
 # -*- coding:utf-8 -*-
 from __future__ import absolute_import, division, print_function, with_statement
 
-import StringIO
 import datetime
 import json
 
@@ -9,7 +8,13 @@ from bson.objectid import ObjectId
 import gridfs
 from pymongo import MongoClient
 from turbo.model import BaseModel
+from turbo.util import PY3, basestring
 from util import unittest, fake_ids, fake_ids_2
+
+if PY3:
+    from io import StringIO
+else:
+    from cStringIO import StringIO
 
 
 mc = MongoClient()

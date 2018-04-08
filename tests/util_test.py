@@ -6,7 +6,7 @@ import json
 from copy import deepcopy
 
 from bson.objectid import ObjectId
-from turbo.util import escape
+from turbo.util import escape, basestring
 
 from util import unittest
 
