@@ -71,8 +71,9 @@ coverage: ## check code coverage quickly with the default Python
 		$(BROWSER) htmlcov/index.html
 
 release: clean ## package and upload a release
-	python setup.py sdist upload
-	python setup.py bdist_wheel upload
+	python setup.py sdist bdist_wheel
+	# python setup.py bdist_wheel
+	twine upload dist/*
 
 dist: clean ## builds source and wheel package
 	python setup.py sdist
