@@ -19,10 +19,9 @@ Turbo is a framework for fast building web site and RESTFul api, based on tornad
 - Simple ORM for MongoDB
 - Logger
 - Session(storage support for redis, disk and so on)
-- support MongoDB, MySQL, PostgreSQL and so on
-- support MongoDB asynchronous driver [Motor](http://motor.readthedocs.io/en/stable/)
-
-**Prerequisites**: Turbo now only runs on Python 2.x, Python 3 support will be added in future.
+- Support MongoDB, MySQL, PostgreSQL and so on
+- Support MongoDB asynchronous driver [Motor](http://motor.readthedocs.io/en/stable/)
+- Support Python3
 
 ## Getting started
 
