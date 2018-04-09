@@ -11,7 +11,7 @@ from turbo import register
 from turbo.conf import app_config
 from turbo.util import  basestring_type as basestring
 
-from util import unittest, port_is_used
+from util import unittest, port_is_used, get_free_tcp_port
 
 app_config.app_name = 'app_test'
 app_config.web_application_setting = {
@@ -116,11 +116,7 @@ def run_server(port):
 
 
 def setUpModule():
-    port = 8888
-    while True:
-        if not port_is_used(port):
-            break
-        port += 1
+    port = get_free_tcp_port()
     server = multiprocessing.Process(target=run_server, args=(port,))
     server.start()
     global PID, URL

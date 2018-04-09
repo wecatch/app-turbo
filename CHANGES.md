@@ -1,6 +1,14 @@
 app-turbo changes log
 =====================
 
+## 0.4.8 
+
+- Support Python3.4, Python3.5, Python3.6
+
+## 0.4.7
+
+- Support turbo in Python 2.7 install correctly
+
 ## 0.4.5
 
 - Methods `get_as_column`,`create`, attribute `column` are removed from `BaseModel` class

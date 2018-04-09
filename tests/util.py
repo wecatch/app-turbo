@@ -20,6 +20,14 @@ def port_is_used(port):
     return False
 
 
+def get_free_tcp_port():
+    tcp = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    tcp.bind(('', 0))
+    addr, port = tcp.getsockname()
+    tcp.close()
+    return port
+
+
 fake_ids = [
     ObjectId('586a01b6ed80083a5087c7d7'),
     ObjectId('586a01b6ed80083a5087c7d8'),
