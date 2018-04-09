@@ -1,3 +1,3 @@
 # -*- coding:utf-8 -*-
 
-from modules import user
+from .modules import user
