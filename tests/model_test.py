@@ -1,7 +1,6 @@
 # -*- coding:utf-8 -*-
 from __future__ import absolute_import, division, print_function, with_statement
 
-import StringIO
 import datetime
 import json
 
@@ -9,8 +8,13 @@ from bson.objectid import ObjectId
 import gridfs
 from pymongo import MongoClient
 from turbo.model import BaseModel
+from turbo.util import PY3, basestring_type as basestring, utf8
 from util import unittest, fake_ids, fake_ids_2
 
+if PY3:
+    from io import StringIO
+else:
+    from cStringIO import StringIO
 
 mc = MongoClient()
 
@@ -186,7 +190,7 @@ class BaseModelTest(unittest.TestCase):
             {'_id': ObjectId()}, wrapper=True))
 
     def test_find(self):
-        self.assertGreater(list(self.tb_tag.find()), 0)
+        self.assertGreater(len(list(self.tb_tag.find())), 0)
         for i in list(self.tb_tag.find()):
             with self.assertRaises(KeyError):
                 i['nokey']
@@ -296,16 +300,16 @@ class BaseModelTest(unittest.TestCase):
 
     def test_put(self):
         value = 'hello word'
-        s = StringIO.StringIO()
+        s = StringIO()
         s.write(value)
         # put
-        file_id = self.tb_tag.put(s.getvalue())
+        file_id = self.tb_tag.put(utf8(s.getvalue()))
         self.assertTrue(isinstance(file_id, ObjectId))
 
         # get
         one = self.tb_tag.get(file_id)
         self.assertTrue(getattr(one, 'read', False), 'test get fail')
-        self.assertEqual(one.read(), value)
+        self.assertEqual(one.read(), utf8(value))
 
     def test_create(self):
         _id = self.tb_tag.create({'value': 0})

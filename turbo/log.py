@@ -2,15 +2,21 @@ from __future__ import absolute_import, division, print_function, with_statement
 
 
 import os
+import sys
 import logging
 import logging.handlers
 
 from turbo.conf import app_config
 
+PY3 = sys.version_info >= (3,)
 
 _formatter = logging.Formatter(
     '%(levelname)s:%(asctime)s %(name)s:%(lineno)d:%(funcName)s %(message)s')
 
+if PY3:
+    basestring_type = str
+else:
+    basestring_type = basestring
 
 def _init_file_logger(logger, level, log_path, log_size, log_count):
     """
@@ -70,7 +76,7 @@ def getLogger(currfile=None, level=None, log_path=None, log_size=500 * 1024 * 10
         path = os.path.abspath(currfile)
         if os.path.isfile(path):
             logger = _module_logger(path)
-        elif isinstance(currfile, basestring) and currfile.strip():
+        elif isinstance(currfile, basestring_type) and currfile.strip():
             # normal logger
             logger = logging.getLogger(currfile)
 

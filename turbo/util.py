@@ -8,16 +8,23 @@ import time
 import json
 from collections import Iterable
 import copy
+import base64
 
 from bson.objectid import ObjectId
 
 from turbo.log import util_log
 
-try:
-    basestring
-except Exception as e:
-    basestring = str
+PY3 = sys.version_info >= (3,)
 
+if PY3:
+    unicode_type = str
+    basestring_type = str
+    from base64 import decodebytes, encodebytes
+else:
+    # The names unicode and basestring don't exist in py3 so silence flake8.
+    unicode_type = unicode  # noqa
+    basestring_type = basestring  # noqa
+    from base64 import encodestring as encodebytes, decodestring as decodebytes
 
 def to_list_str(value, encode=None):
     """recursively convert list content into string
@@ -68,7 +75,7 @@ def default_encode(v):
     """convert ObjectId, datetime, date into string
     """
     if isinstance(v, ObjectId):
-        return unicode(v)
+        return unicode_type(v)
 
     if isinstance(v, datetime):
         return format_time(v)
@@ -82,7 +89,7 @@ def default_encode(v):
 def to_str(v, encode=None):
     """convert any list, dict, iterable and primitives object to string
     """
-    if isinstance(v, basestring):
+    if isinstance(v, basestring_type):
         return v
 
     if isinstance(v, dict):
@@ -330,3 +337,51 @@ def build_index(model_list):
                         attr().create_index(index, background=True)
                 else:
                     print("model %s has no 'index' attribute" % attr.__name__)
+
+
+_UTF8_TYPES = (bytes, type(None))
+
+
+def utf8(value):
+    # type: (typing.Union[bytes,unicode_type,None])->typing.Union[bytes,None]
+    """Converts a string argument to a byte string.
+
+    If the argument is already a byte string or None, it is returned unchanged.
+    Otherwise it must be a unicode string and is encoded as utf8.
+    """
+    if isinstance(value, _UTF8_TYPES):
+        return value
+    if not isinstance(value, unicode_type):
+        raise TypeError(
+            "Expected bytes, unicode, or None; got %r" % type(value)
+        )
+    return value.encode("utf-8")
+
+
+_BASESTRING_TYPES = (basestring_type, type(None))
+
+
+def to_basestring(value):
+    """Converts a string argument to a subclass of basestring.
+
+    In python2, byte and unicode strings are mostly interchangeable,
+    so functions that deal with a user-supplied argument in combination
+    with ascii string constants can use either and should return the type
+    the user supplied.  In python3, the two types are not interchangeable,
+    so this method is needed to convert byte strings to unicode.
+    """
+    if isinstance(value, _BASESTRING_TYPES):
+        return value
+    if not isinstance(value, bytes):
+        raise TypeError(
+            "Expected bytes, unicode, or None; got %r" % type(value)
+        )
+    return value.decode("utf-8")
+
+
+def get_func_name(func):
+    name = getattr(func, 'func_name', None)
+    if not name:
+        name = getattr(func, '__name__', None)
+    return name
+

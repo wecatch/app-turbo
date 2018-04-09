@@ -5,6 +5,6 @@ redis
 docopt
 coverage==4.1
 pymongo>=3.2
-pre-commit==0.9.4
-tornado
+sqlalchemy
+turbo_motor
 

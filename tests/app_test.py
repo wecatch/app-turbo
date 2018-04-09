@@ -9,8 +9,9 @@ import requests
 from turbo import app
 from turbo import register
 from turbo.conf import app_config
+from turbo.util import  basestring_type as basestring
 
-from util import unittest, port_is_used
+from util import unittest, port_is_used, get_free_tcp_port
 
 app_config.app_name = 'app_test'
 app_config.web_application_setting = {
@@ -115,11 +116,7 @@ def run_server(port):
 
 
 def setUpModule():
-    port = 8888
-    while True:
-        if not port_is_used(port):
-            break
-        port += 1
+    port = get_free_tcp_port()
     server = multiprocessing.Process(target=run_server, args=(port,))
     server.start()
     global PID, URL
@@ -167,7 +164,7 @@ class AppTest(unittest.TestCase):
 
     def test_404(self):
         resp = requests.get(self.home_url + '/hello')
-        self.assertTrue(resp.content.find('404') != -1)
+        self.assertTrue(resp.content.find(b'404') != -1)
 
     def test_context(self):
         """TODO test context

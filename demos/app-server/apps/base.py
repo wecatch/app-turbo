@@ -1,5 +1,5 @@
 # -*- coding:utf-8 -*-
-from settings import (
+from .settings import (
     LANG as _LANG,
 )
 

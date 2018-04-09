@@ -19,6 +19,7 @@ from tornado.util import ObjectDict
 
 from turbo.conf import app_config
 from turbo.log import session_log
+from turbo.util import utf8, to_basestring, encodebytes, decodebytes
 
 
 class Session(object):
@@ -161,8 +162,8 @@ class SessionObject(object):
         while True:
             rand = os.urandom(16)
             now = time.time()
-            session_id = sha1("%s%s%s%s" % (
-                rand, now, self.handler.request.remote_ip, secret_key))
+            session_id = sha1(utf8("%s%s%s%s" % (
+                rand, now, self.handler.request.remote_ip, secret_key)))
             session_id = session_id.hexdigest()
             if session_id not in self.store:
                 break
@@ -230,11 +231,11 @@ class Store(object):
     def encode(self, session_data):
         """encodes session dict as a string"""
         pickled = pickle.dumps(session_data)
-        return base64.encodestring(pickled)
+        return to_basestring(encodebytes(pickled))
 
     def decode(self, session_data):
         """decodes the data to get back the session dict """
-        pickled = base64.decodestring(session_data)
+        pickled = decodebytes(utf8(session_data))
         return pickle.loads(pickled)
 
 
@@ -265,6 +266,7 @@ class DiskStore(Store):
         self.root = root
 
     def _get_path(self, key):
+        key = to_basestring(key)
         if os.path.sep in key:
             raise ValueError('Bad key: %s' % repr(key))
         return os.path.join(self.root, key)

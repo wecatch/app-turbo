@@ -1,10 +1,7 @@
 # -*- coding:utf-8 -*-
 from __future__ import absolute_import, print_function
 
-try:
-    basestring
-except Exception as e:
-    basestring = str
+import io
 
 from bson.objectid import ObjectId
 from pymongo import ASCENDING, DESCENDING
@@ -17,10 +14,16 @@ from tornado.util import ObjectDict
 
 from turbo.core.exceptions import ResponseMsg
 import turbo.httputil as _ht
-from turbo.util import escape as _es
+from turbo.util import escape as _es, PY3, basestring_type
 from turbo.conf import app_config
 from turbo.log import app_log
 from turbo.session import Session
+
+
+if PY3:
+    file_types = (io.IOBase,)
+else:
+    file_types = file, io.IOBase
 
 
 class Mixin(tornado.web.RequestHandler):
@@ -91,7 +94,7 @@ class BaseBaseHandler(Mixin):
                                     ('limit', int),
                                 ],
                                 'option':[
-                                    ('jsoncallback', basestring, None),
+                                    ('jsoncallback', basestring_type, None),
                                 ]
                             }
         _post_params: the same to _get_params for post method
@@ -111,7 +114,7 @@ class BaseBaseHandler(Mixin):
     _required_params = []
     # override in subclass to extract the most need arguments
 
-    _types = [ObjectId, None, basestring, str, int, float, list, file, bool]
+    _types = [ObjectId, None, basestring_type, str, int, float, list, file_types, bool]
     _data = None
     _session = None
 
@@ -183,7 +186,7 @@ class BaseBaseHandler(Mixin):
                 raise ValueError(
                     '%s parameter expected types %s' % (key, self._types))
 
-            if tp != file:
+            if  not isinstance(tp, file_types):
                 if key not in arguments:
                     rpd[key] = default
                     return
@@ -193,7 +196,7 @@ class BaseBaseHandler(Mixin):
                         tp, '__name__').lower())(self.get_argument(key))
                     return
 
-                if tp == basestring or tp == str:
+                if tp == basestring_type:
                     rpd[key] = self.get_argument(key, strip=False)
                     return
 

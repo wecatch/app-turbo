@@ -7,7 +7,7 @@ import logging
 import time
 
 from bson.objectid import ObjectId
-from turbo.util import escape as es, camel_to_underscore
+from turbo.util import escape as es, camel_to_underscore, basestring_type as basestring, unicode_type
 from util import unittest
 
 
@@ -27,10 +27,10 @@ class EscapeTest(unittest.TestCase):
             'number': 10,
             'name': 'hello world',
             'child': child,
-            'childs': [copy.deepcopy(child) for i in xrange(3)],
+            'childs': [copy.deepcopy(child) for i in range(3)],
         }
 
-        self.values = [copy.deepcopy(self.record) for i in xrange(3)]
+        self.values = [copy.deepcopy(self.record) for i in range(3)]
 
     def tearDown(self):
         del self.record
@@ -44,7 +44,7 @@ class EscapeTest(unittest.TestCase):
         objid = ObjectId()
         number = 10
         self.assertEqual(es.default_encode(now), time.mktime(now.timetuple()))
-        self.assertEqual(es.default_encode(objid), unicode(objid))
+        self.assertEqual(es.default_encode(objid), unicode_type(objid))
         self.assertEqual(es.default_encode(number), number)
 
     def test_recursive_to_str(self):
