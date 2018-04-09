@@ -13,8 +13,8 @@ class User(Model):
     name = 'user'
 
     field = {
-        'email': (basestring, ''),
-        'passwd': (basestring, ''),
+        'email': (str, ''),
+        'passwd': (str, ''),
         'atime': (datetime, None),
     }
 

@@ -231,7 +231,7 @@ class Store(object):
     def encode(self, session_data):
         """encodes session dict as a string"""
         pickled = pickle.dumps(session_data)
-        return encodebytes(pickled)
+        return to_basestring(encodebytes(pickled))
 
     def decode(self, session_data):
         """decodes the data to get back the session dict """

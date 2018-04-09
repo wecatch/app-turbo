@@ -357,8 +357,6 @@ def utf8(value):
         )
     return value.encode("utf-8")
 
-    return '&'.join([_fo(_en(k), _en(v)) for k, v in kw.items() if not is_empty(v)])
-
 
 _BASESTRING_TYPES = (basestring_type, type(None))
 

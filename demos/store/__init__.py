@@ -1,1 +1,1 @@
-from modules import user, metric, chat
+from .modules import user, metric, chat

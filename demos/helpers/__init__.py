@@ -1,6 +1,6 @@
 # -*- coding:utf-8 -*-
 
-from settings import INSTALLED_HELPERS
+from .settings import INSTALLED_HELPERS
 
 import turbo.helper
 
