@@ -20,7 +20,7 @@ Turbo is a framework for fast building web site and RESTFul api, based on tornad
 - Logger
 - Session(storage support for redis, disk and so on)
 - Support MongoDB, MySQL, PostgreSQL and so on
-- Support MongoDB asynchronous driver [Motor](http://motor.readthedocs.io/en/stable/)
+- Support MongoDB asynchronous driver [Motor](http://motor.readthedocs.io/en/stable/) base on [turbo-motor](https://github.com/wecatch/turbo-motor)
 - Support Python3
 
 ## Getting started
@@ -37,3 +37,7 @@ python main.py
 
 Documentation and links to additional resources are available at [http://app-turbo.readthedocs.org/](http://app-turbo.readthedocs.org/)
 
+## Tutorial
+
+- [让 turbo 支持异步调用 MongoDB](http://sanyuesha.com/2018/04/11/turbo-motor/)
+- [turbo 的诞生记](http://sanyuesha.com/2016/07/23/why-did-i-make-turbo/)
