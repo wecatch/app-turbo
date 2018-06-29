@@ -46,6 +46,7 @@ class ApiHandler(app.BaseHandler):
         ],
         'option': [
             ('who', basestring, 'python'),
+            ('str_key', str, 'python'),
             ('bool', bool, False),
             ('int', int, 0),
             ('float', float, 0),
@@ -73,6 +74,7 @@ class ApiHandler(app.BaseHandler):
         assert self._params['who'] == 'python'
         assert self._params['action'] is None
         assert self._params['list'] == []
+        assert self._params['str_key'] == 'python'
         assert self.is_ajax()
 
         self._data = {

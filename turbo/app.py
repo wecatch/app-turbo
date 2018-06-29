@@ -186,7 +186,7 @@ class BaseBaseHandler(Mixin):
                 raise ValueError(
                     '%s parameter expected types %s' % (key, self._types))
 
-            if  not isinstance(tp, file_types):
+            if not isinstance(tp, file_types):
                 if key not in arguments:
                     rpd[key] = default
                     return
@@ -196,7 +196,7 @@ class BaseBaseHandler(Mixin):
                         tp, '__name__').lower())(self.get_argument(key))
                     return
 
-                if tp == basestring_type:
+                if tp == basestring_type or issubclass(tp, basestring_type):
                     rpd[key] = self.get_argument(key, strip=False)
                     return
 
