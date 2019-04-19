@@ -30,8 +30,10 @@ if sys.version_info < (2, 7):
     install_requires.append('futures')
 elif sys.version_info > (2, 7) and sys.version_info < (2, 7, 9):
     install_requires.append('tornado<5.0.0')
-else:
-    install_requires.append('tornado')
+elif sys.version_info >= (2, 7, 9) and sys.version_info < (3, 5, 2):
+    install_requires.append('tornado<6.0.0')
+elif sys.version_info >= (3, 5, 2):
+    install_requires.append('tornado>=6.0.0')
 
 
 setup(
@@ -54,6 +56,7 @@ setup(
         'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: 3.7',
     ],
     **kwargs
 )
