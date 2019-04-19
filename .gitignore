@@ -60,3 +60,4 @@ __test__
 site
 *~
 .DS_Store
+.python-version
