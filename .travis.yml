@@ -6,6 +6,7 @@ python:
   - "3.4"
   - "3.5"
   - "3.6"
+  - "3.7"
 services:
   - mongodb
   - redis-server
@@ -17,8 +18,8 @@ install:
   - if [[ $TRAVIS_PYTHON_VERSION == '2.7' ]]; then travis_retry pip install 'tornado<5.0.0'; fi
   - if [[ $TRAVIS_PYTHON_VERSION == '3.3' ]]; then travis_retry pip install 'tornado<5.0.0'; fi
   - if [[ $TRAVIS_PYTHON_VERSION == '3.4' ]]; then travis_retry pip install 'tornado<5.0.0'; fi
-  - if [[ $TRAVIS_PYTHON_VERSION == '3.5' ]]; then travis_retry pip install 'tornado'; fi
-  - if [[ $TRAVIS_PYTHON_VERSION == '3.6' ]]; then travis_retry pip install 'tornado'; fi
+  - if [[ $TRAVIS_PYTHON_VERSION == '3.5' ]]; then travis_retry pip install 'tornado<6.0.0'; fi
+  - if [[ $TRAVIS_PYTHON_VERSION == '3.6' ]]; then travis_retry pip install 'tornado>=6.0.0'; fi
   - pip install redis
   - pip install docopt
   - pip install codecov
