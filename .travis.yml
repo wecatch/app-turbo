@@ -1,12 +1,10 @@
 language: python
 python:
-  - "2.6"
   - "2.7"
   - "3.3"
   - "3.4"
   - "3.5"
   - "3.6"
-  - "3.7"
 services:
   - mongodb
   - redis-server
@@ -14,7 +12,6 @@ services:
 # command to install dependencies
 install:
   - pip install pymongo
-  - if [[ $TRAVIS_PYTHON_VERSION == '2.6' ]]; then travis_retry pip install 'tornado<=4.3.0' unittest2; fi
   - if [[ $TRAVIS_PYTHON_VERSION == '2.7' ]]; then travis_retry pip install 'tornado<5.0.0'; fi
   - if [[ $TRAVIS_PYTHON_VERSION == '3.3' ]]; then travis_retry pip install 'tornado<5.0.0'; fi
   - if [[ $TRAVIS_PYTHON_VERSION == '3.4' ]]; then travis_retry pip install 'tornado<5.0.0'; fi
