@@ -9,7 +9,10 @@ import requests
 from turbo import app
 from turbo import register
 from turbo.conf import app_config
-from turbo.util import  basestring_type as basestring
+from turbo.util import (
+    basestring_type as basestring,
+    file_types
+)
 
 from util import unittest, port_is_used, get_free_tcp_port
 
@@ -34,7 +37,6 @@ class HomeHandler(app.BaseHandler):
 
 
 class ApiHandler(app.BaseHandler):
-
     _get_required_params = [
         ('skip', int, 0),
         ('limit', int, 20),
@@ -63,6 +65,7 @@ class ApiHandler(app.BaseHandler):
     _post_params = {
         'need': [
             ('who', basestring),
+            ('app_test', file_types)
         ],
     }
 
@@ -83,13 +86,13 @@ class ApiHandler(app.BaseHandler):
 
     def POST(self):
         self._params = self.parameter
-        print(self._params)
 
         assert self._params['skip'] == 0
         assert self._params['limit'] == 10
 
         self._data = {
-            'value': self._params['who']
+            'value': self._params['who'],
+            'file_name': self._params['app_test'][0].filename
         }
 
     def PUT(self):
@@ -147,22 +150,24 @@ class AppTest(unittest.TestCase):
 
     def test_get_api(self):
         resp = requests.get(self.api_url, headers={
-                            'X-Requested-With': 'XMLHttpRequest'})
+            'X-Requested-With': 'XMLHttpRequest'})
         self.assertEqual(resp.status_code, 200)
         self.assertEqual(resp.json()['res']['value'], 'python')
 
     def test_delete_api(self):
         resp = requests.delete(self.api_url, headers={
-                               'X-Requested-With': 'XMLHttpRequest'})
+            'X-Requested-With': 'XMLHttpRequest'})
         self.assertEqual(resp.status_code, 200)
         self.assertEqual(resp.json()['msg'], 'Unknown Error')
 
     def test_post_api(self):
-        resp = requests.post(self.api_url, headers={
-                             'X-Requested-With': 'XMLHttpRequest'},
-                             data={'limit': 10, 'who': 'ruby'})
-        self.assertEqual(resp.status_code, 200)
-        self.assertEqual(resp.json()['res']['value'], 'ruby')
+        with open(os.path.abspath(__file__), 'rb') as file:
+            resp = requests.post(self.api_url, headers={
+                'X-Requested-With': 'XMLHttpRequest'},
+                                 data={'limit': 10, 'who': 'ruby'}, files={'app_test': file})
+            self.assertEqual(resp.status_code, 200)
+            self.assertEqual(resp.json()['res']['value'], 'ruby')
+            self.assertEqual(resp.json()['res']['file_name'], 'app_test.py')
 
     def test_404(self):
         resp = requests.get(self.home_url + '/hello')

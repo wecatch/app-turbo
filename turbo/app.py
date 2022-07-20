@@ -14,16 +14,10 @@ from tornado.util import ObjectDict
 
 from turbo.core.exceptions import ResponseMsg
 import turbo.httputil as _ht
-from turbo.util import escape as _es, PY3, basestring_type
+from turbo.util import escape as _es, basestring_type, file_types
 from turbo.conf import app_config
 from turbo.log import app_log
 from turbo.session import Session
-
-
-if PY3:
-    file_types = (io.IOBase,)
-else:
-    file_types = file, io.IOBase
 
 
 class Mixin(tornado.web.RequestHandler):
@@ -114,7 +108,7 @@ class BaseBaseHandler(Mixin):
     _required_params = []
     # override in subclass to extract the most need arguments
 
-    _types = [ObjectId, None, basestring_type, str, int, float, list, file_types, bool]
+    _types = [ObjectId, None, basestring_type, str, int, float, list, bool]
     _data = None
     _session = None
 
@@ -182,11 +176,11 @@ class BaseBaseHandler(Mixin):
         rpd = {}  # request parameter dict
 
         def filter_parameter(key, tp, default=None):
-            if tp not in self._types:
+            if tp not in self._types and tp != file_types:
                 raise ValueError(
                     '%s parameter expected types %s' % (key, self._types))
 
-            if not isinstance(tp, file_types):
+            if tp != file_types:
                 if key not in arguments:
                     rpd[key] = default
                     return
@@ -204,7 +198,7 @@ class BaseBaseHandler(Mixin):
                     rpd[key] = self.get_arguments(key)
                     return
 
-            if tp == file:
+            if tp == file_types:
                 if key not in files:
                     rpd[key] = []
                     return

@@ -19,11 +19,13 @@ PY3 = sys.version_info >= (3,)
 if PY3:
     unicode_type = str
     basestring_type = str
+    file_types = 'file'
     from base64 import decodebytes, encodebytes
 else:
     # The names unicode and basestring don't exist in py3 so silence flake8.
     unicode_type = unicode  # noqa
     basestring_type = basestring  # noqa
+    file_types = file
     from base64 import encodestring as encodebytes, decodestring as decodebytes
 
 def to_list_str(value, encode=None):
