@@ -10,10 +10,16 @@ from collections import defaultdict
 from datetime import datetime
 import functools
 import time
+import sys
 
 from bson.objectid import ObjectId
 from turbo.log import model_log
 from turbo.util import escape as _es, import_object
+
+PY3 = sys.version_info >= (3,)
+
+if PY3:
+    long = int
 
 
 def _record(x):

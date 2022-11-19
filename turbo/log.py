@@ -16,7 +16,8 @@ _formatter = logging.Formatter(
 if PY3:
     basestring_type = str
 else:
-    basestring_type = basestring
+    basestring_type = basestring  # noqa: F821
+
 
 def _init_file_logger(logger, level, log_path, log_size, log_count):
     """

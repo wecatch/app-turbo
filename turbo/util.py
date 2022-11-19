@@ -8,7 +8,7 @@ import time
 import json
 from collections import Iterable
 import copy
-import base64
+import base64  # noqa: F401
 
 from bson.objectid import ObjectId
 
@@ -25,8 +25,9 @@ else:
     # The names unicode and basestring don't exist in py3 so silence flake8.
     unicode_type = unicode  # noqa
     basestring_type = basestring  # noqa
-    file_types = file
-    from base64 import encodestring as encodebytes, decodestring as decodebytes
+    file_types = file # noqa
+    from base64 import encodestring as encodebytes, decodestring as decodebytes  # noqa
+
 
 def to_list_str(value, encode=None):
     """recursively convert list content into string
@@ -120,7 +121,7 @@ def to_objectid(objid):
 
     try:
         objid = ObjectId(objid)
-    except:
+    except:  # noqa
         util_log.error('%s is invalid objectid' % objid)
         return None
 
@@ -130,14 +131,14 @@ def to_objectid(objid):
 def json_encode(data, **kwargs):
     try:
         return json.dumps(data, **kwargs)
-    except:
+    except:  # noqa
         util_log.error('Uncaught exception in json_encode', exc_info=True)
 
 
 def json_decode(data, **kwargs):
     try:
         return json.loads(data, **kwargs)
-    except:
+    except:   # noqa
         util_log.error('Uncaught exception in json_decode', exc_info=True)
 
 
@@ -345,7 +346,7 @@ _UTF8_TYPES = (bytes, type(None))
 
 
 def utf8(value):
-    # type: (typing.Union[bytes,unicode_type,None])->typing.Union[bytes,None]
+    # type: (typing.Union[bytes,unicode_type,None])->typing.Union[bytes,None] # noqa
     """Converts a string argument to a byte string.
 
     If the argument is already a byte string or None, it is returned unchanged.
@@ -386,4 +387,3 @@ def get_func_name(func):
     if not name:
         name = getattr(func, '__name__', None)
     return name
-

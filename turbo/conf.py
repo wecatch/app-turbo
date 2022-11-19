@@ -50,4 +50,5 @@ class AppConfig(object):
 
         return level
 
+
 app_config = AppConfig()

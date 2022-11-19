@@ -6,4 +6,3 @@ docopt
 coverage
 pymongo
 sqlalchemy
-turbo_motor

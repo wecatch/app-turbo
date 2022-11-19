@@ -30,7 +30,7 @@ def install_helper(installing_helper_list, package_space):
             try:
                 module = import_object(
                     '.'.join(['helpers', item, m]), package_space)
-            except:
+            except:  # noqa
                 helper_log.error('module helpers.%s.%s Import Error' %
                                  (item, m), exc_info=True)
                 sys.exit(0)

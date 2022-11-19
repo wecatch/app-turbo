@@ -46,8 +46,8 @@ class Jinja2Environment(Environment):
     """
 
     relative_path = re.compile('(./|../)', re.IGNORECASE)
-    relative_dir = re.compile('([^/\s]{1,}/)', re.IGNORECASE)
-    real_name = re.compile('([^/\s]{1,}$)')
+    relative_dir = re.compile('([^/\s]{1,}/)', re.IGNORECASE)   # noqa
+    real_name = re.compile('([^/\s]{1,}$)')  # noqa
 
     def join_path(self, template, parent):
         t_group = self.relative_path.findall(template)

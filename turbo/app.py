@@ -1,8 +1,6 @@
 # -*- coding:utf-8 -*-
 from __future__ import absolute_import, print_function
 
-import io
-
 from bson.objectid import ObjectId
 from pymongo import ASCENDING, DESCENDING
 
@@ -272,7 +270,7 @@ class BaseBaseHandler(Mixin):
             resp = self.init_resp(e.code, e.msg)
         except tornado.web.HTTPError as e:
             raise e
-        except Exception as e:
+        except Exception as e:  # noqa
             app_log.error('Uncaught Exception in %s %s call' % (
                 getattr(getattr(self, '__class__'), '__name__'), method), exc_info=True)
             resp = self.init_resp(1, 'Unknown Error')

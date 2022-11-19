@@ -2,7 +2,7 @@ from __future__ import absolute_import, division, print_function, with_statement
 
 import os
 import time
-import base64
+import base64  # noqa
 from copy import deepcopy
 try:
     import cPickle as pickle

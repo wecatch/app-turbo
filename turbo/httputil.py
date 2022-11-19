@@ -29,7 +29,7 @@ def encode_http_params(**kw):
     try:
         _fo = lambda k, v: '{name}={value}'.format(
             name=k, value=to_basestring(quote(v)))
-    except:
+    except:   # noqa
         _fo = lambda k, v: '%s=%s' % (k, to_basestring(quote(v)))
 
     _en = utf8
