@@ -1,7 +1,11 @@
 app-turbo changes log
 =====================
 
-## 0.4.8 
+## 0.5.0
+
+- fix file upload bug in Python3
+
+## 0.4.8
 
 - Support Python3.4, Python3.5, Python3.6
 

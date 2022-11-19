@@ -1,10 +1,9 @@
-flake8==2.6.0
-tox==2.3.1
+flake8
+tox
 codecov
 redis
 docopt
-coverage==4.1
-pymongo>=3.2
+coverage
+pymongo
 sqlalchemy
 turbo_motor
-
